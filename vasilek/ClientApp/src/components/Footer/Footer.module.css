@@ -1,0 +1,12 @@
+.footer{
+    background-color: #dedede;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.copyright{
+    width: 70%;
+    margin: 0 auto;
+}

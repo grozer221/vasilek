@@ -1,0 +1,32 @@
+.header{
+    background-color: #dedede;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 40px;
+    margin-bottom: 10px;
+    padding: 0 20px;
+}
+
+.wrapper_nav{
+    display: flex;
+    height: 100%;
+    align-items: center;
+}
+
+.logo{
+    margin-right: 10px;
+}
+
+.logo > a{
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+}
+
+.loginBlock a{
+    color: black;
+    text-decoration: none;
+}
+
+

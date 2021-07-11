@@ -1,0 +1,15 @@
+.active{
+    background-color: blueviolet;
+}
+
+.dialog{
+    text-decoration: none;
+    display: block;
+    margin: 5px 0;
+    color: black;
+    border: 1px solid black;
+    padding: 2px;
+    border-radius: 10px;
+    width: 80%;
+    text-align: center;
+}

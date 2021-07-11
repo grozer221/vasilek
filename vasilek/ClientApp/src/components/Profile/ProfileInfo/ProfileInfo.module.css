@@ -1,0 +1,7 @@
+.wrapper_profile{
+    display: flex;
+}
+
+.wrapper_profile .photo{
+    width: 200px;
+}

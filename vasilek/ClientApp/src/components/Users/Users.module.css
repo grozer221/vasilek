@@ -1,0 +1,50 @@
+.wrapper {
+    min-height: calc(100vh - 100px);
+    display: flex;
+    flex-direction: column;
+}
+
+.wrapper_users {
+    flex-grow: 1;
+
+}
+
+.wrapper_user {
+    display: grid;
+    grid-template-columns: 1fr 6fr;
+    grid-template-rows: 1fr;
+    grid-template-areas: 'p u';
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #dedede;
+    box-sizing: border-box;
+    border-radius: 20px;
+}
+
+.photoANDbtn {
+    grid-area: p;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.photoANDbtn img {
+    width: 100px;
+    border-radius: 50%;
+}
+
+.photoANDbtn button {
+    padding: 4px 10px;
+    border-radius: 10px;
+}
+
+.userInfo {
+    grid-area: u;
+    display: flex;
+    justify-content: space-between;
+    font-size: 20px;
+}
+
+.userInfo div {
+    padding: 5px;
+}
+
