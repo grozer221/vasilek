@@ -1,4 +1,4 @@
-import profileReducer, { addPostActionCreator, deletePost } from './profile-reducer';
+import profileReducer, { actions } from './profile-reducer';
 
 let state = {
   posts: [
@@ -10,7 +10,7 @@ let state = {
 
 it('length of post should be incremented', () => {
   //1 test date
-  let action = addPostActionCreator('IT-')
+  let action = actions.addPostActionCreator('IT-')
 
   //2 action
   let newState = profileReducer(state, action);
@@ -21,7 +21,7 @@ it('length of post should be incremented', () => {
 
 it('after deleting length of message should be decrement', () => {
 
-  let action = deletePost(1)
+  let action = actions.deletePost(1)
 
   let newState = profileReducer(state, action);
 
