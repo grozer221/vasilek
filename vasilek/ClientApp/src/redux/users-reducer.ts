@@ -1,12 +1,9 @@
-import { usersAPI } from '../api/api';
-import { updateObjeectInArray } from '../utills/object-helpers';
+import {ResponseCodes, usersAPI} from '../api/api';
 import { ProfileType } from '../types/types';
 import { AppStateType } from './redux-store';
 import { Dispatch } from 'react';
 import { ThunkAction } from 'redux-thunk';
 
-const FOLLOW = 'FOLLOW';
-const UNFOLLOW = 'UNFOLLOW';
 const SET_USERS = 'SET_USERS';
 const SET_CURRENT_PAGE = 'SET_CURRENT_PAGE';
 const SET_USERS_COUNT = 'SET_USERS_COUNT';
@@ -51,8 +48,8 @@ const usersReducer = (state = initialState, action: ActionsTypes): InitialStateT
   }
 };
 
-type ActionsTypes = SetUsersType
-    | SetCurrentPageType | SetUsersCountType | ToggleIsFetchingType | ToggleFollowingProgressType | SetFollowedUsersType
+type ActionsTypes = SetUsersType | SetCurrentPageType | SetUsersCountType
+     | ToggleIsFetchingType | ToggleFollowingProgressType | SetFollowedUsersType
 
 type SetUsersType = {
   type: typeof SET_USERS
@@ -101,24 +98,29 @@ type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes>
 export const getFollowedUsers = (): ThunkType =>
     async (dispatch) => {
         let data = await usersAPI.getFollowedUsers();
-        dispatch(setFollowedUsers(data));
+        if(data.resultCode === ResponseCodes.Success)
+            dispatch(setFollowedUsers(data.data));
     };
 
 export const requestUsers = (page: number, pageSize: number): ThunkType =>
   async (dispatch) => {
     dispatch(toggleIsFetching(true));
     dispatch(setCurrentPage(page));
-    let data = await usersAPI.getUsers(page, pageSize);
-    dispatch(toggleIsFetching(false));
-    dispatch(setUsers(data));
-    dispatch(setUsersCount(data.count));
+    let users = await usersAPI.getUsers(page, pageSize);
+    let userCount = await usersAPI.getUsersCount();
+    if(users.resultCode === ResponseCodes.Success && userCount.resultCode === ResponseCodes.Success)
+    {
+        dispatch(toggleIsFetching(false));
+        dispatch(setUsers(users.data));
+        dispatch(setUsersCount(userCount.data));
+    }
   };
 
 const _followUnfollowFlow = async (dispatch: Dispatch<ActionsTypes>, userId: number, apiMethod: any) => {
   dispatch(toggleFollowingProgress(true, userId));
   let data = await apiMethod(userId);
-  if (data)
-      dispatch(setFollowedUsers(data));
+  if (data.resultCode === ResponseCodes.Success)
+      dispatch(setFollowedUsers(data.data));
   dispatch(toggleFollowingProgress(false, userId));
 };
 

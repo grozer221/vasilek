@@ -12,5 +12,6 @@ namespace vasilek
 
         public DbSet<UserModel> Users { get; set; }
         public DbSet<FollowModel> Follows { get; set; }
+        public DbSet<PhotoModel> Photos { get; set; }
     }
 }

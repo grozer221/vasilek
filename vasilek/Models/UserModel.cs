@@ -10,10 +10,10 @@ namespace vasilek.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Status { get; set; }
-        public string Photo { get; set; }
-        public string Photo_small { get; set; }
         public string City { get; set; }
         public string Country { get; set; }
+        public string AvaPhoto { get; set; }
+        public virtual ICollection<PhotoModel> Photos { get; set; }
         public virtual ICollection<FollowModel> Follows { get; set; }
     }
 }

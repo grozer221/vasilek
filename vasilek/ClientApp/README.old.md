@@ -85,7 +85,7 @@ my-app
     ├── App.js
     ├── App.test.js
     ├── index.css
-    ├── validators.js
+    ├── validators.ts
     ├── logo.svg
     └── serviceWorker.js
     └── setupTests.js

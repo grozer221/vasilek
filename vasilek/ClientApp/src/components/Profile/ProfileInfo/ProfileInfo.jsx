@@ -11,7 +11,7 @@ function ProfileInfo({ profile, status, updateStatus, isOwner, savePhoto, update
   if (!profile)
     return <Loading/>;
 
-  const onMainPhotoSelected = (e) => {
+    const onMainPhotoSelected = (e) => {
     if (e.target.files.length) {
       savePhoto(e.target.files[0]);
     }
@@ -22,13 +22,13 @@ function ProfileInfo({ profile, status, updateStatus, isOwner, savePhoto, update
     setEditMode(false);
   }
 
-  let pathToFolderWithPhotos = 'http://social-network.ua/files/users-photo/';
+    let pathToFolderWithPhotos = 'https://vasilek.blob.core.windows.net/userphotoscontainer/';
 
   return (
     <div className={s.wrapper_profile}>
       <div>
-        <div><img className={s.photo}
-                  src={ profile.photo_small ? pathToFolderWithPhotos + profile.photo_small : man}/>
+              <div><img className={s.photo}
+                  src={profile.avaPhoto ? pathToFolderWithPhotos + profile.avaPhoto : man} />
         </div>
         {isOwner && <div><input type="file" onChange={ onMainPhotoSelected }/></div>}
       </div>

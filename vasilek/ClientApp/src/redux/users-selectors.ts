@@ -28,3 +28,7 @@ export const getFollowedUsersSelector = (state: AppStateType) => {
     return state.usersPage.followedUsers;
 }
 
+export const getIsAuth = (state: AppStateType) => {
+    return state.auth.isAuth;
+}
+

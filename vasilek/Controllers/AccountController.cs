@@ -16,23 +16,32 @@ namespace vasilek.Controllers
     public class AccountController : Controller
     {
         private AppDatabaseContext _ctx;
-        private UserRepository userRepository; 
+        private ProfileRepository _profileRep; 
         public AccountController(AppDatabaseContext ctx)
         {
             _ctx = ctx;
-            userRepository = new UserRepository(_ctx);
+            _profileRep = new ProfileRepository(_ctx);
         }
 
         [HttpGet]
-        public UserModel IsAuth()
+        public ResponseModel IsAuth()
         {
             if(HttpContext.User.Identity.IsAuthenticated)
-                return userRepository.GetUserByLogin(HttpContext.User.Identity.Name);
-            return new UserModel();
+                return new ResponseModel()
+                {
+                    ResultCode = 0,
+                    Data = _profileRep.GetProfileByLogin(HttpContext.User.Identity.Name)
+                };
+            return new ResponseModel()
+            {
+                ResultCode = 1,
+                Messages = new string[] { "User unautorised" },
+                Data = null,
+            };
         }
 
         [HttpPost]
-        public async Task<bool> Login([FromBody]LoginModel model)
+        public async Task<ResponseModel> Login([FromBody]LoginModel model)
         {
             if (ModelState.IsValid)
             {
@@ -40,16 +49,22 @@ namespace vasilek.Controllers
                 if (user != null)
                 {
                     await Authenticate(user); // аутентификация
-                    return true;
+                    return new ResponseModel() 
+                    { 
+                        ResultCode = 0,
+                        Data = model
+                    };
                 }
-                else
-                    return false;
             }
-            return false;
+            return new ResponseModel()
+            {
+                ResultCode = 1,
+                Messages = new string[] { "Login or password invalid" },
+            };
         }
 
         [HttpPost]
-        public async Task<bool> Register([FromBody]RegisterModel model)
+        public async Task<ResponseModel> Register([FromBody]RegisterModel model)
         {
             if (ModelState.IsValid)
             {
@@ -59,12 +74,18 @@ namespace vasilek.Controllers
                     _ctx.Users.Add(new UserModel { Login = model.Login, Password = model.Password });
                     await _ctx.SaveChangesAsync();
                     await Authenticate(user); // аутентификация
-                    return true;
+                    return new ResponseModel() 
+                    {
+                        ResultCode = 0,
+                        Data = model
+                    };
                 }
-                else
-                    return false;
             }
-            return false;
+            return new ResponseModel()
+            {
+                ResultCode = 1,
+                Messages = new string[] { "User with wrote login already exist" },
+            };
         }
 
         private async Task Authenticate(UserModel user)
@@ -79,10 +100,11 @@ namespace vasilek.Controllers
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
         }
 
-        public async Task<bool> Logout()
+        [HttpDelete]
+        public async Task<ResponseModel> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return true;
+            return new ResponseModel() { ResultCode = 0 };
         }
     }
 }

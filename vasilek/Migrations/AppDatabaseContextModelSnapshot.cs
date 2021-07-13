@@ -25,9 +25,6 @@ namespace vasilek.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<bool>("Followed")
-                        .HasColumnType("bit");
-
                     b.Property<int>("SubcriberId")
                         .HasColumnType("int");
 
@@ -41,12 +38,35 @@ namespace vasilek.Migrations
                     b.ToTable("Follows");
                 });
 
+            modelBuilder.Entity("vasilek.Models.PhotoModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Photos");
+                });
+
             modelBuilder.Entity("vasilek.Models.UserModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("AvaPhoto")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("City")
                         .HasColumnType("nvarchar(max)");
@@ -64,12 +84,6 @@ namespace vasilek.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Photo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Photo_small")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
@@ -91,9 +105,22 @@ namespace vasilek.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("vasilek.Models.PhotoModel", b =>
+                {
+                    b.HasOne("vasilek.Models.UserModel", "User")
+                        .WithMany("Photos")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("vasilek.Models.UserModel", b =>
                 {
                     b.Navigation("Follows");
+
+                    b.Navigation("Photos");
                 });
 #pragma warning restore 612, 618
         }

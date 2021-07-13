@@ -19,21 +19,33 @@ namespace vasilek.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<int> Get()
+        public ResponseModel Get()
         {
-            return userRepository.GetFollowedUsersByUserId(userRepository.GetUserIdByLogin(HttpContext.User.Identity.Name));
+            return new ResponseModel()
+            {
+                ResultCode = 0,
+                Data = userRepository.GetFollowedUsersByUserId(userRepository.GetUserIdByLogin(HttpContext.User.Identity.Name))
+            };
         }
 
         [HttpPut("{id}")]
-        public IEnumerable<int> Put(int id)
+        public ResponseModel Put(int id)
         {
-            return userRepository.FollowUser(userRepository.GetUserIdByLogin(HttpContext.User.Identity.Name), id);
+            return new ResponseModel()
+            {
+                ResultCode = 0,
+                Data = userRepository.FollowUser(userRepository.GetUserIdByLogin(HttpContext.User.Identity.Name), id)
+            };
         }
 
         [HttpDelete("{id}")]
-        public IEnumerable<int> Delete(int id)
+        public ResponseModel Delete(int id)
         {
-            return userRepository.UnFollowUser(userRepository.GetUserIdByLogin(HttpContext.User.Identity.Name), id);
+            return new ResponseModel()
+            {
+                ResultCode = 0,
+                Data = userRepository.UnFollowUser(userRepository.GetUserIdByLogin(HttpContext.User.Identity.Name), id)
+            };
         }
     }
 }

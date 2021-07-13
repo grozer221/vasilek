@@ -10,7 +10,7 @@ export type ProfileType = {
   name: string
   status: string
   photo: string
-  photo_small: string
+  avaPhoto: string
   city: string
   country: string
 }

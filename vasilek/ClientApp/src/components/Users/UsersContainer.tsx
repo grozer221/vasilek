@@ -16,7 +16,8 @@ import {
   getPageSize,
   getUsers,
   getUsersCount,
-  getFollowedUsersSelector
+    getFollowedUsersSelector,
+    getIsAuth
 } from '../../redux/users-selectors';
 import { ProfileType } from '../../types/types';
 import { AppStateType } from '../../redux/redux-store';
@@ -29,6 +30,7 @@ type MapStatePropsType = {
   users: Array<ProfileType>
   followingInProgress: Array<number>
   followedUsers: Array<number>
+  isAuth: boolean
 }
 
 type MapDispatchPropsType = {
@@ -70,6 +72,7 @@ class UsersContainer extends React.Component<PropsType> {
                 followingInProgress={this.props.followingInProgress}
                 getFollowedUsers={this.props.getFollowedUsers}
                 followedUsers={this.props.followedUsers}
+                isAuth={this.props.isAuth}
         />
       </>
     );
@@ -84,7 +87,8 @@ let mapStateToProps = (state: AppStateType): MapStatePropsType => {
     currentPage: getCurrentPage(state),
     isFetching: getIsFetching(state),
     followingInProgress: getFollowingInProgress(state),
-    followedUsers: getFollowedUsersSelector(state)
+    followedUsers: getFollowedUsersSelector(state),
+    isAuth: getIsAuth(state)
   };
 };
 

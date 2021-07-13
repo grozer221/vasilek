@@ -1,5 +1,5 @@
-import { usersAPI } from '../api/api';
-import { PostType, ProfileType } from '../types/types';
+import {ResponseCodes, usersAPI} from '../api/api';
+import {PostType, ProfileType} from '../types/types';
 
 const ADD_POST = 'ADD-POST';
 const SET_USER_PROFILE = 'SET_USER_PROFILE';
@@ -11,97 +11,100 @@ const SAVE_PHOTO_SUCCESS = 'SAVE_PHOTO_SUCCESS';
 export type InitialStateType = typeof initialState;
 
 let initialState = {
-  posts: [
-    { id: 1, likesCount: 1, message: 'ааааа' },
-    { id: 2, likesCount: 2, message: 'ббббб' },
-    { id: 2, likesCount: 3, message: 'ввввв' }
-  ] as Array<PostType>,
-  profile: null as ProfileType | null,
-  status: '',
-  newPostText: ''
+    posts: [
+        {id: 1, likesCount: 1, message: 'ааааа'},
+        {id: 2, likesCount: 2, message: 'ббббб'},
+        {id: 2, likesCount: 3, message: 'ввввв'}
+    ] as Array<PostType>,
+    profile: null as ProfileType | null,
+    status: '',
+    newPostText: ''
 };
 
 const profileReducer = (state = initialState, action: any): InitialStateType => {
-  switch (action.type) {
-    case ADD_POST:
-      let newPost = {
-        id: 5,
-        message: action.newPostText,
-        likesCount: 0
-      };
-      return {
-        ...state,
-        posts: [...state.posts, newPost],
-        newPostText: ''
-      };
-    case SET_USER_PROFILE:
-      if (action.profile === null)
-        return { ...state, profile: action.profile };
-      return { ...state, profile: action.profile, status: action.profile.status };
-    case SET_STATUS:
-      return { ...state, status: action.status };
-    case DELETE_POST:
-      return { ...state, posts: state.posts.filter(p => p.id != action.postId) };
-    case SAVE_PHOTO_SUCCESS:
-      return { ...state, profile: {...state.profile, photo_small: action.photo_small} as ProfileType };
+    switch (action.type) {
+        case ADD_POST:
+            let newPost = {
+                id: 5,
+                message: action.newPostText,
+                likesCount: 0
+            };
+            return {
+                ...state,
+                posts: [...state.posts, newPost],
+                newPostText: ''
+            };
+        case SET_USER_PROFILE:
+            if (action.profile === null)
+                return {...state, profile: action.profile};
+            return {...state, profile: action.profile, status: action.profile.status};
+        case SET_STATUS:
+            return {...state, status: action.status};
+        case DELETE_POST:
+            return {...state, posts: state.posts.filter(p => p.id != action.postId)};
+        case SAVE_PHOTO_SUCCESS:
+            return {...state, profile: {...state.profile, avaPhoto: action.avaPhoto} as ProfileType};
 
-    default:
-      return state;
-  }
+        default:
+            return state;
+    }
 };
 
 export type AddPostActionCreatorType = {
-  type: typeof ADD_POST,
-  newPostText: string
+    type: typeof ADD_POST,
+    newPostText: string
 }
-export const addPostActionCreator = (newPostText: string): AddPostActionCreatorType => ({ type: ADD_POST, newPostText });
+export const addPostActionCreator = (newPostText: string): AddPostActionCreatorType => ({type: ADD_POST, newPostText});
 
 export type SetUserProfileActionType = {
-  type: typeof SET_USER_PROFILE
-  profile: ProfileType
+    type: typeof SET_USER_PROFILE
+    profile: ProfileType
 }
-export const setUserProfile = (profile: ProfileType): SetUserProfileActionType => ({ type: SET_USER_PROFILE, profile });
+export const setUserProfile = (profile: ProfileType): SetUserProfileActionType => ({type: SET_USER_PROFILE, profile});
 
 export type SetStatusActionType = {
-  type: typeof SET_STATUS
-  status: string
+    type: typeof SET_STATUS
+    status: string
 }
-export const setStatus = (status: string): SetStatusActionType => ({ type: SET_STATUS, status });
+export const setStatus = (status: string): SetStatusActionType => ({type: SET_STATUS, status});
 
 export type DeletePostActionType = {
-  type: typeof DELETE_POST
-  postId: number
+    type: typeof DELETE_POST
+    postId: number
 }
-export const deletePost = (postId: number): DeletePostActionType => ({ type: DELETE_POST, postId });
+export const deletePost = (postId: number): DeletePostActionType => ({type: DELETE_POST, postId});
 
 export type SavePhotoSuccessActionType = {
-  type: typeof SAVE_PHOTO_SUCCESS
-  photo_small: string
+    type: typeof SAVE_PHOTO_SUCCESS
+    avaPhoto: string
 }
-export const savePhotoSuccess = (photo_small: string): SavePhotoSuccessActionType => ({ type: SAVE_PHOTO_SUCCESS, photo_small });
+export const savePhotoSuccess = (avaPhoto: string): SavePhotoSuccessActionType => ({
+    type: SAVE_PHOTO_SUCCESS,
+    avaPhoto: avaPhoto
+});
 
 export const getUserProfile = (userId: number) => async (dispatch: any) => {
-  let data = await usersAPI.getProfile(userId);
-  dispatch(setUserProfile(data));
+    let data = await usersAPI.getProfile(userId);
+    if (data.resultCode === ResponseCodes.Success)
+        dispatch(setUserProfile(data.data));
 };
 
 export const updateStatus = (status: string) => async (dispatch: any) => {
-  let data = await usersAPI.updateStatus(status);
-  if (data)
-    dispatch(setStatus(status));
+    let data = await usersAPI.updateStatus(status);
+    if (data.resultCode === ResponseCodes.Success)
+        dispatch(setStatus(status));
 };
 
 export const savePhoto = (file: any) => async (dispatch: any) => {
-  let data = await usersAPI.savePhoto(file);
-  if (data)
-    dispatch(savePhotoSuccess(data.photo_small));
+    let data = await usersAPI.savePhoto(file);
+    if (data.resultCode === ResponseCodes.Success)
+        dispatch(savePhotoSuccess(data.data));
 };
 
-export const updateProfile = (profile: ProfileType) => async (dispatch: any, getState: any) => {
-  const userId = getState().auth.userId;
-  let data = await usersAPI.updateProfile(profile);
-  if (data)
-    dispatch(setUserProfile(data));
+export const updateProfile = (profile: ProfileType) => async (dispatch: any) => {
+    let data = await usersAPI.updateProfile(profile);
+    if (data.resultCode === ResponseCodes.Success)
+        dispatch(setUserProfile(data.data));
 };
 
 export default profileReducer;

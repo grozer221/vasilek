@@ -13,6 +13,7 @@ type MapStatePropsType = {
     users: Array<ProfileType>
     followingInProgress: Array<number>
     followedUsers: Array<number>
+    isAuth: boolean
 }
 
 type MapDispatchPropsType = {
@@ -43,6 +44,7 @@ class Users extends React.Component<PropsType> {
                             follow={this.props.follow}
                             unfollow={this.props.unfollow}
                             followedUsers={this.props.followedUsers}
+                            isAuth={this.props.isAuth}
                         />
                     )}
                 </div>

@@ -22,34 +22,9 @@ namespace vasilek.Repository
             return _ctx.Users.Select(u => u).Skip(offset).Take(limit).ToList();
         }
 
-        public UserModel GetUserById(int id)
-        {
-            return _ctx.Users.Find(id);
-        }
-        
-        public UserModel GetUserByLogin(string login)
-        {
-            return _ctx.Users.FirstOrDefault(u => u.Login == login); ;
-        }
-
         public UserModel AddUser(UserModel user)
         {
             _ctx.Users.Add(user);
-            _ctx.SaveChanges();
-            return user;
-        }
-
-        public UserModel EditUserByLogin(string login, UserModel updatedUser)
-        {
-            UserModel user = _ctx.Users.FirstOrDefault(u => u.Login == login);
-            user.Login = updatedUser.Login;
-            user.Password = updatedUser.Password;
-            user.FirstName = updatedUser.FirstName;
-            user.LastName = updatedUser.LastName;
-            user.Photo = updatedUser.Photo;
-            user.Photo_small = updatedUser.Photo_small;
-            user.City = updatedUser.City;
-            user.Country = updatedUser.Country;
             _ctx.SaveChanges();
             return user;
         }
@@ -92,12 +67,19 @@ namespace vasilek.Repository
             return _ctx.Follows.Where(f => f.UserId == unSignatoryId).Select(f => f.SubcriberId);
         }
 
-        public UserModel DeleteUserById(int id)
+        public int GetUsersCount()
         {
-            UserModel user = _ctx.Users.Find(id);
-            _ctx.Users.Remove(user);
-            _ctx.SaveChanges();
-            return user;
+            return _ctx.Users.Count();
         }
+
+        //public UserModel DeleteUserById(int id)
+        //{
+        //    UserModel user = _ctx.Users.Find(id);
+        //    _ctx.Users.Remove(user);
+        //    _ctx.SaveChanges();
+        //    return user;
+        //}
+
+
     }
 }
