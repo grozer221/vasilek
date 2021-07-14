@@ -36,9 +36,9 @@ export type LoginFormValuesType = {
     login: string
     password: string
     rememberMe: boolean
-}
+};
 
-export type LoginFormValuesTypeKeys = Extract<keyof LoginFormValuesType, string>;
+export type LoginFormValuesTypeKeys = GetStringKeys<LoginFormValuesType>;
 
 export function createField<FormKeysType extends string>(placeholder: string | undefined,
                                                          name: FormKeysType,
@@ -55,5 +55,6 @@ export function createField<FormKeysType extends string>(placeholder: string | u
             />{text}
         </div>
     )
-}
-;
+};
+
+export type GetStringKeys<T> = Extract<keyof T, string>;

@@ -12,7 +12,7 @@ ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter basename={process.env.PUBLIC_URL}>
-        <App store={store}/>
+        <App />
       </BrowserRouter>
     </Provider>
   </React.StrictMode>,

@@ -17,8 +17,8 @@ type MapStatePropsType = {
 }
 
 type MapDispatchPropsType = {
-    follow: (userId: number, userLogin: string) => void
-    unfollow: (userId: number, userLogin: string) => void
+    follow: (userId: number) => void
+    unfollow: (userId: number) => void
     getFollowedUsers: () => void
 }
 

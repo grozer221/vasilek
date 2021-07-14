@@ -82,7 +82,7 @@ my-app
 │   └── manifest.json
 └── src
     ├── App.css
-    ├── App.js
+    ├── App.tsx
     ├── App.test.js
     ├── index.css
     ├── validators.ts

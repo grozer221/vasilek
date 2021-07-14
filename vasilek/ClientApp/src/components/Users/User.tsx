@@ -2,8 +2,18 @@ import React from 'react';
 import s from './Users.module.css';
 import photo from '../../assets/images/man.png';
 import {NavLink} from 'react-router-dom';
+import {ProfileType} from "../../types/types";
 
-let Users = ({user, followingInProgress, follow, unfollow, followedUsers, isAuth}) => {
+type PropsType = {
+    user: ProfileType
+    followingInProgress: Array<number>
+    follow: (userId: number) => void
+    unfollow: (userId: number) => void
+    followedUsers: Array<number>
+    isAuth: boolean
+}
+
+let Users: React.FC<PropsType> = ({user, followingInProgress, follow, unfollow, followedUsers, isAuth}) => {
     let pathToFolderWithPhotos = 'https://vasilek.blob.core.windows.net/userphotoscontainer/';
     return (
         <div className={s.wrapper_user}>
