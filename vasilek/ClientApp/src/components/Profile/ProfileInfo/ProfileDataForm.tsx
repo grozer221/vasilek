@@ -14,11 +14,11 @@ const ProfileDataForm: React.FC<InjectedFormProps<ProfileType, PropsType> & Prop
     return (
         <form onSubmit={handleSubmit}>
             <button>Save</button>
-            <div><b>First name</b>: {createField<ProfileTypeKeys>('FirstName', 'firstName', [], Input)}</div>
-            <div><b>Last name</b>: {createField<ProfileTypeKeys>('LastName', 'lastName', [], Input)}</div>
-            <div><b>Status</b>: <ProfileStatusWithHooks status={status} updateStatus={updateStatus}/></div>
-            <div><b>City</b>: {createField<ProfileTypeKeys>('City', 'city', [], Input)}</div>
-            <div><b>Country</b>: {createField<ProfileTypeKeys>('Country', 'country', [], Input)}</div>
+            <div><b>First name</b>: {createField<ProfileTypeKeys>('FirstName', 'FirstName', [], Input)}</div>
+            <div><b>Last name</b>: {createField<ProfileTypeKeys>('LastName', 'LastName', [], Input)}</div>
+            <div><b>Status</b>: <ProfileStatusWithHooks Status={status} updateStatus={updateStatus}/></div>
+            <div><b>City</b>: {createField<ProfileTypeKeys>('City', 'City', [], Input)}</div>
+            <div><b>Country</b>: {createField<ProfileTypeKeys>('Country', 'Country', [], Input)}</div>
         </form>
     );
 }

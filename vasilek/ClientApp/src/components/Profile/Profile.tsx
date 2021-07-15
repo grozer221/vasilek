@@ -5,11 +5,11 @@ import PostsContainer from './Posts/PostsContainer';
 import {ProfileType} from "../../types/types";
 
 type PropsType = {
+    IsOwner: boolean
+    Status: string
+    Profile: ProfileType | null
     updateProfile: (profile: ProfileType) => void
     savePhoto: (file: File) => void
-    isOwner: boolean
-    profile: ProfileType | null
-    status: string
     updateStatus: (status: string) => void
 }
 
@@ -18,9 +18,9 @@ const Profile: React.FC<PropsType> = props => {
         <div>
             <ProfileInfo updateProfile={props.updateProfile}
                          savePhoto={props.savePhoto}
-                         isOwner={props.isOwner}
-                         profile={props.profile}
-                         status={props.status}
+                         isOwner={props.IsOwner}
+                         profile={props.Profile}
+                         status={props.Status}
                          updateStatus={props.updateStatus}/>
             <PostsContainer/>
         </div>

@@ -2,13 +2,13 @@ import React, {ChangeEvent, useState} from 'react';
 import s from './ProfileInfo.module.css';
 
 type PropsType = {
-    status: string
+    Status: string
     updateStatus: (newStatus: string) => void
 }
 
 const ProfileStatusWithHooks: React.FC<PropsType> = (props) => {
     let [editMode, setEditMode] = useState(false);
-    let [status, setStatus] = useState(props.status);
+    let [status, setStatus] = useState(props.Status);
     const activateEditMode = () => {
         setEditMode(true);
     };
@@ -23,11 +23,9 @@ const ProfileStatusWithHooks: React.FC<PropsType> = (props) => {
     return (
         <div>
             <span><b>Status</b>: </span>
-            {!editMode &&
-            <span onDoubleClick={activateEditMode}>{props.status || '--'}</span>
-            }
-            {editMode &&
-            <input onChange={onStatusChange} autoFocus={true} onBlur={deactivateEditMode} value={status}/>
+            {editMode
+                ? <input onChange={onStatusChange} autoFocus={true} onBlur={deactivateEditMode} value={status}/>
+                : <span onDoubleClick={activateEditMode}>{props.Status || '--'}</span>
             }
         </div>
     );

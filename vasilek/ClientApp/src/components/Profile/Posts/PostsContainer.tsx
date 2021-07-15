@@ -6,11 +6,11 @@ import {AppStateType} from "../../../redux/redux-store";
 import {PostType} from "../../../types/types";
 
 type MapStatePropsType = {
-    posts: Array<PostType>
+    Posts: Array<PostType>
 }
 const mapStateToProps = (state: AppStateType): MapStatePropsType => {
     return {
-        posts: state.profilePage.posts,
+        Posts: state.profilePage.Posts,
     };
 };
 

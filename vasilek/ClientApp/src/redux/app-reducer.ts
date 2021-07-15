@@ -2,10 +2,10 @@ import { getAuthUserData } from './auth-reducer';
 import {InferActionsTypes} from "./redux-store";
 
 let initialState = {
-  initialised: false,
-  login: null,
-  name: null,
-  isAuth: false
+  Initialised: false,
+  Login: null,
+  Name: null,
+  IsAuth: false
 };
 
 export type InitialStateType = typeof initialState;
@@ -16,7 +16,7 @@ const appReducer = (state = initialState, action: ActionsTypes) : InitialStateTy
     case 'INITIALISED_SUCCESS':
       return {
         ...state,
-        initialised: true,
+        Initialised: true,
       };
 
     default:

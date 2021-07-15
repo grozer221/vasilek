@@ -1,0 +1,35 @@
+.login_form {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background-color: #dedede;
+    border-radius: 20px;
+    width: 500px;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.wrapper_form_content {
+
+}
+
+.control {
+    margin: 10px;
+}
+
+.button {
+    padding: 10px 20px;
+}
+
+.button:hover {
+    background-color: #a7a7a7;
+}
+
+.button:checked {
+    background-color: red;
+}
+

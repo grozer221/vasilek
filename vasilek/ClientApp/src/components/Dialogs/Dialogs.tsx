@@ -28,10 +28,10 @@ const Dialogs: React.FC<OwnPropsType> = (props) => {
     return (
         <div className={s.wrapper_dialogs}>
             <div className={s.dialogs}>
-                {props.dialogsPage.dialogs.map(obj => <Dialog key={obj.id} id={obj.id} login={obj.login}/>)}
+                {props.dialogsPage.Dialogs.map(obj => <Dialog key={obj.Id} Id={obj.Id} login={obj.Login}/>)}
             </div>
             <div className={s.messages}>
-                <div>{props.dialogsPage.messages.map(obj => <Message key={obj.id} message={obj.message}/>)}</div>
+                <div>{props.dialogsPage.Messages.map(obj => <Message key={obj.Id} message={obj.Message}/>)}</div>
                 <AddMessageFormRedux onSubmit={addNewMessage}/>
             </div>
         </div>

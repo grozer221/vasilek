@@ -20,7 +20,7 @@ it('length of post should be incremented', () => {
     let newState = profileReducer(state, action);
 
     //3 expectation
-    expect(newState.posts.length).toBe(4);
+    expect(newState.Posts.length).toBe(4);
 });
 
 it('after deleting length of message should be decrement', () => {
@@ -29,6 +29,6 @@ it('after deleting length of message should be decrement', () => {
 
     let newState = profileReducer(state, action);
 
-    expect(newState.posts.length).toBe(3);
+    expect(newState.Posts.length).toBe(3);
 });
 

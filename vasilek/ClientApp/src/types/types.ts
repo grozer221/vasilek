@@ -1,17 +1,17 @@
 export type PostType = {
-    id: number
-    likesCount: number
-    message: string
+    Id: number
+    LikesCount: number
+    Message: string
 }
 export type ProfileType = {
-    id: number
-    login: string
-    password: string
-    firstName: string
-    lastName: string
-    status: string
-    photo: string
-    avaPhoto: string
-    city: string
-    country: string
+    Id: number
+    Login: string
+    Password: string
+    FirstName: string
+    LastName: string
+    Status: string
+    Photo: string
+    AvaPhoto: string
+    City: string
+    Country: string
 }

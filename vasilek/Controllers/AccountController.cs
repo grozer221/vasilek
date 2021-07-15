@@ -3,11 +3,12 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using vasilek.ViewModels; // пространство имен моделей RegisterModel и LoginModel
-using vasilek.Models; // пространство имен UserContext и класса User
+using vasilek.ViewModels;
+using vasilek.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using vasilek.Repository;
+using Newtonsoft.Json;
 
 namespace vasilek.Controllers
 {
@@ -24,24 +25,24 @@ namespace vasilek.Controllers
         }
 
         [HttpGet]
-        public ResponseModel IsAuth()
+        public string IsAuth()
         {
-            if(HttpContext.User.Identity.IsAuthenticated)
-                return new ResponseModel()
+            if (HttpContext.User.Identity.IsAuthenticated)
+                return JsonConvert.SerializeObject(new ResponseModel()
                 {
                     ResultCode = 0,
                     Data = _profileRep.GetProfileByLogin(HttpContext.User.Identity.Name)
-                };
-            return new ResponseModel()
+                });
+            return JsonConvert.SerializeObject(new ResponseModel()
             {
                 ResultCode = 1,
                 Messages = new string[] { "User unautorised" },
                 Data = null,
-            };
+            });
         }
 
         [HttpPost]
-        public async Task<ResponseModel> Login([FromBody]LoginModel model)
+        public async Task<string> Login([FromBody]LoginModel model)
         {
             if (ModelState.IsValid)
             {
@@ -49,22 +50,22 @@ namespace vasilek.Controllers
                 if (user != null)
                 {
                     await Authenticate(user); // аутентификация
-                    return new ResponseModel() 
-                    { 
+                    return JsonConvert.SerializeObject(new ResponseModel()
+                    {
                         ResultCode = 0,
                         Data = model
-                    };
+                    });
                 }
             }
-            return new ResponseModel()
+            return JsonConvert.SerializeObject(new ResponseModel()
             {
                 ResultCode = 1,
                 Messages = new string[] { "Login or password invalid" },
-            };
+            });
         }
 
         [HttpPost]
-        public async Task<ResponseModel> Register([FromBody]RegisterModel model)
+        public async Task<string> Register([FromBody]RegisterModel model)
         {
             if (ModelState.IsValid)
             {
@@ -74,18 +75,18 @@ namespace vasilek.Controllers
                     _ctx.Users.Add(new UserModel { Login = model.Login, Password = model.Password });
                     await _ctx.SaveChangesAsync();
                     await Authenticate(user); // аутентификация
-                    return new ResponseModel() 
+                    return JsonConvert.SerializeObject(new ResponseModel()
                     {
                         ResultCode = 0,
                         Data = model
-                    };
+                    });
                 }
             }
-            return new ResponseModel()
+            return JsonConvert.SerializeObject(new ResponseModel()
             {
                 ResultCode = 1,
                 Messages = new string[] { "User with wrote login already exist" },
-            };
+            });
         }
 
         private async Task Authenticate(UserModel user)
@@ -101,10 +102,10 @@ namespace vasilek.Controllers
         }
 
         [HttpDelete]
-        public async Task<ResponseModel> Logout()
+        public async Task<string> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return new ResponseModel() { ResultCode = 0 };
+            return JsonConvert.SerializeObject(new ResponseModel() { ResultCode = 0 });
         }
     }
 }

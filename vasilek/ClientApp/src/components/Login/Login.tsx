@@ -12,23 +12,23 @@ import {AppStateType} from "../../redux/redux-store";
 let LoginForm: React.FC<InjectedFormProps<LoginFormValuesType>>
     = ({handleSubmit, error}) => {
     return (
-        <form onSubmit={handleSubmit}>
-            <div>
-                {createField<LoginFormValuesTypeKeys>("Login", "login", [required], Input)}
-            </div>
-            <div>
-                {createField<LoginFormValuesTypeKeys>("Password", "password", [required], Input, {type: "password"})}
-            </div>
-            <div>
-                {createField<LoginFormValuesTypeKeys>(undefined, "rememberMe", [], Input, {type: "checkbox"}, "remember me")}
-            </div>
-            {error &&
-            <div className={sForm.from_summary_error}>
-                {error}
-            </div>
-            }
-            <div>
-                <button>Sign in</button>
+        <form onSubmit={handleSubmit} className={s.login_form}>
+            <div className={s.wrapper_form_content}>
+                <h1>LOGIN</h1>
+                <div className={s.control}>
+                    {createField<LoginFormValuesTypeKeys>("Login", "login", [required], Input)}
+                </div>
+                <div className={s.control}>
+                    {createField<LoginFormValuesTypeKeys>("Password", "password", [required], Input, {type: "password"})}
+                </div>
+                {error &&
+                <div className={sForm.from_summary_error}>
+                    {error}
+                </div>
+                }
+                <div>
+                    <button className={s.button}>Sign in</button>
+                </div>
             </div>
         </form>
     )
@@ -37,28 +37,20 @@ let LoginForm: React.FC<InjectedFormProps<LoginFormValuesType>>
 const LoginReduxFrom = reduxForm<LoginFormValuesType>({form: 'login'})(LoginForm)
 
 type MapStatePropsType = {
-    isAuth: boolean
+    IsAuth: boolean
 }
 type MapDispatchPropsType = {
-    login: (login: string, password: string, rememberMe: boolean) => void
+    login: (login: string, password: string) => void
 }
 
 let Login: React.FC<MapStatePropsType & MapDispatchPropsType> = (props) => {
-    const onSubmit = (formData: any) => {
-        props.login(formData.login, formData.password, formData.rememberMe);
-    }
-
-    if (props.isAuth)
+    const onSubmit = (formData: any) =>
+        props.login(formData.login, formData.password);
+    if (props.IsAuth)
         return <Redirect to='/profile'/>
-
-    return (
-        <div>
-            <h1>LOGIN</h1>
-            <LoginReduxFrom onSubmit={onSubmit}/>
-        </div>
-    )
+    return <LoginReduxFrom onSubmit={onSubmit}/>
 };
 
-const mapStateToProps = (state: AppStateType): MapStatePropsType => ({isAuth: state.auth.isAuth})
+const mapStateToProps = (state: AppStateType): MapStatePropsType => ({IsAuth: state.auth.IsAuth})
 
 export default connect(mapStateToProps, {login})(Login);

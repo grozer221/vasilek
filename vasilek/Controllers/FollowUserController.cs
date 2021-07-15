@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using vasilek.Models;
@@ -19,33 +20,33 @@ namespace vasilek.Controllers
         }
 
         [HttpGet]
-        public ResponseModel Get()
+        public string Get()
         {
-            return new ResponseModel()
+            return JsonConvert.SerializeObject(new ResponseModel()
             {
                 ResultCode = 0,
                 Data = userRepository.GetFollowedUsersByUserId(userRepository.GetUserIdByLogin(HttpContext.User.Identity.Name))
-            };
+            });
         }
 
         [HttpPut("{id}")]
-        public ResponseModel Put(int id)
+        public string Put(int id)
         {
-            return new ResponseModel()
+            return JsonConvert.SerializeObject(new ResponseModel()
             {
                 ResultCode = 0,
                 Data = userRepository.FollowUser(userRepository.GetUserIdByLogin(HttpContext.User.Identity.Name), id)
-            };
+            });
         }
 
         [HttpDelete("{id}")]
-        public ResponseModel Delete(int id)
+        public string Delete(int id)
         {
-            return new ResponseModel()
+            return JsonConvert.SerializeObject(new ResponseModel()
             {
                 ResultCode = 0,
                 Data = userRepository.UnFollowUser(userRepository.GetUserIdByLogin(HttpContext.User.Identity.Name), id)
-            };
+            });
         }
     }
 }

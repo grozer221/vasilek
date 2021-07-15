@@ -34,6 +34,7 @@ class App extends React.Component<MapPropsType & DispatchPropsType> {
                         <Route exact path="/" render={() => <Redirect to={'/profile'}/>}/>
                         <Route path="/profile/:userId?" render={() => <ProfileContainer/>}/>
                         <Route path="/dialogs" render={() => <DialogsContainer/>}/>
+                        <Route path="/friends" render={() => <UsersContainer/>}/>
                         <Route path="/users" render={() => <UsersContainer/>}/>
                         <Route path="/login" render={() => <Login/>}/>
                         <Route path="*" render={() => <div>404 Not Found</div>}/>
@@ -48,7 +49,7 @@ class App extends React.Component<MapPropsType & DispatchPropsType> {
 }
 
 const mapStateToProps = (state: AppStateType) => ({
-    initialised: state.app.initialised
+    initialised: state.app.Initialised
 });
 
 export default compose<React.ComponentType>(

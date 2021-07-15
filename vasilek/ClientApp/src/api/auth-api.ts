@@ -1,11 +1,12 @@
 import {instance, ResponseCodes} from "./api";
+import {ProfileType} from "../types/types";
 
 export const authAPI = {
     isAuth() {
-        return instance.get<MeType>('account/isauth')
+        return instance.get<IsAuthType>('account/isauth')
             .then(res => res.data);
     },
-    login(login: string, password: string, rememberMe = false) {
+    login(login: string, password: string) {
         return instance.post<LoginType>('account/login', {'login': login, 'password': password})
             .then(res => res.data);
     },
@@ -15,25 +16,21 @@ export const authAPI = {
     }
 };
 
-type MeType = {
-    resultCode: ResponseCodes,
-    messages: Array<string>
-    data: {
-        id: number
-        login: string
-        firstName: string
-        lastName: string
-    }
+type IsAuthType = {
+    ResultCode: ResponseCodes,
+    Messages: Array<string>
+    Data: ProfileType
 }
 
 type LoginType = {
-    resultCode: ResponseCodes,
-    messages: Array<string>
-    data: {
-        login: string
+    ResultCode: ResponseCodes,
+    Messages: Array<string>
+    Data: {
+        Login: string
+        Password: string
     }
 }
 
 type LogoutType = {
-    resultCode: ResponseCodes,
+    ResultCode: ResponseCodes
 }

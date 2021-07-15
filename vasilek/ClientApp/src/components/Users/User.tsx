@@ -5,34 +5,34 @@ import {NavLink} from 'react-router-dom';
 import {ProfileType} from "../../types/types";
 
 type PropsType = {
-    user: ProfileType
-    followingInProgress: Array<number>
+    User: ProfileType
+    FollowedUsers: Array<number>
+    IsAuth: boolean
+    FollowingInProgress: Array<number>
     follow: (userId: number) => void
     unfollow: (userId: number) => void
-    followedUsers: Array<number>
-    isAuth: boolean
 }
 
-let Users: React.FC<PropsType> = ({user, followingInProgress, follow, unfollow, followedUsers, isAuth}) => {
+let Users: React.FC<PropsType> = ({User, FollowingInProgress, follow, unfollow, FollowedUsers, IsAuth}) => {
     let pathToFolderWithPhotos = 'https://vasilek.blob.core.windows.net/userphotoscontainer/';
     return (
         <div className={s.wrapper_user}>
             <div className={s.photoANDbtn}>
                 <div>
-                    <NavLink to={'/profile/' + user.id}>
-                        <img src={user.avaPhoto !== null ? pathToFolderWithPhotos + user.avaPhoto : photo}/>
+                    <NavLink to={'/profile/' + User.Id}>
+                        <img src={User.AvaPhoto !== null ? pathToFolderWithPhotos + User.AvaPhoto : photo}/>
                     </NavLink>
                 </div>
                 <div>
                     {
-                        isAuth && (
-                            followedUsers.some(id => id === user.id)
-                                ? <button disabled={followingInProgress
-                                    .some(id => id === user.id)} onClick={() => unfollow(user.id)}
+                        IsAuth && (
+                            FollowedUsers.some(Id => Id === User.Id)
+                                ? <button disabled={FollowingInProgress
+                                    .some(id => id === User.Id)} onClick={() => unfollow(User.Id)}
                                 >UnFollow</button>
 
-                                : <button disabled={followingInProgress
-                                    .some(id => id === user.id)} onClick={() => follow(user.id)}
+                                : <button disabled={FollowingInProgress
+                                    .some(id => id === User.Id)} onClick={() => follow(User.Id)}
                                 >Follow</button>
                         )
                     }
@@ -40,14 +40,14 @@ let Users: React.FC<PropsType> = ({user, followingInProgress, follow, unfollow, 
             </div>
             <div className={s.userInfo}>
                 <div>
-                    <div>{user.login}</div>
-                    <div>{user.firstName}</div>
-                    <div>{user.lastName}</div>
-                    <div>{user.status}</div>
+                    <div>{User.Login}</div>
+                    <div>{User.FirstName}</div>
+                    <div>{User.LastName}</div>
+                    <div>{User.Status}</div>
                 </div>
                 <div>
-                    <div>{user.city}</div>
-                    <div>{user.country}</div>
+                    <div>{User.City}</div>
+                    <div>{User.Country}</div>
                 </div>
             </div>
         </div>

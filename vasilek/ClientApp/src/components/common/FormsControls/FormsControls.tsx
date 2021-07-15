@@ -35,7 +35,6 @@ export const Input: React.FC<WrappedFieldProps> = (props) => {
 export type LoginFormValuesType = {
     login: string
     password: string
-    rememberMe: boolean
 };
 
 export type LoginFormValuesTypeKeys = GetStringKeys<LoginFormValuesType>;
@@ -47,7 +46,8 @@ export function createField<FormKeysType extends string>(placeholder: string | u
                                                          props = {}, text = "") {
     return (
         <div>
-            <Field placeholder={placeholder}
+            <Field className={s.control}
+                   placeholder={placeholder}
                    name={name}
                    validate={validators}
                    component={component}

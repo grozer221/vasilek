@@ -2,22 +2,18 @@ import React from 'react';
 import Post from './Post/Post';
 import {InjectedFormProps, reduxForm} from 'redux-form';
 import {maxLengthCreator, required} from '../../../utills/validators/validators';
-import {
-    createField, GetStringKeys,
-    Textarea
-} from '../../common/FormsControls/FormsControls';
+import {createField, GetStringKeys, Textarea} from '../../common/FormsControls/FormsControls';
 import {PostType} from "../../../types/types";
 
 const maxLength10 = maxLengthCreator(10);
 
 type MapPropsType = {
-    posts: Array<PostType>
+    Posts: Array<PostType>
 }
 
 type MapDispatchType = {
     addPost: (newPostText: string) => void
 }
-
 
 const Posts: React.FC<MapPropsType & MapDispatchType> = props => {
     let onAddPost = (values: AddPostFormValuesType) => {
@@ -27,14 +23,11 @@ const Posts: React.FC<MapPropsType & MapDispatchType> = props => {
         <div>
             <AddNewPostFormRedux onSubmit={onAddPost}/>
             <div>
-                {props.posts.map(obj => <Post key={obj.id} message={obj.message} likesCount={obj.likesCount}/>)}
+                {props.Posts.map(obj => <Post key={obj.Id} Message={obj.Message} LikesCount={obj.LikesCount}/>)}
             </div>
         </div>
     );
 }
-
-const PostsMemorised = React.memo(Posts);
-
 
 export type AddPostFormValuesType = {
     newPostText: string
@@ -56,4 +49,4 @@ let AddNewPostForm: React.FC<InjectedFormProps<AddPostFormValuesType>> = (props)
 const AddNewPostFormRedux = reduxForm<AddPostFormValuesType>({form: 'ProfileAddPost'})(AddNewPostForm);
 
 
-export default PostsMemorised;
+export default React.memo(Posts);

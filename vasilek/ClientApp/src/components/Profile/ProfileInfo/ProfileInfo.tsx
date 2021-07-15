@@ -38,7 +38,7 @@ const ProfileInfo: React.FC<PropsType> = ({profile, status, updateStatus, isOwne
         <div className={s.wrapper_profile}>
             <div>
                 <div><img className={s.photo}
-                          src={profile.avaPhoto ? pathToFolderWithPhotos + profile.avaPhoto : man}/>
+                          src={profile.AvaPhoto ? pathToFolderWithPhotos + profile.AvaPhoto : man}/>
                 </div>
                 {isOwner && <div><input type="file" onChange={onMainPhotoSelected}/></div>}
             </div>
@@ -47,28 +47,28 @@ const ProfileInfo: React.FC<PropsType> = ({profile, status, updateStatus, isOwne
                                    updateStatus={updateStatus}/>
                 : <ProfileData goToEditMode={() => {
                     setEditMode(true)
-                }} profile={profile} status={status} updateStatus={updateStatus} isOwner={isOwner}/>}
+                }} Profile={profile} Status={status} updateStatus={updateStatus} IsOwner={isOwner}/>}
         </div>
     );
 }
 
 type ProfileDataType = {
-    profile: ProfileType
-    status: string
+    Profile: ProfileType
+    Status: string
+    IsOwner: boolean
     updateStatus: (status: string) => void
-    isOwner: boolean
     goToEditMode: () => void
 }
 
-const ProfileData: React.FC<ProfileDataType> = ({profile, status, updateStatus, isOwner, goToEditMode}) => {
+const ProfileData: React.FC<ProfileDataType> = ({Profile, Status, updateStatus, IsOwner, goToEditMode}) => {
     return (
         <div>
-            {isOwner && <button onClick={goToEditMode}>Edit</button>}
-            <div><b>First name</b>: {profile.firstName}</div>
-            <div><b>Last name</b>: {profile.lastName}</div>
-            <div><ProfileStatusWithHooks status={status} updateStatus={updateStatus}/></div>
-            <div><b>City</b>: {profile.city}</div>
-            <div><b>Country</b>: {profile.country}</div>
+            {IsOwner && <button onClick={goToEditMode}>Edit</button>}
+            <div><b>First name</b>: {Profile.FirstName}</div>
+            <div><b>Last name</b>: {Profile.LastName}</div>
+            <div><ProfileStatusWithHooks Status={Status} updateStatus={updateStatus}/></div>
+            <div><b>City</b>: {Profile.City}</div>
+            <div><b>Country</b>: {Profile.Country}</div>
         </div>
     );
 }

@@ -25,12 +25,12 @@ export const profileAPI = {
 }
 
 type UpdateType = {
-    resultCode: ResponseCodes,
-    messages: Array<string>
-    data: string
+    ResultCode: ResponseCodes,
+    Messages: Array<string>
+    Data: string
 }
 type UserType = {
-    resultCode: ResponseCodes,
-    messages: Array<string>
-    data: ProfileType
+    ResultCode: ResponseCodes,
+    Messages: Array<string>
+    Data: ProfileType
 }

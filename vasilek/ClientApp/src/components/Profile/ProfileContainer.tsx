@@ -29,10 +29,9 @@ class ProfileContainer extends React.Component<PropsType, MapDispatchToProps> {
             userId = this.props.authUserId;
             if (!userId) {
                 this.props.history.push('/login');
+                return;
             }
         }
-        if(!userId)
-            throw new Error("ID should exist in URI or in state");
         this.props.getUserProfile(userId);
     }
 
@@ -48,20 +47,20 @@ class ProfileContainer extends React.Component<PropsType, MapDispatchToProps> {
     render() {
         return (
             <Profile {...this.props}
-                     profile={this.props.profile}
-                     status={this.props.status}
+                     Profile={this.props.Profile}
+                     Status={this.props.Status}
                      updateStatus={this.props.updateStatus}
-                     isOwner={!this.props.match.params.userId}
+                     IsOwner={!this.props.match.params.userId}
                      savePhoto={this.props.savePhoto}/>
         );
     }
 }
 
 let mapStateToProps = (state: AppStateType) => ({
-    profile: state.profilePage.profile,
-    status: state.profilePage.status,
-    authUserId: state.auth.userId,
-    isAuth: state.auth.isAuth
+    Profile: state.profilePage.Profile,
+    Status: state.profilePage.Status,
+    authUserId: state.auth.UserId,
+    isAuth: state.auth.IsAuth
 });
 
 export default compose<React.ComponentType>(

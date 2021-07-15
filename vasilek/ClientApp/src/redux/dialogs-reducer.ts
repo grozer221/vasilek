@@ -1,26 +1,26 @@
 import {InferActionsTypes} from "./redux-store";
 
 type DialogType = {
-    id: number,
-    login: string,
+    Id: number,
+    Login: string,
 }
 
 type MessageType = {
-    id: number,
-    message: string,
+    Id: number,
+    Message: string,
 }
 
 let initialState = {
-    dialogs: [
-        {id: 1, login: 'Grozer'},
-        {id: 2, login: 'Prozer'},
-        {id: 3, login: 'Zhozer'},
-        {id: 4, login: 'Lozer'}
+    Dialogs: [
+        {Id: 1, Login: 'Grozer'},
+        {Id: 2, Login: 'Prozer'},
+        {Id: 3, Login: 'Zhozer'},
+        {Id: 4, Login: 'Lozer'}
     ] as Array<DialogType>,
-    messages: [
-        {id: 1, message: 'fffffff'},
-        {id: 2, message: 'asrgrea'},
-        {id: 3, message: 'ffffbbbbfagff'}
+    Messages: [
+        {Id: 1, Message: 'fffffff'},
+        {Id: 2, Message: 'asrgrea'},
+        {Id: 3, Message: 'ffffbbbbfagff'}
     ] as Array<MessageType>
 };
 
@@ -30,7 +30,7 @@ const dialogsReducer = (state = initialState, action: ActionsType): InitialState
             let body = action.newMessageBody;
             return {
                 ...state,
-                messages: [...state.messages, {id: 4, message: body}]
+                Messages: [...state.Messages, {Id: 4, Message: body}]
             };
         default:
             return state;

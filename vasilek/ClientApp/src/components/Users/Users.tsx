@@ -2,7 +2,9 @@ import React from 'react';
 import s from './Users.module.css';
 import Paginator from '../common/Paginator/Paginator';
 import User from './User';
-import { ProfileType } from '../../types/types';
+import {ProfileType} from '../../types/types';
+import {UsersSearchForm} from "./UsersSearchForm";
+import {FilterFormType} from "../../redux/users-reducer";
 
 type MapStatePropsType = {
     usersCount: number
@@ -14,6 +16,7 @@ type MapStatePropsType = {
     followingInProgress: Array<number>
     followedUsers: Array<number>
     isAuth: boolean
+    onFilterChanged: (filter: FilterFormType) => void
 }
 
 type MapDispatchPropsType = {
@@ -22,33 +25,29 @@ type MapDispatchPropsType = {
     getFollowedUsers: () => void
 }
 
-type OwnPropsType = {
-
-}
+type OwnPropsType = {}
 
 type PropsType = MapStatePropsType & MapDispatchPropsType & OwnPropsType;
 
 class Users extends React.Component<PropsType> {
-    componentDidMount() {
-        this.props.getFollowedUsers();
-    };
-
     render() {
         return (
-            <div className={s.wrapper} >
+            <div className={s.wrapper}>
+                <UsersSearchForm onFilterChanged={this.props.onFilterChanged}/>
                 <div className={s.wrapper_users}>
                     {this.props.users.map(obj =>
-                        <User user={obj}
-                            key={obj.id}
-                            followingInProgress={this.props.followingInProgress}
-                            follow={this.props.follow}
-                            unfollow={this.props.unfollow}
-                            followedUsers={this.props.followedUsers}
-                            isAuth={this.props.isAuth}
+                        <User User={obj}
+                              key={obj.Id}
+                              FollowingInProgress={this.props.followingInProgress}
+                              follow={this.props.follow}
+                              unfollow={this.props.unfollow}
+                              FollowedUsers={this.props.followedUsers}
+                              IsAuth={this.props.isAuth}
                         />
                     )}
                 </div>
-                <Paginator currentPage={this.props.currentPage} onPageChanged={this.props.onPageChanged} itemsCount={this.props.usersCount} pageSize={this.props.pageSize} />
+                <Paginator currentPage={this.props.currentPage} onPageChanged={this.props.onPageChanged}
+                           itemsCount={this.props.usersCount} pageSize={this.props.pageSize}/>
             </div>
         );
     }

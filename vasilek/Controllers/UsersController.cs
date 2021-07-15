@@ -1,6 +1,10 @@
 ﻿using vasilek.Models;
 using vasilek.Repository;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace vasilek.Controllers
 {
@@ -16,36 +20,47 @@ namespace vasilek.Controllers
             _userRep = new UserRepository(_ctx);
         }
 
-        [HttpGet("{count}")]
-        public ResponseModel Get(string count)
+        [HttpGet]
+        public string Get([FromQuery] bool friends, [FromQuery] string term, [FromQuery] int page = 1, [FromQuery] int count = 5)
         {
-            return new ResponseModel()
+            if (friends == true && !HttpContext.User.Identity.IsAuthenticated)
+                return JsonConvert.SerializeObject(new ResponseModel() { ResultCode = 1, Messages = new string[] { "User must be authorized to see friends" } });
+            ResponseUserModel data = new ResponseUserModel();
+            if (friends == false && term == null)
+                data = new ResponseUserModel()
+                {
+                    Users = _userRep.GetUsers(count, --page * count),
+                    Count = _userRep.GetUsersCount()
+                };
+            else if (friends == false & term != null)
             {
-                ResultCode = 0,
-                Data = _userRep.GetUsersCount()
-            };
-        }
-
-        [HttpGet("{page}/{count}")]
-        public ResponseModel Get(int page, int count)
-        {
-            return new ResponseModel()
+                int usersCount = 0;
+                data = new ResponseUserModel()
+                {
+                    Users = _userRep.GetUsersWithTerm(term, ref usersCount, count, --page * count),
+                    Count = usersCount
+                };
+            }
+            else if (friends == true && term == null)
             {
-                ResultCode = 0,
-                Data = _userRep.GetUsers(count, --page * count)
-            };
+                int friendsCount = 0;
+                data = new ResponseUserModel()
+                {
+                    Users = _userRep.GetFriends(_userRep.GetUserIdByLogin(HttpContext.User.Identity.Name), ref friendsCount, count, --page * count),
+                    Count = friendsCount
+                };
+            }
+            else if (friends == true && term != null)
+            {
+                int unFriendsCount = 0;
+                data = new ResponseUserModel()
+                {
+                    Users = _userRep.GetFriendsWithTerm(_userRep.GetUserIdByLogin(HttpContext.User.Identity.Name), term, ref unFriendsCount, count, --page * count),
+                    Count = unFriendsCount
+                };
+            }
+            return JsonConvert.SerializeObject(new ResponseModel() { ResultCode = 0, Data = data });
+
         }
-
-        //[HttpPost]
-        //public UserModel Post([FromBody]UserModel user)
-        //{
-        //    return userRepository.AddUser(user);
-        //}
-
-        //[HttpDelete("{id}")]
-        //public UserModel Delete(int id)
-        //{
-        //    return userRepository.DeleteUserById(id);
-        //}
     }
 }

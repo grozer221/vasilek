@@ -4,37 +4,37 @@ import {profileAPI} from "../api/profile-api";
 import {BaseThunkType, InferActionsTypes} from "./redux-store";
 
 let initialState = {
-    posts: [
-        {id: 1, likesCount: 1, message: 'ааааа'},
-        {id: 2, likesCount: 2, message: 'ббббб'},
-        {id: 2, likesCount: 3, message: 'ввввв'}
+    Posts: [
+        {Id: 1, LikesCount: 1, Message: 'ааааа'},
+        {Id: 2, LikesCount: 2, Message: 'ббббб'},
+        {Id: 2, LikesCount: 3, Message: 'ввввв'}
     ] as Array<PostType>,
-    profile: null as ProfileType | null,
-    status: '',
+    Profile: null as ProfileType | null,
+    Status: '',
 };
 
 const profileReducer = (state = initialState, action: ActionsType): InitialStateType => {
     switch (action.type) {
         case 'ADD_POST':
             let newPost = {
-                id: 5,
-                message: action.newPostText,
-                likesCount: 0
+                Id: 5,
+                Message: action.newPostText,
+                LikesCount: 0
             };
             return {
                 ...state,
-                posts: [...state.posts, newPost],
+                Posts: [...state.Posts, newPost],
             };
         case 'SET_USER_PROFILE':
             if (action.profile === null)
-                return {...state, profile: action.profile};
-            return {...state, profile: action.profile, status: action.profile.status};
+                return {...state, Profile: action.profile};
+            return {...state, Profile: action.profile, Status: action.profile.Status};
         case 'SET_STATUS':
-            return {...state, status: action.status};
+            return {...state, Status: action.status};
         case 'DELETE_POST':
-            return {...state, posts: state.posts.filter(p => p.id != action.postId)};
+            return {...state, Posts: state.Posts.filter(p => p.Id != action.postId)};
         case 'SAVE_PHOTO_SUCCESS':
-            return {...state, profile: {...state.profile, avaPhoto: action.avaPhoto} as ProfileType};
+            return {...state, Profile: {...state.Profile, avaPhoto: action.avaPhoto} as ProfileType};
 
         default:
             return state;
@@ -43,8 +43,8 @@ const profileReducer = (state = initialState, action: ActionsType): InitialState
 
 export const actions = {
     addPostActionCreator: (newPostText: string) => ({type: 'ADD_POST', newPostText} as const),
-    setUserProfile: (profile: ProfileType) => ({type: 'SET_USER_PROFILE', profile} as const),
-    setStatus: (status: string) => ({type: 'SET_STATUS', status} as const),
+    setUserProfile: (profile: ProfileType) => ({type: 'SET_USER_PROFILE', profile: profile} as const),
+    setStatus: (status: string) => ({type: 'SET_STATUS', status: status} as const),
     deletePost: (postId: number) => ({type: 'DELETE_POST', postId} as const),
     savePhotoSuccess: (avaPhoto: string) => ({type: 'SAVE_PHOTO_SUCCESS', avaPhoto: avaPhoto} as const),
 }
@@ -53,26 +53,26 @@ export const actions = {
 
 export const getUserProfile = (userId: number): ThunkType => async (dispatch) => {
     let data = await profileAPI.getProfile(userId);
-    if (data.resultCode === ResponseCodes.Success)
-        dispatch(actions.setUserProfile(data.data));
+    if (data.ResultCode === ResponseCodes.Success)
+        dispatch(actions.setUserProfile(data.Data));
 };
 
 export const updateStatus = (status: string): ThunkType => async (dispatch) => {
     let data = await profileAPI.updateStatus(status);
-    if (data.resultCode === ResponseCodes.Success)
+    if (data.ResultCode === ResponseCodes.Success)
         dispatch(actions.setStatus(status));
 };
 
 export const savePhoto = (file: File): ThunkType => async (dispatch) => {
     let data = await profileAPI.savePhoto(file);
-    if (data.resultCode === ResponseCodes.Success)
-        dispatch(actions.savePhotoSuccess(data.data));
+    if (data.ResultCode === ResponseCodes.Success)
+        dispatch(actions.savePhotoSuccess(data.Data));
 };
 
 export const updateProfile = (profile: ProfileType): ThunkType => async (dispatch) => {
     let data = await profileAPI.updateProfile(profile);
-    if (data.resultCode === ResponseCodes.Success)
-        dispatch(actions.setUserProfile(data.data));
+    if (data.ResultCode === ResponseCodes.Success)
+        dispatch(actions.setUserProfile(data.Data));
 };
 
 export default profileReducer;

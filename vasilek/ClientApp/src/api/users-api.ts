@@ -2,12 +2,8 @@ import {ProfileType} from "../types/types";
 import {instance, ResponseCodes} from "./api";
 
 export const usersAPI = {
-    getUsers(currentPage = 1, pageSize = 5) {
-        return instance.get<UsersType>(`users/${currentPage}/${pageSize}`)
-            .then(res => res.data);
-    },
-    getUsersCount() {
-        return instance.get<GetUsersCountType>('users/count')
+    getUsers(currentPage = 1, pageSize = 5, term = '', friends: boolean = false) {
+        return instance.get<UsersType>(`users?page=${currentPage}&count=${pageSize}`+ (term === '' ? '' : `&term=${term}`) + (!friends ? '' : `&friends=${friends}`))
             .then(res => res.data);
     },
     getFollowedUsers() {
@@ -22,21 +18,24 @@ export const usersAPI = {
         return instance.delete<FollowType>('followuser/' + userId)
             .then(res => res.data);
     },
-
+    getFriends(currentPage = 1, pageSize = 5) {
+        return instance.get<UsersType>(`users?page=${currentPage}&count=${pageSize}&friends=true`)
+            .then(res => res.data);
+    },
 };
 
-type UsersType = {
-    resultCode: ResponseCodes,
-    messages: Array<string>
-    data: Array<ProfileType>
+export type UsersType = {
+    ResultCode: ResponseCodes,
+    Messages: Array<string>
+    Data: DataUsersType
 }
-type GetUsersCountType = {
-    resultCode: ResponseCodes,
-    messages: Array<string>
-    data: number
+
+type DataUsersType = {
+    Users: Array<ProfileType>
+    Count: number
 }
 type FollowType = {
-    resultCode: ResponseCodes,
-    messages: Array<string>
-    data: Array<number>
+    ResultCode: ResponseCodes,
+    Messages: Array<string>
+    Data: Array<number>
 }

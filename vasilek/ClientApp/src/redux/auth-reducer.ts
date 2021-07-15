@@ -3,14 +3,12 @@ import {ResponseCodes} from '../api/api';
 import {authAPI} from "../api/auth-api";
 import {BaseThunkType, InferActionsTypes} from "./redux-store";
 
-const SET_USER_DATA = 'SET_USER_DATA';
-
 let initialState = {
-    userId: null as number | null,
-    login: null as string | null,
-    firstName: null as string | null,
-    lastName: null as string | null,
-    isAuth: false as boolean
+    UserId: null as number | null,
+    Login: null as string | null,
+    FirstName: null as string | null,
+    LastName: null as string | null,
+    IsAuth: false as boolean
 };
 
 const authReducer = (state = initialState, action: ActionsType): InitialStateType => {
@@ -27,9 +25,9 @@ const authReducer = (state = initialState, action: ActionsType): InitialStateTyp
 };
 
 export const actions = {
-    setAuthUserData: (userId: number | null, login: string | null, firstName: string | null, lastName: string | null, isAuth: boolean) => ({
+    setAuthUserData: (UserId: number | null, Login: string | null, FirstName: string | null, LastName: string | null, IsAuth: boolean) => ({
         type: 'SET_USER_DATA',
-        payload: {userId, login, firstName, lastName, isAuth}
+        payload: {UserId, Login, FirstName, LastName, IsAuth}
     } as const),
 }
 
@@ -37,21 +35,21 @@ export const actions = {
 
 export const getAuthUserData = (): ThunkType => async (dispatch) => {
     let data = await authAPI.isAuth();
-    if (data.resultCode === ResponseCodes.Success)
-        dispatch(actions.setAuthUserData(data.data.id, data.data.login, data.data.firstName, data.data.lastName, true));
+    if (data.ResultCode === ResponseCodes.Success)
+        dispatch(actions.setAuthUserData(data.Data.Id, data.Data.Login, data.Data.FirstName, data.Data.LastName, true));
 };
 
-export const login = (login: string, password: string, rememberMe: boolean): ThunkType => async (dispatch) => {
-    let data = await authAPI.login(login, password, rememberMe);
-    if (data.resultCode === ResponseCodes.Success)
-        dispatch(getAuthUserData());
+export const login = (login: string, password: string): ThunkType => async (dispatch) => {
+    let data = await authAPI.login(login, password);
+    if (data.ResultCode === ResponseCodes.Success)
+        await dispatch(getAuthUserData());
     else
-        dispatch(stopSubmit('login', {_error: data.messages}));
+        dispatch(stopSubmit('login', {_error: data.Messages}));
 };
 
 export const logout = (): ThunkType => async (dispatch) => {
     let data = await authAPI.logout();
-    if (data.resultCode === ResponseCodes.Success)
+    if (data.ResultCode === ResponseCodes.Success)
         dispatch(actions.setAuthUserData(null, null, null, null, false));
 };
 
