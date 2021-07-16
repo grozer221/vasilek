@@ -24,7 +24,7 @@ type PropsType = MapPropsType & MapDispatchToProps & RouteComponentProps<PathPar
 
 class ProfileContainer extends React.Component<PropsType, MapDispatchToProps> {
     refreshProfile() {
-        let userId: number | null = +this.props.match.params.userId;
+        let userId: number | undefined = +this.props.match.params.userId;
         if (!userId) {
             userId = this.props.authUserId;
             if (!userId) {
@@ -59,7 +59,7 @@ class ProfileContainer extends React.Component<PropsType, MapDispatchToProps> {
 let mapStateToProps = (state: AppStateType) => ({
     Profile: state.profilePage.Profile,
     Status: state.profilePage.Status,
-    authUserId: state.auth.UserId,
+    authUserId: state.auth.CurrentUser?.Id,
     isAuth: state.auth.IsAuth
 });
 

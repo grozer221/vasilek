@@ -1,6 +1,4 @@
 import { AppStateType } from './redux-store';
-import exp from "constants";
-import App from "../App";
 
 export const getUsers = (state: AppStateType) => {
   return state.usersPage.Users;
@@ -34,7 +32,11 @@ export const getIsAuth = (state: AppStateType) => {
     return state.auth.IsAuth;
 }
 
-export const getUsersFilter = (state: AppStateType) => {
-    return state.usersPage.Term;
+export const getFilter = (state: AppStateType) => {
+    return state.usersPage.Filter;
+}
+
+export const getCurrentUser = (state: AppStateType) => {
+    return state.auth.CurrentUser;
 }
 

@@ -18,10 +18,12 @@ namespace vasilek.Controllers
     {
         private AppDatabaseContext _ctx;
         private ProfileRepository _profileRep; 
+        private UserRepository _userRep; 
         public AccountController(AppDatabaseContext ctx)
         {
             _ctx = ctx;
             _profileRep = new ProfileRepository(_ctx);
+            _userRep = new UserRepository(_ctx);
         }
 
         [HttpGet]
@@ -53,7 +55,7 @@ namespace vasilek.Controllers
                     return JsonConvert.SerializeObject(new ResponseModel()
                     {
                         ResultCode = 0,
-                        Data = model
+                        Data = _userRep.GetUserByLogin(model.Login)
                     });
                 }
             }

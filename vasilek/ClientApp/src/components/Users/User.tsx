@@ -6,14 +6,14 @@ import {ProfileType} from "../../types/types";
 
 type PropsType = {
     User: ProfileType
-    FollowedUsers: Array<number>
-    IsAuth: boolean
-    FollowingInProgress: Array<number>
+    followedUsers: Array<number>
+    isAuth: boolean
+    followingInProgress: Array<number>
     follow: (userId: number) => void
     unfollow: (userId: number) => void
 }
 
-let Users: React.FC<PropsType> = ({User, FollowingInProgress, follow, unfollow, FollowedUsers, IsAuth}) => {
+let Users: React.FC<PropsType> = ({User, followingInProgress, follow, unfollow, followedUsers, isAuth}) => {
     let pathToFolderWithPhotos = 'https://vasilek.blob.core.windows.net/userphotoscontainer/';
     return (
         <div className={s.wrapper_user}>
@@ -25,13 +25,13 @@ let Users: React.FC<PropsType> = ({User, FollowingInProgress, follow, unfollow, 
                 </div>
                 <div>
                     {
-                        IsAuth && (
-                            FollowedUsers.some(Id => Id === User.Id)
-                                ? <button disabled={FollowingInProgress
+                        isAuth && (
+                            followedUsers.some(Id => Id === User.Id)
+                                ? <button disabled={followingInProgress
                                     .some(id => id === User.Id)} onClick={() => unfollow(User.Id)}
                                 >UnFollow</button>
 
-                                : <button disabled={FollowingInProgress
+                                : <button disabled={followingInProgress
                                     .some(id => id === User.Id)} onClick={() => follow(User.Id)}
                                 >Follow</button>
                         )

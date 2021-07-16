@@ -2,8 +2,7 @@ import axios from 'axios';
 
 export const instance = axios.create({
     withCredentials: true,
-    //baseURL: 'https://vasilek.azurewebsites.net/api/',
-    baseURL: 'https://localhost:44353/api/',
+    baseURL: window.location.protocol + '//' + window.location.host + '/api/',
 });
 
 export enum ResponseCodes {

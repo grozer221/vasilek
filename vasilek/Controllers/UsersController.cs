@@ -21,7 +21,7 @@ namespace vasilek.Controllers
         }
 
         [HttpGet]
-        public string Get([FromQuery] bool friends, [FromQuery] string term, [FromQuery] int page = 1, [FromQuery] int count = 5)
+        public string Get([FromQuery]bool friends, [FromQuery] string term, [FromQuery] int page = 1, [FromQuery] int count = 5)
         {
             if (friends == true && !HttpContext.User.Identity.IsAuthenticated)
                 return JsonConvert.SerializeObject(new ResponseModel() { ResultCode = 1, Messages = new string[] { "User must be authorized to see friends" } });

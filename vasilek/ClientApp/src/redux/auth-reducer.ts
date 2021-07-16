@@ -2,12 +2,10 @@ import {FormAction, stopSubmit} from 'redux-form';
 import {ResponseCodes} from '../api/api';
 import {authAPI} from "../api/auth-api";
 import {BaseThunkType, InferActionsTypes} from "./redux-store";
+import {ProfileType} from "../types/types";
 
 let initialState = {
-    UserId: null as number | null,
-    Login: null as string | null,
-    FirstName: null as string | null,
-    LastName: null as string | null,
+    CurrentUser: {} as ProfileType | null,
     IsAuth: false as boolean
 };
 
@@ -25,24 +23,23 @@ const authReducer = (state = initialState, action: ActionsType): InitialStateTyp
 };
 
 export const actions = {
-    setAuthUserData: (UserId: number | null, Login: string | null, FirstName: string | null, LastName: string | null, IsAuth: boolean) => ({
+    setAuthUserData: (user: ProfileType | null, isAuth: boolean) => ({
         type: 'SET_USER_DATA',
-        payload: {UserId, Login, FirstName, LastName, IsAuth}
+        payload: {CurrentUser: user, IsAuth: isAuth}
     } as const),
 }
-
 
 
 export const getAuthUserData = (): ThunkType => async (dispatch) => {
     let data = await authAPI.isAuth();
     if (data.ResultCode === ResponseCodes.Success)
-        dispatch(actions.setAuthUserData(data.Data.Id, data.Data.Login, data.Data.FirstName, data.Data.LastName, true));
+        dispatch(actions.setAuthUserData(data.Data, true));
 };
 
 export const login = (login: string, password: string): ThunkType => async (dispatch) => {
     let data = await authAPI.login(login, password);
     if (data.ResultCode === ResponseCodes.Success)
-        await dispatch(getAuthUserData());
+        dispatch(actions.setAuthUserData(data.Data, true));
     else
         dispatch(stopSubmit('login', {_error: data.Messages}));
 };
@@ -50,7 +47,7 @@ export const login = (login: string, password: string): ThunkType => async (disp
 export const logout = (): ThunkType => async (dispatch) => {
     let data = await authAPI.logout();
     if (data.ResultCode === ResponseCodes.Success)
-        dispatch(actions.setAuthUserData(null, null, null, null, false));
+        dispatch(actions.setAuthUserData(null, false));
 };
 
 export default authReducer;

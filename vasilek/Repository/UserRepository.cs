@@ -18,6 +18,11 @@ namespace vasilek.Repository
         {
             return _ctx.Users.FirstOrDefault(u => u.Login == login).Id;
         }
+        
+        public UserModel GetUserByLogin(string login)
+        {
+            return _ctx.Users.FirstOrDefault(u => u.Login == login);
+        }
 
 
 

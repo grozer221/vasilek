@@ -3,7 +3,7 @@ import {ProfileType} from "../types/types";
 
 export const authAPI = {
     isAuth() {
-        return instance.get<IsAuthType>('account/isauth')
+        return instance.get<LoginType>('account/isauth')
             .then(res => res.data);
     },
     login(login: string, password: string) {
@@ -16,19 +16,10 @@ export const authAPI = {
     }
 };
 
-type IsAuthType = {
-    ResultCode: ResponseCodes,
+type LoginType = {
+    ResultCode: ResponseCodes
     Messages: Array<string>
     Data: ProfileType
-}
-
-type LoginType = {
-    ResultCode: ResponseCodes,
-    Messages: Array<string>
-    Data: {
-        Login: string
-        Password: string
-    }
 }
 
 type LogoutType = {
