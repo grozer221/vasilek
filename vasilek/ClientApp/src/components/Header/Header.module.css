@@ -2,12 +2,10 @@
     position: fixed;
     z-index: 1;
     width: 100%;
+    padding: 0 50px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: #001529;
 }
 
-.dropdown {
-    background-color: #001529;
-}

@@ -11,8 +11,9 @@ import {compose} from 'redux';
 import {AppStateType} from "./redux/redux-store";
 import {Users} from "./components/Users/Users";
 import 'antd/dist/antd.css';
-import {Breadcrumb, Layout} from 'antd';
+import {Button, Layout, Result} from 'antd';
 import {Header} from "./components/Header/Header";
+import {ChatPage} from "./components/pages/Chat/ChatPage";
 
 const {Content, Footer} = Layout;
 
@@ -33,20 +34,21 @@ class App extends React.Component<MapPropsType & DispatchPropsType> {
             <Layout>
                 <Header/>
                 <Content className="site-layout" style={{padding: '0 50px', marginTop: 64}}>
-                    <Breadcrumb style={{margin: '16px 0'}}>
-                        <Breadcrumb.Item>Home</Breadcrumb.Item>
-                        <Breadcrumb.Item>List</Breadcrumb.Item>
-                        <Breadcrumb.Item>App</Breadcrumb.Item>
-                    </Breadcrumb>
                     <div className="site-layout-background" style={{padding: 24, minHeight: 380}}>
                         <Switch>
                             <Route exact path="/" render={() => <Redirect to={'/profile'}/>}/>
                             <Route path="/profile/:userId?" render={() => <ProfileContainer/>}/>
                             <Route path="/dialogs" render={() => <DialogsContainer/>}/>
-                            <Route exact path="/users?friends=true" render={() => <Users/>}/>
                             <Route exact path="/users" render={() => <Users/>}/>
+                            <Route exact path="/users?friends=true" render={() => <Users/>}/>
                             <Route path="/login" render={() => <Login/>}/>
-                            <Route path="*" render={() => <div>404 Not Found</div>}/>
+                            <Route path="/chat" render={() => <ChatPage/>}/>
+                            <Route path="*" render={() => <Result
+                                status="404"
+                                title="404"
+                                subTitle="Sorry, the page you visited does not exist."
+                                extra={<Button type="primary">Back Home</Button>}
+                            />}/>
                         </Switch>
                     </div>
                 </Content>

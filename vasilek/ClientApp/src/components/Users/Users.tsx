@@ -3,17 +3,21 @@ import s from './Users.module.css';
 import Paginator from '../common/Paginator/Paginator';
 import User from './User';
 import {UsersSearchForm} from "./UsersSearchForm";
-import {getFollowedUsers, requestUsers, follow, unfollow, FilterType} from "../../redux/users-reducer";
+import {follow, getFollowedUsers, requestUsers, unfollow} from "../../redux/users-reducer";
 import {useDispatch, useSelector} from "react-redux";
 import {
-    getCurrentPage, getFilter, getFollowedUsersSelector,
+    getCurrentPage,
+    getFilter,
+    getFollowedUsersSelector,
     getFollowingInProgress,
-    getIsAuth, getIsFetching,
-    getPageSize, getUsers,
+    getIsAuth,
+    getIsFetching,
+    getPageSize,
+    getUsers,
     getUsersCount
 } from "../../redux/users-selectors";
 import Loading from "../common/Loading/Loading";
-import { useHistory } from 'react-router-dom';
+import {useHistory} from 'react-router-dom';
 import * as queryString from "querystring";
 
 
@@ -39,13 +43,18 @@ export const Users: React.FC = (props) => {
         if(!!parsed.page) actualPage = Number(parsed.page);
         let actualFilter = filter;
         if(!!parsed.term) actualFilter = {...actualFilter, Term: parsed.term as string};
-        if(parsed.friends === 'true') actualFilter = {...actualFilter, Friends: parsed.friends === 'true'};
+        if(parsed.friends === 'true')
+            actualFilter = {...actualFilter, Friends: true};
+        else
+            actualFilter = {...actualFilter, Friends: false};
+
 
         dispatch(requestUsers(actualPage, pageSize, actualFilter));
         dispatch(getFollowedUsers());
     }, []);
 
     useEffect(() => {
+        debugger
         const query: QueryParamsType = {}
         if(!!filter.Term) query.term = filter.Term;
         if(filter.Friends) query.friends = String(filter.Friends);
@@ -54,7 +63,7 @@ export const Users: React.FC = (props) => {
             pathname: '/users',
             search: queryString.stringify(query),
         })
-    }, [filter, currentPage])
+    }, [filter, currentPage, history.location.search])
 
     const onPageChanged = (pageNumber: number) => {
         dispatch(requestUsers(pageNumber, pageSize, filter));

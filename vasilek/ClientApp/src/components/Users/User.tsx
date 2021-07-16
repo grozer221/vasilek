@@ -13,7 +13,7 @@ type PropsType = {
     unfollow: (userId: number) => void
 }
 
-let Users: React.FC<PropsType> = ({User, followingInProgress, follow, unfollow, followedUsers, isAuth}) => {
+let User: React.FC<PropsType> = ({User, followingInProgress, follow, unfollow, followedUsers, isAuth}) => {
     let pathToFolderWithPhotos = 'https://vasilek.blob.core.windows.net/userphotoscontainer/';
     return (
         <div className={s.wrapper_user}>
@@ -54,4 +54,4 @@ let Users: React.FC<PropsType> = ({User, followingInProgress, follow, unfollow, 
     );
 };
 
-export default Users;
+export default User;
