@@ -9,6 +9,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using System.IO;
 using System.Web.Http;
+using vasilek.Hubs;
 
 namespace vasilek
 {
@@ -39,6 +40,19 @@ namespace vasilek
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            services.AddSignalR();
+
+            //services.AddCors(options =>
+            //{
+            //    options.AddPolicy("ClientPermission", policy =>
+            //    {
+            //        policy.AllowAnyHeader()
+            //            .AllowAnyMethod()
+            //            .WithOrigins("https://localhost:44353", "https://vasilek.azurewebsites.net")
+            //            .AllowCredentials();
+            //    });
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,9 +70,11 @@ namespace vasilek
             }
 
             app.UseHttpsRedirection();
+            app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
+            //app.UseCors("ClientPermission");
             app.UseRouting();
 
             app.UseAuthentication();
@@ -69,8 +85,7 @@ namespace vasilek
                 endpoints.MapControllerRoute("DefaultApiWithId", "api/{controller}/{id}", new { id = RouteParameter.Optional }, new { id = @"\d+" });
                 endpoints.MapControllerRoute("DefaultApiWithId", "api/{controller}/{count}/{page}", new { id = RouteParameter.Optional }, new { id = @"\d+" });
                 endpoints.MapControllerRoute("DefaultApiWithAction", "api/{controller}/{action}");
-                //endpoints.MapControllerRoute("DefaultApiGet", "Api/{controller}", new { action = "Get" }, new { httpMethod = new HttpMethodConstraint(HttpMethod.Get) });
-                //endpoints.MapControllerRoute("DefaultApiPost", "Api/{controller}", new { action = "Post" }, new { httpMethod = new HttpMethodConstraint(HttpMethod.Post) });
+                endpoints.MapHub<ChatHub>("api/chat");
             });
 
             app.UseSpa(spa =>

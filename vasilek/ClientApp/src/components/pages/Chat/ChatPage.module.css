@@ -1,5 +1,9 @@
-.messages{
+.window_chat {
     height: 500px;
     overflow-y: auto;
-    border: 1px solid black;
+}
+
+.form_input_message {
+    display: flex;
+    align-items: center;
 }

@@ -15,5 +15,6 @@ namespace vasilek.Models
         public string AvaPhoto { get; set; }
         public virtual ICollection<PhotoModel> Photos { get; set; }
         public virtual ICollection<FollowModel> Follows { get; set; }
+        public virtual ICollection<MessageModel> Messages { get; set; }
     }
 }

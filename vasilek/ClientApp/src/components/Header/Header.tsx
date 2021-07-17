@@ -22,9 +22,9 @@ export const Header: React.FC = (props) => {
     function handleMenuClick(e: any) {
         console.log('click', e);
         switch (e.key) {
-            case '1':
+            case '2':
                 logoutCallback()
-                message.info('Yuo logouted');
+                message.info('You logout');
                 break;
         }
     }

@@ -23,6 +23,11 @@ namespace vasilek.Repository
         {
             return _ctx.Users.FirstOrDefault(u => u.Login == login);
         }
+        
+        public UserModel GetUserById(int id)
+        {
+            return _ctx.Users.Find(id);
+        }
 
 
 

@@ -12,13 +12,13 @@ import {getIsAuth} from "../../redux/users-selectors";
 let LoginForm: React.FC<InjectedFormProps<LoginFormValuesType>>
     = ({handleSubmit, error}) => {
     return (
-        <form onSubmit={handleSubmit} className={s.login_form}>
-            <div className={s.wrapper_form_content}>
+        <form onSubmit={handleSubmit}>
+            <div>
                 <h1>LOGIN</h1>
-                <div className={s.control}>
+                <div>
                     {createField<LoginFormValuesTypeKeys>("Login", "login", [required], Input)}
                 </div>
-                <div className={s.control}>
+                <div>
                     {createField<LoginFormValuesTypeKeys>("Password", "password", [required], Input, {type: "password"})}
                 </div>
                 {error &&
@@ -27,7 +27,7 @@ let LoginForm: React.FC<InjectedFormProps<LoginFormValuesType>>
                 </div>
                 }
                 <div>
-                    <button className={s.button}>Sign in</button>
+                    <button>Sign in</button>
                 </div>
             </div>
         </form>
