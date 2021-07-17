@@ -42,7 +42,7 @@ export const Header: React.FC = (props) => {
 
     return (
         <header className={s.header}>
-            <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['2']}>
+            <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['1']}>
                 <Menu.Item key="1">
                     <Link to="/profile">Profile</Link>
                 </Menu.Item>

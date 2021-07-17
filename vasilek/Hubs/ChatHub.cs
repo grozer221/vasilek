@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using vasilek.Interfaces;
 using vasilek.Models;
@@ -19,26 +21,30 @@ namespace vasilek.Hubs
             _chatRep = new ChatRepository(_ctx);
             _userRep = new UserRepository(ctx);
         }
-        public async Task SendMessage(RequestChatModel request)
+        public async Task SendMessage(string messageText)
         {
-            _chatRep.AddMessage(request);
-            UserModel sender = _userRep.GetUserById(request.UserId);
+            UserModel sender = _userRep.GetUserByLogin(Context.User.Identity.Name);
+            _chatRep.AddMessageByUserId(sender.Id, messageText);
             await Clients.Caller.ReceiveMessage(new ResponseChatModel() 
             {
-                UserId = request.UserId,
+                UserId = sender.Id,
                 UserFirstName = "You",
                 UserLastName = "",
                 AvaPhoto = sender.AvaPhoto,
-                MessageText = request.MessageText,
+                MessageText = messageText,
             });
             await Clients.Others.ReceiveMessage(new ResponseChatModel() 
             {
-                UserId = request.UserId,
+                UserId = sender.Id,
                 UserFirstName = sender.FirstName,
                 UserLastName = sender.LastName,
                 AvaPhoto = sender.AvaPhoto,
-                MessageText = request.MessageText,
+                MessageText = messageText,
             });
+        }
+        public override async Task OnConnectedAsync()
+        {
+            await Clients.Caller.OnConnected(_chatRep.GetAllMessages(Context.User.Identity.Name));
         }
     }
 }

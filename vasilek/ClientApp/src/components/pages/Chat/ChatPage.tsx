@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {RefObject, useEffect, useRef, useState} from 'react';
 import {HubConnection, HubConnectionBuilder} from "@microsoft/signalr";
 import {useSelector} from "react-redux";
 import {getCurrentUser, getIsAuth} from "../../../redux/users-selectors";
@@ -9,11 +9,6 @@ import {Link} from 'react-router-dom';
 
 let pathToFolderWithPhotos = 'https://vasilek.blob.core.windows.net/userphotoscontainer/';
 
-type RequestType = {
-    userId: number
-    messageText: string
-}
-
 type ResponseType = {
     userId: number
     userFirstName: string
@@ -22,8 +17,7 @@ type ResponseType = {
     messageText: string
 }
 
-const AddMessageForm = (props: { sendMessage: (res: RequestType) => void }) => {
-    const user = useSelector(getCurrentUser);
+const AddMessageForm = (props: { sendMessage: (messageText: string) => void }) => {
     const isAuth = useSelector(getIsAuth);
     const [_message, setMessage] = useState('');
 
@@ -33,14 +27,8 @@ const AddMessageForm = (props: { sendMessage: (res: RequestType) => void }) => {
         const isMessageProvided = _message && _message !== '';
 
         if (isMessageProvided && isAuth) {
-            if (user) {
-                const res: RequestType = {
-                    userId: user.Id,
-                    messageText: _message
-                }
-                props.sendMessage(res);
-                setMessage('');
-            }
+            props.sendMessage(_message);
+            setMessage('');
         }
     }
 
@@ -109,9 +97,18 @@ export const ChatPage = () => {
                 .then(() => {
                     message.success('Connected!')
 
-                    connection.on('ReceiveMessage', (message: RequestType) => {
+                    connection.on('ReceiveMessage', (message: ResponseType) => {
                         const updatedChat: any = [...latestChat.current];
                         updatedChat.push(message);
+
+                        setChat(updatedChat);
+                    });
+
+                    connection.on('OnConnected', (response: ResponseType[]) => {
+                        debugger
+                        const updatedChat: any = [...latestChat.current];
+                        for (let i = 0; i < response.length; i++)
+                            updatedChat.push(response[i]);
 
                         setChat(updatedChat);
                     });
@@ -120,11 +117,11 @@ export const ChatPage = () => {
         }
     }, [connection]);
 
-    const sendMessage = async (res: RequestType) => {
+    const sendMessage = async (messageText: string) => {
         // @ts-ignore
         if (connection.connectionStarted) {
             try {
-                await connection?.send('SendMessage', res);
+                await connection?.send('SendMessage', messageText);
             } catch (e) {
                 message.error(e);
             }
