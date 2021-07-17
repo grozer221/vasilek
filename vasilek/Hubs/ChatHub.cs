@@ -25,26 +25,33 @@ namespace vasilek.Hubs
         {
             UserModel sender = _userRep.GetUserByLogin(Context.User.Identity.Name);
             _chatRep.AddMessageByUserId(sender.Id, messageText);
-            await Clients.Caller.ReceiveMessage(new ResponseChatModel() 
+            await Clients.Caller.ReceiveMessage(new List<ResponseChatModel>() 
             {
-                UserId = sender.Id,
-                UserFirstName = "You",
-                UserLastName = "",
-                AvaPhoto = sender.AvaPhoto,
-                MessageText = messageText,
+                new ResponseChatModel()
+                {
+                    UserId = sender.Id,
+                    UserFirstName = "You",
+                    UserLastName = "",
+                    AvaPhoto = sender.AvaPhoto,
+                    MessageText = messageText,
+                }
             });
-            await Clients.Others.ReceiveMessage(new ResponseChatModel() 
+            await Clients.Others.ReceiveMessage(new List<ResponseChatModel>()
             {
-                UserId = sender.Id,
-                UserFirstName = sender.FirstName,
-                UserLastName = sender.LastName,
-                AvaPhoto = sender.AvaPhoto,
-                MessageText = messageText,
+                new ResponseChatModel()
+                {
+                    UserId = sender.Id,
+                    UserFirstName = sender.FirstName,
+                    UserLastName = sender.LastName,
+                    AvaPhoto = sender.AvaPhoto,
+                    MessageText = messageText,
+                }
+                
             });
         }
         public override async Task OnConnectedAsync()
         {
-            await Clients.Caller.OnConnected(_chatRep.GetAllMessages(Context.User.Identity.Name));
+            await Clients.Caller.ReceiveMessage(_chatRep.GetAllMessages(Context.User.Identity.Name).ToList());
         }
     }
 }

@@ -1,25 +1,22 @@
 import React, {RefObject, useEffect, useRef, useState} from 'react';
 import {HubConnection, HubConnectionBuilder} from "@microsoft/signalr";
-import {useSelector} from "react-redux";
-import {getCurrentUser, getIsAuth} from "../../../redux/users-selectors";
+import {useDispatch, useSelector} from "react-redux";
+import {getIsAuth} from "../../../redux/users-selectors";
 import {message} from 'antd';
 import s from './ChatPage.module.css';
 import photo from '../../../assets/images/man.png';
 import {Link} from 'react-router-dom';
+import {ResponseMessageType} from '../../../api/chat-api';
+import {sendMessage, startMessagesListening, stopMessagesListening} from "../../../redux/chat-reducer";
+import {AppStateType} from "../../../redux/redux-store";
 
 let pathToFolderWithPhotos = 'https://vasilek.blob.core.windows.net/userphotoscontainer/';
 
-type ResponseType = {
-    userId: number
-    userFirstName: string
-    userLastName: string
-    avaPhoto: string
-    messageText: string
-}
 
-const AddMessageForm = (props: { sendMessage: (messageText: string) => void }) => {
+const AddMessageForm = () => {
     const isAuth = useSelector(getIsAuth);
     const [_message, setMessage] = useState('');
+    const dispatch = useDispatch();
 
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -27,7 +24,7 @@ const AddMessageForm = (props: { sendMessage: (messageText: string) => void }) =
         const isMessageProvided = _message && _message !== '';
 
         if (isMessageProvided && isAuth) {
-            props.sendMessage(_message);
+            dispatch(sendMessage(_message));
             setMessage('');
         }
     }
@@ -48,7 +45,7 @@ const AddMessageForm = (props: { sendMessage: (messageText: string) => void }) =
     )
 };
 
-const Message = (props: ResponseType) => (
+const Message = (props: ResponseMessageType) => (
     <div style={{background: "#eee", borderRadius: '5px', padding: '0 10px'}}>
         <p>
             <Link to={'/profile/' + props.userId}>
@@ -60,79 +57,35 @@ const Message = (props: ResponseType) => (
     </div>
 );
 
-const Messages = (props: { chat: ResponseType[] }) => {
+const Messages = () => {
+    const messages = useSelector((state: AppStateType) => state.chat.messages);
     return (
         <div className={s.window_chat}>
-            {props.chat
-                .map(m => <Message
-                    key={Date.now() * Math.random()}
-                    userId={m.userId}
-                    userFirstName={m.userFirstName}
-                    userLastName={m.userLastName}
-                    avaPhoto={m.avaPhoto}
-                    messageText={m.messageText}
-                />)}
+            {messages.map(m => <Message
+                key={Date.now() * Math.random()}
+                userId={m.userId}
+                userFirstName={m.userFirstName}
+                userLastName={m.userLastName}
+                avaPhoto={m.avaPhoto}
+                messageText={m.messageText}
+            />)}
         </div>
     )
 };
 
 export const ChatPage = () => {
-    const [connection, setConnection] = useState<HubConnection | null>(null);
-    const [chat, setChat] = useState([]);
-    const latestChat = useRef<any>(null);
-
-    latestChat.current = chat;
-
+    const dispatch = useDispatch();
     useEffect(() => {
-        const newConnection: HubConnection = new HubConnectionBuilder()
-            .withUrl(window.location.protocol + '//' + window.location.host + '/api/chat')
-            .withAutomaticReconnect()
-            .build();
-        setConnection(newConnection);
-    }, []);
-
-    useEffect(() => {
-        if (connection) {
-            connection.start()
-                .then(() => {
-                    message.success('Connected!')
-
-                    connection.on('ReceiveMessage', (message: ResponseType) => {
-                        const updatedChat: any = [...latestChat.current];
-                        updatedChat.push(message);
-
-                        setChat(updatedChat);
-                    });
-
-                    connection.on('OnConnected', (response: ResponseType[]) => {
-                        debugger
-                        const updatedChat: any = [...latestChat.current];
-                        for (let i = 0; i < response.length; i++)
-                            updatedChat.push(response[i]);
-
-                        setChat(updatedChat);
-                    });
-                })
-                .catch((e: any) => message.error('Connection failed: ', e));
+        dispatch(startMessagesListening());
+        return () => {
+            dispatch(stopMessagesListening());
         }
-    }, [connection]);
-
-    const sendMessage = async (messageText: string) => {
-        // @ts-ignore
-        if (connection.connectionStarted) {
-            try {
-                await connection?.send('SendMessage', messageText);
-            } catch (e) {
-                message.error(e);
-            }
-        } else
-            message.error('No connection to server yet.');
-    }
+    }, []);
 
     return (
         <div>
-            <Messages chat={chat}/>
-            <AddMessageForm sendMessage={sendMessage}/>
+            <Messages/>
+            <AddMessageForm/>
         </div>
     );
 };

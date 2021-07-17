@@ -7,7 +7,7 @@ namespace vasilek.Interfaces
 {
     public interface IChatClient
     {
-        Task ReceiveMessage(ResponseChatModel message);
+        Task ReceiveMessage(List<ResponseChatModel> message);
         Task OnConnected(IEnumerable<ResponseChatModel> response);
     }
 }
