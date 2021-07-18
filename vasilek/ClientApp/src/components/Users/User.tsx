@@ -3,6 +3,7 @@ import s from './Users.module.css';
 import photo from '../../assets/images/man.png';
 import {NavLink} from 'react-router-dom';
 import {ProfileType} from "../../types/types";
+import {urls} from "../../api/api";
 
 type PropsType = {
     User: ProfileType
@@ -14,13 +15,12 @@ type PropsType = {
 }
 
 let User: React.FC<PropsType> = ({User, followingInProgress, follow, unfollow, followedUsers, isAuth}) => {
-    let pathToFolderWithPhotos = 'https://vasilek.blob.core.windows.net/userphotoscontainer/';
     return (
         <div className={s.wrapper_user}>
             <div className={s.photoANDbtn}>
                 <div>
                     <NavLink to={'/profile/' + User.Id}>
-                        <img src={User.AvaPhoto !== null ? pathToFolderWithPhotos + User.AvaPhoto : photo}/>
+                        <img src={User.AvaPhoto !== null ? urls.pathToUsersPhotos + User.AvaPhoto : photo}/>
                     </NavLink>
                 </div>
                 <div>

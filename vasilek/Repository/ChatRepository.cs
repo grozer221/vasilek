@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using vasilek.Models;
 
@@ -14,17 +15,20 @@ namespace vasilek.Repository
             _userRep = new UserRepository(_ctx);
         }
 
-        public bool AddMessageByUserId(int userId, string messageText)
+        public int AddMessageByUserId(int userId, string messageText)
         {
-            if (userId == null)
-                return false;
-            _ctx.Messages.Add(new MessageModel()
+            if (!_ctx.Users.Any(u => u.Id == userId))
+                return 0;
+            MessageModel message = new MessageModel()
             {
                 UserId = userId,
                 MessageText = messageText,
-            });
+                Date = DateTime.Now.ToString("dd.MM.yyyy"),
+                Time = DateTime.Now.ToString("hh:mm:ss")
+            };
+            _ctx.Messages.Add(message);
             _ctx.SaveChanges();
-            return true;
+            return message.Id;
         }
 
         public IQueryable<ResponseChatModel> GetAllMessages(string currentUserLogin)
@@ -41,11 +45,14 @@ namespace vasilek.Repository
                 }
                 response.Add(new ResponseChatModel()
                 {
+                    Id = message.Id,
                     UserId = message.UserId,
                     UserFirstName = sender.FirstName,
                     UserLastName = sender.LastName,
                     AvaPhoto = sender.AvaPhoto,
-                    MessageText = message.MessageText
+                    MessageText = message.MessageText,
+                    Date = message.Date,
+                    Time = message.Time,
                 });
             }
             return response.AsQueryable();

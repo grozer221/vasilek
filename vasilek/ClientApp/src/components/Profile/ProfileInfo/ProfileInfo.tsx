@@ -5,6 +5,7 @@ import man from '../../../assets/images/man.png';
 import ProfileStatusWithHooks from './ProfileStatusWithHooks';
 import ProfileDataForm from './ProfileDataForm';
 import {ProfileType} from "../../../types/types";
+import {urls} from "../../../api/api";
 
 type PropsType = {
     profile: ProfileType | null
@@ -32,13 +33,11 @@ const ProfileInfo: React.FC<PropsType> = ({profile, status, updateStatus, isOwne
         setEditMode(false);
     }
 
-    let pathToFolderWithPhotos = 'https://vasilek.blob.core.windows.net/userphotoscontainer/';
-
     return (
         <div className={s.wrapper_profile}>
             <div>
                 <div><img className={s.photo}
-                          src={profile.AvaPhoto ? pathToFolderWithPhotos + profile.AvaPhoto : man}/>
+                          src={profile.AvaPhoto ? urls.pathToUsersPhotos + profile.AvaPhoto : man}/>
                 </div>
                 {isOwner && <div><input type="file" onChange={onMainPhotoSelected}/></div>}
             </div>

@@ -7,9 +7,7 @@ import {logout} from "../../redux/auth-reducer";
 import {Avatar, Dropdown, Menu, message} from 'antd';
 import {SettingOutlined, UserOutlined} from '@ant-design/icons';
 import photo from '../../assets/images/man.png';
-
-let pathToFolderWithPhotos = 'https://vasilek.blob.core.windows.net/userphotoscontainer/';
-
+import {urls} from "../../api/api";
 
 export const Header: React.FC = (props) => {
     const isAuth = useSelector(getIsAuth);
@@ -71,7 +69,7 @@ export const Header: React.FC = (props) => {
                                      placement="bottomCenter"
                                      icon={<Avatar
                                          icon={<img
-                                             src={currentUser?.AvaPhoto === null ? photo : pathToFolderWithPhotos + currentUser?.AvaPhoto}/>}
+                                             src={currentUser?.AvaPhoto === null ? photo : urls.pathToUsersPhotos + currentUser?.AvaPhoto}/>}
                                          shape="square"
                                          size={28}/>
                                      }>

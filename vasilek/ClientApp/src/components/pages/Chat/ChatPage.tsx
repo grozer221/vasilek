@@ -1,21 +1,19 @@
-import React, {RefObject, useEffect, useRef, useState} from 'react';
-import {HubConnection, HubConnectionBuilder} from "@microsoft/signalr";
+import React, {EventHandler, KeyboardEventHandler, useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {getIsAuth} from "../../../redux/users-selectors";
-import {message} from 'antd';
 import s from './ChatPage.module.css';
 import photo from '../../../assets/images/man.png';
 import {Link} from 'react-router-dom';
 import {ResponseMessageType} from '../../../api/chat-api';
-import {sendMessage, startMessagesListening, stopMessagesListening} from "../../../redux/chat-reducer";
+import {sendMessage} from "../../../redux/chat-reducer";
 import {AppStateType} from "../../../redux/redux-store";
-
-let pathToFolderWithPhotos = 'https://vasilek.blob.core.windows.net/userphotoscontainer/';
-
+import {urls} from "../../../api/api";
 
 const AddMessageForm = () => {
     const isAuth = useSelector(getIsAuth);
     const [_message, setMessage] = useState('');
+    const status = useSelector((state: AppStateType) => state.chat.status);
+
     const dispatch = useDispatch();
 
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -33,55 +31,79 @@ const AddMessageForm = () => {
         setMessage(e.target.value);
     }
 
+    const onEnterPress = (e: any) => {
+        if(e.keyCode == 13 && e.shiftKey == false) {
+            e.preventDefault();
+            onSubmit(e);
+        }
+    }
+
     return (
         <form className={s.form_input_message} onSubmit={onSubmit}>
-            <div style={{width: '90%'}}>
-                <textarea style={{width: '100%'}} onChange={onMessageUpdate} value={_message}></textarea>
+            <div>
+                <textarea onKeyDown={onEnterPress} cols={50} className="editor" onChange={onMessageUpdate} value={_message}/>
             </div>
-            <div style={{width: '10%'}}>
-                <button style={{width: '100%'}}>Submit</button>
+            <div>
+                <button disabled={status !== 'ready'}>Submit</button>
             </div>
         </form>
     )
 };
 
-const Message = (props: ResponseMessageType) => (
-    <div style={{background: "#eee", borderRadius: '5px', padding: '0 10px'}}>
-        <p>
-            <Link to={'/profile/' + props.userId}>
-                <img width={'100px'} src={props.avaPhoto === null ? photo : pathToFolderWithPhotos + props.avaPhoto}/>
-                <strong>{props.userFirstName} {props.userLastName}</strong>
-            </Link>
-        </p>
-        <p>{props.messageText}</p>
-    </div>
-);
-
-const Messages = () => {
-    const messages = useSelector((state: AppStateType) => state.chat.messages);
+const Message: React.FC<ResponseMessageType> = React.memo((props) => {
+    console.log('message')
     return (
-        <div className={s.window_chat}>
+        <div className={s.message}>
+            <div>
+                <Link to={'/profile/' + props.userId}>
+                    <img width={'100px'} src={props.avaPhoto === null ? photo : urls.pathToUsersPhotos + props.avaPhoto}
+                         alt="avatar"/>
+                    <strong>{props.userFirstName} {props.userLastName}</strong>
+                </Link>
+            </div>
+            <div>{props.messageText}</div>
+            <div>
+                <small>{props.time}</small>
+            </div>
+        </div>
+    );
+});
+
+const Messages: React.FC = () => {
+    console.log('messages')
+    const messages = useSelector((state: AppStateType) => state.chat.messages);
+    const messagesAnchorRef = useRef<HTMLDivElement>(null);
+    const [isAutoScroll, setIsAutoScroll] = useState(false);
+    useEffect(() => {
+        if (isAutoScroll)
+            messagesAnchorRef.current?.scrollIntoView({behavior: 'smooth'});
+    }, [messages])
+    const scrollHandler = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
+        const element = e.currentTarget;
+        if (Math.abs(element.scrollHeight - element.scrollTop) - element.clientHeight < 100)
+            !isAutoScroll && setIsAutoScroll(true);
+        else
+            isAutoScroll && setIsAutoScroll(false);
+    };
+    return (
+        <div className={s.window_chat} onScroll={scrollHandler}>
             {messages.map(m => <Message
-                key={Date.now() * Math.random()}
+                key={m.id}
+                id={m.id}
                 userId={m.userId}
                 userFirstName={m.userFirstName}
                 userLastName={m.userLastName}
                 avaPhoto={m.avaPhoto}
                 messageText={m.messageText}
+                date={m.date}
+                time={m.time}
             />)}
+            <div ref={messagesAnchorRef}/>
         </div>
     )
 };
 
 export const ChatPage = () => {
-    const dispatch = useDispatch();
-    useEffect(() => {
-        dispatch(startMessagesListening());
-        return () => {
-            dispatch(stopMessagesListening());
-        }
-    }, []);
-
     return (
         <div>
             <Messages/>
