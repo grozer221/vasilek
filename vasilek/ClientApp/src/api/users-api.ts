@@ -6,10 +6,6 @@ export const usersAPI = {
         return instance.get<UsersType>(`users?page=${currentPage}&count=${pageSize}`+ (term === '' ? '' : `&term=${term}`) + (!friends ? '' : `&friends=${friends}`))
             .then(res => res.data);
     },
-    getFollowedUsers() {
-        return instance.get<FollowType>('followuser')
-            .then(res => res.data);
-    },
     followUser(userId: number) {
         return instance.put<FollowType>('followuser/' + userId)
             .then(res => res.data);

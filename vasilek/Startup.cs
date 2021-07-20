@@ -1,6 +1,8 @@
+using AuthSignalRApp;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -43,16 +45,7 @@ namespace vasilek
 
             services.AddSignalR();
 
-            //services.AddCors(options =>
-            //{
-            //    options.AddPolicy("ClientPermission", policy =>
-            //    {
-            //        policy.AllowAnyHeader()
-            //            .AllowAnyMethod()
-            //            .WithOrigins("https://localhost:44353", "https://vasilek.azurewebsites.net")
-            //            .AllowCredentials();
-            //    });
-            //});
+            services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

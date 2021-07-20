@@ -1,4 +1,7 @@
-import {InferActionsTypes} from "./redux-store";
+import {BaseThunkType, InferActionsTypes} from "./redux-store";
+import {usersAPI} from "../api/users-api";
+import {ResponseCodes} from "../api/api";
+import {FilterType} from "./users-reducer";
 
 type DialogType = {
     Id: number,
@@ -24,7 +27,7 @@ let initialState = {
     ] as Array<MessageType>
 };
 
-const dialogsReducer = (state = initialState, action: ActionsType): InitialStateType => {
+const dialogsReducer = (state = initialState, action: ActionsTypes): InitialStateType => {
     switch (action.type) {
         case 'SEND_MESSAGE':
             let body = action.newMessageBody;
@@ -32,6 +35,11 @@ const dialogsReducer = (state = initialState, action: ActionsType): InitialState
                 ...state,
                 Messages: [...state.Messages, {Id: 4, Message: body}]
             };
+        case 'GET_DIALOG_WITH_USER':
+                return {
+                    ...state,
+
+                }
         default:
             return state;
     }
@@ -39,9 +47,16 @@ const dialogsReducer = (state = initialState, action: ActionsType): InitialState
 
 export const actions = {
     sendMessage: (newMessageBody: string) => ({type: 'SEND_MESSAGE', newMessageBody} as const),
+    setDialogWithUser: (dialog: DialogType) => ({type: 'GET_DIALOG_WITH_USER', dialog} as const),
 }
+
+export const getAndSetDialogByUserId = (page: number, pageSize: number, filter: FilterType): ThunkType =>
+    async (dispatch) => {
+
+    };
 
 export default dialogsReducer;
 
-export type InitialStateType = typeof initialState
-type ActionsType = InferActionsTypes<typeof actions>
+type InitialStateType = typeof initialState;
+type ActionsTypes = InferActionsTypes<typeof actions>;
+type ThunkType = BaseThunkType<ActionsTypes>;

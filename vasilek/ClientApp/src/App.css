@@ -1,11 +1,18 @@
-#components-layout-demo-fixed .logo {
-    float: left;
-    width: 120px;
-    height: 31px;
-    margin: 16px 24px 16px 0;
-    background: rgba(255, 255, 255, 0.2);
+.ant-layout{
+    background-color: white;
 }
 
-.site-layout .site-layout-background {
-    background: #fff;
+.site_layout{
+    margin: 80px auto 0 auto;
+    width: 1200px;
+    background-color: white;
 }
+
+input {
+    outline: none;
+}
+
+
+
+
+

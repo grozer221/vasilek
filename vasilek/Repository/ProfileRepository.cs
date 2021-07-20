@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using vasilek.Models;
 
 namespace vasilek.Repository
@@ -6,9 +7,11 @@ namespace vasilek.Repository
     public class ProfileRepository
     {
         private readonly AppDatabaseContext _ctx;
+        private UserRepository _userRep;
         public ProfileRepository(AppDatabaseContext appDatabaseContext)
         {
             _ctx = appDatabaseContext;
+            _userRep = new UserRepository(_ctx);
         }
 
         public UserModel GetProfileById(int id)
@@ -31,8 +34,7 @@ namespace vasilek.Repository
             UserModel user = _ctx.Users.FirstOrDefault(u => u.Login == login);
             user.Login = updatedUser.Login;
             user.Password = updatedUser.Password;
-            user.FirstName = updatedUser.FirstName;
-            user.LastName = updatedUser.LastName;
+            user.NickName = updatedUser.NickName;
             user.Photos = updatedUser.Photos;
             user.City = updatedUser.City;
             user.Country = updatedUser.Country;
@@ -45,16 +47,12 @@ namespace vasilek.Repository
             return _ctx.Users.FirstOrDefault(u => u.Login == login);
         }
 
-        public bool AddPhotoByUserId(int userId, string photoName)
+        public bool AddPhotoByUserLogin(string login, string photoName)
         {
-            UserModel user = _ctx.Users.Find(userId);
+            UserModel user = _ctx.Users.Include(u => u.Photos).FirstOrDefault(u => u.Login == login);
             if (user == null)
                 return false;
-            _ctx.Photos.Add(new PhotoModel()
-            {
-                Name = photoName,
-                UserId = userId
-            });
+            user.Photos.Add(new PhotoModel() { PhotoName = photoName });
             _ctx.SaveChanges();
             return true;
         }

@@ -1,7 +1,7 @@
 import {HubConnection, HubConnectionBuilder} from "@microsoft/signalr";
 import {Avatar, message, notification} from "antd";
 import {urls} from "./api";
-import photo from "../assets/images/man.png";
+import userWithoutPhoto from "../assets/images/man.png";
 import React from "react";
 
 const subscribers = {
@@ -30,14 +30,16 @@ const createConnection = () => {
                 const lastMessage = messages[messages.length - 1];
                 if (lastMessage) {
                     notification.open({
-                        message: lastMessage.userFirstName + ' ' + lastMessage.userLastName,
+                        message: lastMessage.userNickName,
                         description: (
                             <div>
                                 <div>{lastMessage.messageText}</div>
                                 <div><small>{lastMessage.time}</small></div>
                             </div>),
-                        icon: <Avatar shape="square" size={32} icon={<img
-                            src={lastMessage.avaPhoto ? urls.pathToUsersPhotos + lastMessage.avaPhoto : photo}/>}/>,
+                        icon: <Avatar shape="square" size={32}
+                                      icon={<img
+                                          src={lastMessage.avaPhoto ? urls.pathToUsersPhotos + lastMessage.avaPhoto : userWithoutPhoto}/>}
+                        />,
                         duration: 10,
                         placement: "bottomRight"
                     });
@@ -74,8 +76,7 @@ type StatusChangedSubscriberType = (status: StatusType) => void
 export type ResponseMessageType = {
     id: number
     userId: number
-    userFirstName: string
-    userLastName: string
+    userNickName: string
     avaPhoto: string
     messageText: string
     date: string

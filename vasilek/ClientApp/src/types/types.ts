@@ -7,11 +7,10 @@ export type ProfileType = {
     Id: number
     Login: string
     Password: string
-    FirstName: string
-    LastName: string
+    NickName: string
     Status: string
-    Photo: string
-    AvaPhoto: string
     City: string
     Country: string
+    AvaPhoto: string
+    IsFollowed: boolean
 }

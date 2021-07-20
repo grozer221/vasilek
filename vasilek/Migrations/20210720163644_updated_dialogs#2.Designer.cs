@@ -10,8 +10,8 @@ using vasilek;
 namespace vasilek.Migrations
 {
     [DbContext(typeof(AppDatabaseContext))]
-    [Migration("20210717194414_AddedDateTimeToMessages")]
-    partial class AddedDateTimeToMessages
+    [Migration("20210720163644_updated_dialogs#2")]
+    partial class updated_dialogs2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,6 +21,39 @@ namespace vasilek.Migrations
                 .HasAnnotation("ProductVersion", "5.0.7")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("DialogModelUserModel", b =>
+                {
+                    b.Property<int>("DialogsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("DialogsId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("DialogModelUserModel");
+                });
+
+            modelBuilder.Entity("vasilek.Models.DialogModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AuthorId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateCreate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Dialogs");
+                });
+
             modelBuilder.Entity("vasilek.Models.FollowModel", b =>
                 {
                     b.Property<int>("Id")
@@ -28,10 +61,10 @@ namespace vasilek.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("SubcriberId")
+                    b.Property<int>("SubscriberId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -48,18 +81,18 @@ namespace vasilek.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("DateTime")
+                    b.Property<DateTime>("DateCreate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("DialogId")
+                        .HasColumnType("int");
 
                     b.Property<string>("MessageText")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("DialogId");
 
                     b.ToTable("Messages");
                 });
@@ -71,10 +104,10 @@ namespace vasilek.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Name")
+                    b.Property<string>("PhotoName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -100,13 +133,10 @@ namespace vasilek.Migrations
                     b.Property<string>("Country")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Login")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NickName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
@@ -120,44 +150,56 @@ namespace vasilek.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("DialogModelUserModel", b =>
+                {
+                    b.HasOne("vasilek.Models.DialogModel", null)
+                        .WithMany()
+                        .HasForeignKey("DialogsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("vasilek.Models.UserModel", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("vasilek.Models.FollowModel", b =>
                 {
                     b.HasOne("vasilek.Models.UserModel", "User")
                         .WithMany("Follows")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("vasilek.Models.MessageModel", b =>
                 {
-                    b.HasOne("vasilek.Models.UserModel", "User")
+                    b.HasOne("vasilek.Models.DialogModel", "Dialog")
                         .WithMany("Messages")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DialogId");
 
-                    b.Navigation("User");
+                    b.Navigation("Dialog");
                 });
 
             modelBuilder.Entity("vasilek.Models.PhotoModel", b =>
                 {
                     b.HasOne("vasilek.Models.UserModel", "User")
                         .WithMany("Photos")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("vasilek.Models.DialogModel", b =>
+                {
+                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("vasilek.Models.UserModel", b =>
                 {
                     b.Navigation("Follows");
-
-                    b.Navigation("Messages");
 
                     b.Navigation("Photos");
                 });

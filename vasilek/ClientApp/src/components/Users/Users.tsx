@@ -3,92 +3,92 @@ import s from './Users.module.css';
 import Paginator from '../common/Paginator/Paginator';
 import User from './User';
 import {UsersSearchForm} from "./UsersSearchForm";
-import {follow, getFollowedUsers, requestUsers, unfollow} from "../../redux/users-reducer";
+import {follow, requestUsers, unfollow} from "../../redux/users-reducer";
 import {useDispatch, useSelector} from "react-redux";
 import {
-    getCurrentPage,
-    getFilter,
-    getFollowedUsersSelector,
-    getFollowingInProgress,
-    getIsAuth,
-    getIsFetching,
-    getPageSize,
-    getUsers,
-    getUsersCount
+    s_getCurrentPage,
+    s_getFilter,
+    s_getFollowingInProgress,
+    s_getIsFetching,
+    s_getPageSize,
+    s_getUsers,
+    s_getUsersCount
 } from "../../redux/users-selectors";
 import Loading from "../common/Loading/Loading";
 import {useHistory} from 'react-router-dom';
 import * as queryString from "querystring";
+import {s_getIsAuth} from "../../redux/auth-selectors";
 
 
 type QueryParamsType = { term?: string, page?: string, friends?: string };
 export const Users: React.FC = (props) => {
-    const usersCount = useSelector(getUsersCount);
-    const currentPage = useSelector(getCurrentPage);
-    const pageSize = useSelector(getPageSize);
-    const isAuth = useSelector(getIsAuth);
-    const followingInProgress = useSelector(getFollowingInProgress);
-    const users = useSelector(getUsers);
-    const followedUsers = useSelector(getFollowedUsersSelector);
-    const filter = useSelector(getFilter);
-    const isFetching = useSelector(getIsFetching);
+        const usersCount = useSelector(s_getUsersCount);
+        const currentPage = useSelector(s_getCurrentPage);
+        const pageSize = useSelector(s_getPageSize);
+        const isAuth = useSelector(s_getIsAuth);
+        const followingInProgress = useSelector(s_getFollowingInProgress);
+        const users = useSelector(s_getUsers);
+        const filter = useSelector(s_getFilter);
+        const isFetching = useSelector(s_getIsFetching);
 
-    const dispatch = useDispatch();
-    const history = useHistory();
+        const dispatch = useDispatch();
+        const history = useHistory();
 
-    useEffect(() => {
-        const parsed = queryString.parse(history.location.search.substr(1)) as QueryParamsType;
+        useEffect(() => {
+            const parsed = queryString.parse(history.location.search.substr(1)) as QueryParamsType;
 
-        let actualPage = currentPage;
-        if(!!parsed.page) actualPage = Number(parsed.page);
-        let actualFilter = filter;
-        if(!!parsed.term) actualFilter = {...actualFilter, Term: parsed.term as string};
-        if(parsed.friends === 'true')
-            actualFilter = {...actualFilter, Friends: true};
-        else
-            actualFilter = {...actualFilter, Friends: false};
+            let actualPage = currentPage;
+            if (!!parsed.page) actualPage = Number(parsed.page);
+            let actualFilter = filter;
+            if (!!parsed.term) actualFilter = {...actualFilter, Term: parsed.term as string};
+            if (parsed.friends === 'true')
+                actualFilter = {...actualFilter, Friends: true};
+            else
+                actualFilter = {...actualFilter, Friends: false};
 
+            if (!isAuth && parsed.friends === 'true') {
+                history.push({pathname: '/login'});
+                return;
+            }
 
-        dispatch(requestUsers(actualPage, pageSize, actualFilter));
-        dispatch(getFollowedUsers());
-    }, []);
+            dispatch(requestUsers(actualPage, pageSize, actualFilter));
+        }, []);
 
-    useEffect(() => {
-        debugger
-        const query: QueryParamsType = {}
-        if(!!filter.Term) query.term = filter.Term;
-        if(filter.Friends) query.friends = String(filter.Friends);
-        if(currentPage !== 1) query.page = String(currentPage);
-        history.push({
-            pathname: '/users',
-            search: queryString.stringify(query),
-        })
-    }, [filter, currentPage, history.location.search])
+        useEffect(() => {
+            const query: QueryParamsType = {}
+            if (!!filter.Term) query.term = filter.Term;
+            if (filter.Friends) query.friends = String(filter.Friends);
+            if (currentPage !== 1) query.page = String(currentPage);
+            history.push({
+                pathname: '/users',
+                search: queryString.stringify(query),
+            })
+        }, [filter, currentPage, history.location.search])
 
-    const onPageChanged = (pageNumber: number) => {
-        dispatch(requestUsers(pageNumber, pageSize, filter));
-        dispatch(getFollowedUsers());
-    };
+        const onPageChanged = (pageNumber: number) => {
+            dispatch(requestUsers(pageNumber, pageSize, filter));
+        };
 
-    const onTermChanged = (term: string) => {
-        dispatch(requestUsers(1, pageSize, {...filter, Term: term}));
-        dispatch(getFollowedUsers());
-    }
+        const _follow = (userId: number) => {
+            dispatch(follow(userId, users, usersCount));
+        }
+        const _unfollow = (userId: number) => {
+            dispatch(unfollow(userId, users, usersCount));
+        }
 
-    const _follow = (userId: number) => {
-        dispatch(follow(userId));
-    }
-    const _unfollow = (userId: number) => {
-        dispatch(unfollow(userId));
-    }
+        const onTermChanged = (term: string) => {
+            dispatch(requestUsers(1, pageSize, {...filter, Term: term}));
+            return new Promise(function (resolve, reject) {
+            });
+        }
 
-    return (
-        <>
-            {
-                isFetching
+        return (
+            <div className={s.wrapper}>
+                <UsersSearchForm onTermChanged={onTermChanged} filter={filter}/>
+                {isFetching
                     ? <Loading/>
-                    : <div className={s.wrapper}>
-                        <UsersSearchForm onTermChanged={onTermChanged}/>
+                    : <div>
+
                         <div className={s.wrapper_users}>
                             {users.map(obj =>
                                 <User User={obj}
@@ -96,7 +96,6 @@ export const Users: React.FC = (props) => {
                                       followingInProgress={followingInProgress}
                                       follow={_follow}
                                       unfollow={_unfollow}
-                                      followedUsers={followedUsers}
                                       isAuth={isAuth}
                                 />
                             )}
@@ -104,8 +103,8 @@ export const Users: React.FC = (props) => {
                         <Paginator currentPage={currentPage} onPageChanged={onPageChanged}
                                    itemsCount={usersCount} pageSize={pageSize}/>
                     </div>
-            }
-        </>
-
-    );
-};
+                }
+            </div>
+        );
+    }
+;

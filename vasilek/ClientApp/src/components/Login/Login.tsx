@@ -1,52 +1,53 @@
 import React from 'react';
 import s from './Login.module.css';
-import sForm from './../common/FormsControls/FormsControls.module.css';
-import {InjectedFormProps, reduxForm} from 'redux-form';
-import {createField, Input, LoginFormValuesType, LoginFormValuesTypeKeys} from '../common/FormsControls/FormsControls';
-import {required} from '../../utills/validators/validators';
 import {useDispatch, useSelector} from 'react-redux';
 import {login} from '../../redux/auth-reducer';
 import {Redirect} from 'react-router-dom';
-import {getIsAuth} from "../../redux/users-selectors";
+import {s_getIsAuth} from "../../redux/auth-selectors";
+import {Form, Input, Button, Checkbox} from 'antd';
 
-let LoginForm: React.FC<InjectedFormProps<LoginFormValuesType>>
-    = ({handleSubmit, error}) => {
-    return (
-        <form onSubmit={handleSubmit}>
-            <div>
-                <h1>LOGIN</h1>
-                <div>
-                    {createField<LoginFormValuesTypeKeys>("Login", "login", [required], Input)}
-                </div>
-                <div>
-                    {createField<LoginFormValuesTypeKeys>("Password", "password", [required], Input, {type: "password"})}
-                </div>
-                {error &&
-                <div className={sForm.from_summary_error}>
-                    {error}
-                </div>
-                }
-                <div>
-                    <button>Sign in</button>
-                </div>
-            </div>
-        </form>
-    )
-};
-
-const LoginReduxFrom = reduxForm<LoginFormValuesType>({form: 'login'})(LoginForm)
-
-
-export let Login: React.FC = (props) => {
-    const isAuth = useSelector(getIsAuth);
+export let Login: React.FC = () => {
+    const isAuth = useSelector(s_getIsAuth);
     const dispatch = useDispatch();
 
-    const onSubmit = (formData: any) =>
-        dispatch(login(formData.login, formData.password));
+    const onFinish = (values: { login: string, password: string }) => {
+        console.log('Success:', values);
+        dispatch(login(values.login, values.password));
+    };
 
     return (
         isAuth
             ? <Redirect to='/profile'/>
-            : <LoginReduxFrom onSubmit={onSubmit}/>
+            : (
+                <div className={s.login_form_wrapper}>
+                    <div>
+                        <Form
+                            name="login"
+                            labelCol={{span: 8}}
+                            wrapperCol={{span: 16}}
+                            initialValues={{remember: true}}
+                            onFinish={onFinish}
+                        >
+                            <Form.Item
+                                label="Login"
+                                name="login"
+                                rules={[{required: true, message: 'Please input your Login!'}]}
+                            >
+                                <Input/>
+                            </Form.Item>
+                            <Form.Item
+                                label="Password"
+                                name="password"
+                                rules={[{required: true, message: 'Please input your Password!'}]}
+                            >
+                                <Input.Password/>
+                            </Form.Item>
+                            <Form.Item wrapperCol={{offset: 8, span: 16}}>
+                                <Button type="primary" htmlType="submit">Submit</Button>
+                            </Form.Item>
+                        </Form>
+                    </div>
+                </div>
+            )
     );
 };

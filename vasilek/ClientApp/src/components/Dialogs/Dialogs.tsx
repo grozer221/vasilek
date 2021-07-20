@@ -1,44 +1,52 @@
 import React from 'react';
 import s from './Dialogs.module.css';
-import Dialog from './Dialog/Dialog';
 import Message from './Message/Message';
 import {InjectedFormProps, reduxForm} from 'redux-form';
 import {createField, Textarea} from '../common/FormsControls/FormsControls';
 import {maxLengthCreator, required} from '../../utills/validators/validators';
-import {InitialStateType} from "../../redux/dialogs-reducer";
+import {actions} from "../../redux/dialogs-reducer";
+import {useDispatch, useSelector} from "react-redux";
+import {s_getDialogs, s_getMessages} from "../../redux/dialogs-selectors";
+import {Menu} from "antd";
+import {Link} from "react-router-dom";
 
 const maxLength100 = maxLengthCreator(100);
 
-type OwnPropsType = {
-    dialogsPage: InitialStateType
-    sendMessage: (newMessageBody: string) => void
-};
-type PropsType = {}
 
 export type NewMessageFormValuesType = {
     newMessageBody: string
 }
 export type NewMessageFormValuesTypeKeys = Extract<keyof NewMessageFormValuesType, string>;
 
-const Dialogs: React.FC<OwnPropsType> = (props) => {
+const Dialogs: React.FC = () => {
+    const dialogs = useSelector(s_getDialogs);
+    const messages = useSelector(s_getMessages);
+    const dispatch = useDispatch();
     let addNewMessage = (values: { newMessageBody: string }) => {
-        props.sendMessage(values.newMessageBody);
+        dispatch(actions.sendMessage(values.newMessageBody));
     };
 
     return (
         <div className={s.wrapper_dialogs}>
             <div className={s.dialogs}>
-                {props.dialogsPage.Dialogs.map(obj => <Dialog key={obj.Id} Id={obj.Id} login={obj.Login}/>)}
+                <Menu theme="light" mode="vertical" defaultSelectedKeys={['1']}>
+                    {dialogs.map(obj => (
+                            <Menu.Item key={obj.Id}>
+                                <Link to={'/dialogs/' + obj.Id}>{obj.Login}</Link>
+                            </Menu.Item>
+                        )
+                    )}
+                </Menu>
             </div>
             <div className={s.messages}>
-                <div>{props.dialogsPage.Messages.map(obj => <Message key={obj.Id} message={obj.Message}/>)}</div>
+                <div>{messages.map(obj => <Message key={obj.Id} message={obj.Message}/>)}</div>
                 <AddMessageFormRedux onSubmit={addNewMessage}/>
             </div>
         </div>
     );
 };
 
-const AddMessageForm: React.FC<InjectedFormProps<NewMessageFormValuesType, PropsType> & PropsType> = ({handleSubmit, error}) => {
+const AddMessageForm: React.FC<InjectedFormProps<NewMessageFormValuesType>> = ({handleSubmit, error}) => {
     return (
         <form onSubmit={handleSubmit}>
             <div>

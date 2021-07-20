@@ -9,3 +9,10 @@
     background-color: #001529;
 }
 
+.nameAndPhoto{
+    display: flex;
+}
+
+.nameAndPhoto > div {
+    margin-left: 10px;
+}

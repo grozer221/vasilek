@@ -1,35 +1,38 @@
 import React from 'react';
 import s from './Header.module.css';
-import {Link} from 'react-router-dom';
+import {Link, useHistory} from 'react-router-dom';
 import {useDispatch, useSelector} from "react-redux";
-import {getCurrentUser, getIsAuth} from "../../redux/users-selectors";
 import {logout} from "../../redux/auth-reducer";
 import {Avatar, Dropdown, Menu, message} from 'antd';
-import {SettingOutlined, UserOutlined} from '@ant-design/icons';
-import photo from '../../assets/images/man.png';
+import {DownOutlined, SettingOutlined, UserOutlined} from '@ant-design/icons';
+import userWithoutPhoto from '../../assets/images/man.png';
 import {urls} from "../../api/api";
+import {s_getCurrentUser, s_getIsAuth} from "../../redux/auth-selectors";
 
-export const Header: React.FC = (props) => {
-    const isAuth = useSelector(getIsAuth);
-    const currentUser = useSelector(getCurrentUser);
+export const Header: React.FC = () => {
+    const isAuth = useSelector(s_getIsAuth);
+    const currentUser = useSelector(s_getCurrentUser);
     const dispatch = useDispatch();
+    const history = useHistory();
+
     const logoutCallback = () => {
         dispatch(logout());
+        message.info('You logout');
+        history.push({pathname: "/login"});
     }
 
-    function handleMenuClick(e: any) {
+    const handleMenuClick = (e: any) => {
         console.log('click', e);
         switch (e.key) {
             case '2':
                 logoutCallback()
-                message.info('You logout');
                 break;
         }
     }
 
     const menu = (
         <Menu onClick={handleMenuClick}>
-            <Menu.Item key="1" icon={<SettingOutlined />}>
+            <Menu.Item key="1" icon={<SettingOutlined/>}>
                 <Link to="/settings">Setting</Link>
             </Menu.Item>
             <Menu.Item key="2" icon={<UserOutlined/>}>
@@ -64,22 +67,30 @@ export const Header: React.FC = (props) => {
                 </Menu.Item>
             </Menu>
             {isAuth
-                ? <div>
-                    <Dropdown.Button overlay={menu}
-                                     placement="bottomCenter"
-                                     icon={<Avatar
-                                         icon={<img
-                                             src={currentUser?.AvaPhoto === null ? photo : urls.pathToUsersPhotos + currentUser?.AvaPhoto}/>}
-                                         shape="square"
-                                         size={28}/>
-                                     }>
-                        {currentUser?.Login}
-                    </Dropdown.Button>
+                ? <div className={s.nameAndPhoto}>
+                    <div>
+                        <Dropdown overlay={menu} trigger={['click']}>
+                            <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+                                {currentUser?.NickName}
+                                <DownOutlined/>
+                            </a>
+                        </Dropdown>
+                    </div>
+                    <div>
+                        <Link to="/profile">
+                            <Avatar
+                                icon={<img
+                                    src={currentUser?.AvaPhoto === null ? userWithoutPhoto : urls.pathToUsersPhotos + currentUser?.AvaPhoto}
+                                    alt="Ava"
+                                />}/>
+                        </Link>
+                    </div>
                 </div>
                 : <Link to={'/login'}>Login</Link>
             }
-
         </header>
     );
 }
+
+
 

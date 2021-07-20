@@ -2,11 +2,11 @@ import {instance, ResponseCodes} from "./api";
 import {ProfileType} from "../types/types";
 
 export const profileAPI = {
-    getProfile(userId: number) {
+    getProfile(userId: number | undefined) {
         return instance.get<UserType>('profile/get/' + userId)
             .then(res => res.data);
     },
-    updateStatus(status: string) {
+    updateStatus(status: string | null) {
         return instance.put<UpdateType>('profile/status/' + status)
             .then(res => res.data);
     },

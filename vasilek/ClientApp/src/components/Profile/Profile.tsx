@@ -1,30 +1,41 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import s from './Profile.module.css';
 import ProfileInfo from './ProfileInfo/ProfileInfo';
 import PostsContainer from './Posts/PostsContainer';
-import {ProfileType} from "../../types/types";
+import {useDispatch, useSelector} from "react-redux";
+import {s_getCurrentUserId, s_getIsAuth} from "../../redux/auth-selectors";
+import {useHistory} from "react-router-dom";
+import queryString from "querystring";
+import {getUserProfile} from "../../redux/profile-reducer";
 
-type PropsType = {
-    IsOwner: boolean
-    Status: string
-    Profile: ProfileType | null
-    updateProfile: (profile: ProfileType) => void
-    savePhoto: (file: File) => void
-    updateStatus: (status: string) => void
-}
+const Profile: React.FC = () => {
+    const isAuth = useSelector(s_getIsAuth);
+    const currentUserId = useSelector(s_getCurrentUserId);
+    const history = useHistory();
+    let userId = useSelector(s_getCurrentUserId);
+    const dispatch = useDispatch();
 
-const Profile: React.FC<PropsType> = props => {
+    useEffect(() => {
+        const parsed = queryString.parse(history.location.search.substr(1)) as QueryParamsType;
+        if(parsed.id !== undefined)
+            userId = parsed.id
+        else if(isAuth)
+            userId = currentUserId
+        else
+            history.push({pathname: '/login'});
+        dispatch(getUserProfile(userId));
+    }, [])
+
     return (
         <div>
-            <ProfileInfo updateProfile={props.updateProfile}
-                         savePhoto={props.savePhoto}
-                         isOwner={props.IsOwner}
-                         profile={props.Profile}
-                         status={props.Status}
-                         updateStatus={props.updateStatus}/>
+            <ProfileInfo userId={userId} />
             <PostsContainer/>
         </div>
     );
+}
+
+type QueryParamsType = {
+    id: number | undefined
 }
 
 export default Profile;

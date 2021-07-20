@@ -1,41 +1,46 @@
-import {Field, Form, Formik} from "formik";
 import React from "react";
-import {useSelector} from "react-redux";
-import {getFilter} from "../../redux/users-selectors";
-
-const usersSearchFormValidate = (values: any) => {
-    const errors = {};
-    return errors;
-}
+import s from "./Users.module.css";
+import {FilterType} from "../../redux/users-reducer";
+import {Field, Form, Formik} from "formik";
 
 type PropsType = {
+    filter: FilterType
     onTermChanged: (term: string) => void
 }
 
-export const UsersSearchForm: React.FC<PropsType> = React.memo((props) => {
-    const filter = useSelector(getFilter);
 
-    const submit = (values: {term: string}, {setSubmitting}: { setSubmitting: (setSubmitting: boolean) => void }) => {
+export const UsersSearchForm: React.FC<PropsType> = React.memo((props) => {
+    const submit = (values: { term: string }, {setSubmitting}: { setSubmitting: (setSubmitting: boolean) => void }) => {
         props.onTermChanged(values.term);
         setSubmitting(false)
     }
+
+    const usersSearchFormValidate = (values: any) => {
+        const errors = {};
+        return errors;
+    }
+
     return (
-        <div>
-            <Formik
-                enableReinitialize
-                initialValues={{term: filter.Term}}
-                validate={usersSearchFormValidate}
-                onSubmit={submit}
-            >
-                {({isSubmitting}) => (
-                    <Form>
-                        <Field type="text" name="term"/>
-                        <button type="submit" disabled={isSubmitting}>
-                            Find
-                        </button>
-                    </Form>
-                )}
-            </Formik>
+        <div className={s.wrapper_users_search_form}>
+            <div className={s.users_search_form}>
+                <Formik
+                    enableReinitialize
+                    initialValues={{term: props.filter.Term}}
+                    validate={usersSearchFormValidate}
+                    onSubmit={submit}
+                >
+                    {({isSubmitting}) => (
+                        <Form>
+                            <Field type="text"
+                                   name="term"
+                                   onInput={(e: any) => props.onTermChanged(e.currentTarget.value)}
+                            />
+                        </Form>
+                    )}
+
+                </Formik>
+            </div>
         </div>
     );
 });
+

@@ -1,56 +1,54 @@
 import React from 'react';
 import s from './Users.module.css';
-import photo from '../../assets/images/man.png';
-import {NavLink} from 'react-router-dom';
+import userWithoutPhoto from '../../assets/images/man.png';
+import {Link, NavLink} from 'react-router-dom';
 import {ProfileType} from "../../types/types";
 import {urls} from "../../api/api";
+import {Avatar, Button, Card} from "antd";
+import Meta from "antd/es/card/Meta";
+import {EditOutlined} from "@ant-design/icons";
 
 type PropsType = {
     User: ProfileType
-    followedUsers: Array<number>
     isAuth: boolean
     followingInProgress: Array<number>
     follow: (userId: number) => void
     unfollow: (userId: number) => void
 }
 
-let User: React.FC<PropsType> = ({User, followingInProgress, follow, unfollow, followedUsers, isAuth}) => {
+let User: React.FC<PropsType> = ({User, followingInProgress, follow, unfollow, isAuth}) => {
     return (
-        <div className={s.wrapper_user}>
-            <div className={s.photoANDbtn}>
-                <div>
-                    <NavLink to={'/profile/' + User.Id}>
-                        <img src={User.AvaPhoto !== null ? urls.pathToUsersPhotos + User.AvaPhoto : photo}/>
-                    </NavLink>
-                </div>
-                <div>
-                    {
-                        isAuth && (
-                            followedUsers.some(Id => Id === User.Id)
-                                ? <button disabled={followingInProgress
-                                    .some(id => id === User.Id)} onClick={() => unfollow(User.Id)}
-                                >UnFollow</button>
+        <Card size="small" style={{width: 270, margin: 15}}>
+            <Meta avatar={
+                <Link to={'/profile?id=' + User.Id}>
+                    <Avatar size={80}
+                            src={User.AvaPhoto !== null ? urls.pathToUsersPhotos + User.AvaPhoto : userWithoutPhoto}/>
+                </Link>
+            }
+                  title={<Link to={'/profile?id=' + User.Id}>{User.NickName}</Link>}
+                  description={
+                      <div className={s.user_desk}>
+                          {isAuth && (
+                              User.IsFollowed
+                                  ? <Button type={"primary"}
+                                            disabled={followingInProgress.some(id => id === User.Id)}
+                                            onClick={() => unfollow(User.Id)}
+                                  >UnFollow</Button>
 
-                                : <button disabled={followingInProgress
-                                    .some(id => id === User.Id)} onClick={() => follow(User.Id)}
-                                >Follow</button>
-                        )
-                    }
-                </div>
-            </div>
-            <div className={s.userInfo}>
-                <div>
-                    <div>{User.Login}</div>
-                    <div>{User.FirstName}</div>
-                    <div>{User.LastName}</div>
-                    <div>{User.Status}</div>
-                </div>
-                <div>
-                    <div>{User.City}</div>
-                    <div>{User.Country}</div>
-                </div>
-            </div>
-        </div>
+                                  : <Button disabled={followingInProgress.some(id => id === User.Id)}
+                                            onClick={() => follow(User.Id)}
+                                  >Follow</Button>
+
+                          )
+                          }
+                          {isAuth &&
+                          <Link to="">
+                              <EditOutlined size={64}/>
+                          </Link>}
+                      </div>
+                  }
+            />
+        </Card>
     );
 };
 

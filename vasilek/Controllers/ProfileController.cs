@@ -74,7 +74,7 @@ namespace vasilek.Controllers
                 });
             string photoName = await UploadToAzurePhoto(photo);
             _profileRep.SetAvaPhotoByLogin(HttpContext.User.Identity.Name, photoName);
-            _profileRep.AddPhotoByUserId(_userRep.GetUserIdByLogin(HttpContext.User.Identity.Name), photoName);
+            _profileRep.AddPhotoByUserLogin(HttpContext.User.Identity.Name, photoName);
             return JsonConvert.SerializeObject(new ResponseModel() { ResultCode = 0, Data = photoName });
         }
 

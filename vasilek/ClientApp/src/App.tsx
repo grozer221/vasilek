@@ -1,77 +1,86 @@
 import React, {useEffect} from 'react';
 import './App.css';
-import {Redirect, Route, Switch, withRouter} from 'react-router-dom';
-import DialogsContainer from './components/Dialogs/DialogsContainer';
-import ProfileContainer from './components/Profile/ProfileContainer';
+import {Redirect, Route, Switch} from 'react-router-dom';
 import {Login} from './components/Login/Login';
-import {connect, useDispatch, useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {initialiseApp} from './redux/app-reducer';
 import Loading from './components/common/Loading/Loading';
-import {compose} from 'redux';
-import {AppStateType} from "./redux/redux-store";
 import {Users} from "./components/Users/Users";
 import 'antd/dist/antd.css';
-import {Button, Layout, Result} from 'antd';
+import {BackTop, Button, Layout, Result} from 'antd';
 import {Header} from "./components/Header/Header";
 import {ChatPage} from "./components/pages/Chat/ChatPage";
 import {startMessagesListening, stopMessagesListening} from "./redux/chat-reducer";
-import {getIsAuth} from "./redux/users-selectors";
+import Profile from "./components/Profile/Profile";
+import {s_getInitialised} from "./redux/app-selectors";
+import Dialogs from "./components/Dialogs/Dialogs";
+import {s_getIsAuth} from "./redux/auth-selectors";
 
 const {Content, Footer} = Layout;
 
-type MapPropsType = ReturnType<typeof mapStateToProps>;
-type DispatchPropsType = {
-    initialiseApp: () => void
-}
-
-const App: React.FC<MapPropsType & DispatchPropsType> = (props) => {
-    const isAuth = useSelector(getIsAuth);
-    const messages = useSelector((state: AppStateType) => state.chat.messages)
+const App: React.FC = (props) => {
+    const isAuth = useSelector(s_getIsAuth);
+    const initialised = useSelector(s_getInitialised);
     const dispatch = useDispatch();
+
     useEffect(() => {
         if (isAuth)
             dispatch(startMessagesListening());
-        props.initialiseApp();
+        dispatch(initialiseApp());
         return () => {
             if (isAuth)
                 dispatch(stopMessagesListening());
         }
     }, [isAuth]);
 
-    if (!props.initialised)
+    const requireAuth = () => {
+        if (!isAuth)
+            return <Redirect to="/login"/>
+    }
+
+    if (!initialised)
         return <Loading/>;
 
     return (
-        <Layout>
+        <Layout style={{backgroundColor:'white'}}>
             <Header/>
-            <Content className="site-layout" style={{padding: '0 50px', marginTop: 64}}>
-                <div className="site-layout-background" style={{padding: 24, minHeight: 380}}>
-                    <Switch>
-                        <Route exact path="/" render={() => <Redirect to={'/profile'}/>}/>
-                        <Route path="/profile/:userId?" render={() => <ProfileContainer/>}/>
-                        <Route path="/dialogs" render={() => <DialogsContainer/>}/>
-                        <Route exact path="/users" render={() => <Users/>}/>
-                        <Route exact path="/users?friends=true" render={() => <Users/>}/>
-                        <Route path="/login" render={() => <Login/>}/>
-                        <Route path="/chat" render={() => <ChatPage/>}/>
-                        <Route path="*" render={() => <Result
-                            status="404"
-                            title="404"
-                            subTitle="Sorry, the page you visited does not exist."
-                            extra={<Button type="primary">Back Home</Button>}
-                        />}/>
-                    </Switch>
-                </div>
+            <Content  className="site_layout">
+                <Switch>
+                    <ProtectedRoute exact path="/" component={Profile}/>
+                    <Route path="/profile" component={Profile}/>
+                    <ProtectedRoute path="/dialogs" component={Dialogs}/>
+                    <Route exact path="/users" render={() => <Users/>}/>
+                    <ProtectedRoute exact path="/users?friends=true" component={Users}/>
+                    <Route path="/login" render={() => <Login/>}/>
+                    <ProtectedRoute path="/chat" component={ChatPage}/>
+                    <Route path="*" render={() => <Result
+                        status="404"
+                        title="404"
+                        subTitle="Sorry, the page you visited does not exist."
+                        extra={<Button type="primary">Back Home</Button>}
+                    />}/>
+                </Switch>
             </Content>
-            <Footer style={{textAlign: 'center'}}>VASILEK ©2021 Created by Grozer</Footer>
+            <BackTop />
         </Layout>
     );
 }
 
-const mapStateToProps = (state: AppStateType) => ({
-    initialised: state.app.Initialised
-});
+// @ts-ignore
+const ProtectedRoute = ({path, component: Component, ...rest}) => {
+    const isAuth = useSelector(s_getIsAuth);
+    return (
+        <Route
+            path={path}
+            {...rest}
+            render={props => {
+                if (isAuth)
+                    return <Component {...props} />
+                else
+                    return <Redirect to="/login"/>
+            }}
+        />
+    );
+};
 
-export default compose<React.ComponentType>(
-    withRouter,
-    connect(mapStateToProps, {initialiseApp}))(App);
+export default App;

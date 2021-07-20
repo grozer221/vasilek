@@ -10,7 +10,7 @@ let initialState = {
         {Id: 2, LikesCount: 3, Message: 'ввввв'}
     ] as Array<PostType>,
     Profile: null as ProfileType | null,
-    Status: '',
+    Status: null as string | null,
 };
 
 const profileReducer = (state = initialState, action: ActionsType): InitialStateType => {
@@ -34,7 +34,7 @@ const profileReducer = (state = initialState, action: ActionsType): InitialState
         case 'DELETE_POST':
             return {...state, Posts: state.Posts.filter(p => p.Id != action.postId)};
         case 'SAVE_PHOTO_SUCCESS':
-            return {...state, Profile: {...state.Profile, avaPhoto: action.avaPhoto} as ProfileType};
+            return {...state, Profile: {...state.Profile, AvaPhoto: action.avaPhoto} as ProfileType};
 
         default:
             return state;
@@ -44,20 +44,20 @@ const profileReducer = (state = initialState, action: ActionsType): InitialState
 export const actions = {
     addPostActionCreator: (newPostText: string) => ({type: 'ADD_POST', newPostText} as const),
     setUserProfile: (profile: ProfileType) => ({type: 'SET_USER_PROFILE', profile: profile} as const),
-    setStatus: (status: string) => ({type: 'SET_STATUS', status: status} as const),
+    setStatus: (status: string | null) => ({type: 'SET_STATUS', status: status} as const),
     deletePost: (postId: number) => ({type: 'DELETE_POST', postId} as const),
     savePhotoSuccess: (avaPhoto: string) => ({type: 'SAVE_PHOTO_SUCCESS', avaPhoto: avaPhoto} as const),
 }
 
 
 
-export const getUserProfile = (userId: number): ThunkType => async (dispatch) => {
+export const getUserProfile = (userId: number | undefined): ThunkType => async (dispatch) => {
     let data = await profileAPI.getProfile(userId);
     if (data.ResultCode === ResponseCodes.Success)
         dispatch(actions.setUserProfile(data.Data));
 };
 
-export const updateStatus = (status: string): ThunkType => async (dispatch) => {
+export const updateStatus = (status: string | null): ThunkType => async (dispatch) => {
     let data = await profileAPI.updateStatus(status);
     if (data.ResultCode === ResponseCodes.Success)
         dispatch(actions.setStatus(status));
