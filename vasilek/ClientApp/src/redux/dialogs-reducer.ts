@@ -52,7 +52,7 @@ export const requestCurrentDialogId = (userId: number): ThunkType =>
     async (dispatch) => {
         let data = await dialogsAPI.getCurrentDialogId(userId);
         if (data.ResultCode === ResponseCodes.Success) {
-            dispatch(actions.setCurrentDialogId(data.Data));
+            dispatch(actions.setCurrentDialogId(data.Data))
         }
     };
 
@@ -65,8 +65,8 @@ export const stopDialogsListening = (): ThunkType => async (dispatch) => {
     dialogsAPI.unsubscribe('DIALOGS_RECEIVED', newDialogsHandlerCreator(dispatch));
 };
 
-export const sendMessage = (messageText: string): ThunkType => async (dispatch) => {
-    dialogsAPI.sendMessage(messageText);
+export const sendMessage = (dialogId: number, messageText: string): ThunkType => async (dispatch) => {
+    dialogsAPI.sendMessage(dialogId, messageText);
 };
 
 export default dialogsReducer;

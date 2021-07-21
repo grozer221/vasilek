@@ -1,8 +1,9 @@
 import {ProfileType} from "../types/types";
 import {HubConnection, HubConnectionBuilder} from "@microsoft/signalr";
-import {message} from "antd";
+import {Avatar, message, notification} from "antd";
 import React from "react";
-import {instance, ResponseCodes} from "./api";
+import {instance, ResponseCodes, urls} from "./api";
+import userWithoutPhoto from "../assets/images/man.png";
 
 let connection: HubConnection | null = null;
 
@@ -21,29 +22,31 @@ const createConnection = () => {
             message.success('Connected!')
 
             connection?.on('ReceiveDialogs', (dialogs: DialogType[]) => {
-                debugger
                 subscribers['DIALOGS_RECEIVED'].forEach(s => s(dialogs))
             });
 
-            // connection?.on('ReceiveNotification', (messages) => {
-            //     const lastMessage = messages[messages.length - 1];
-            //     if (lastMessage) {
-            //         notification.open({
-            //             message: lastMessage.userNickName,
-            //             description: (
-            //                 <div>
-            //                     <div>{lastMessage.messageText}</div>
-            //                     <div><small>{lastMessage.time}</small></div>
-            //                 </div>),
-            //             icon: <Avatar shape="square" size={32}
-            //                           icon={<img
-            //                               src={lastMessage.avaPhoto ? urls.pathToUsersPhotos + lastMessage.avaPhoto : userWithoutPhoto}/>}
-            //             />,
-            //             duration: 10,
-            //             placement: "bottomRight"
-            //         });
-            //     }
+            // connection?.on('ReceiveMessage', (message: MessageType) => {
+            //     subscribers['MESSAGE_RECEIVED'].forEach(s => s(message))
             // });
+
+            connection?.on('ReceiveNotification', (message: MessageType) => {
+                debugger
+                if (message) {
+                    notification.open({
+                        message: message.user.NickName,
+                        description: (
+                            <div>
+                                <div>{message.messageText}</div>
+                                <div><small>{message.dateCreate}</small></div>
+                            </div>),
+                        // icon: <Avatar shape="square" size={32}
+                        //               src={message.avaPhoto ? urls.pathToUsersPhotos + message.avaPhoto : userWithoutPhoto}
+                        // />,
+                        duration: 10,
+                        placement: "topRight"
+                    });
+                }
+            });
         })
         .catch((e: any) => message.error('Connection failed: ', e));
 }
@@ -64,8 +67,8 @@ export const dialogsAPI = {
         // @ts-ignore
         subscribers[eventName] = subscribers[eventName].filter(s => s !== callback);
     },
-    sendMessage(messageText: string) {
-        connection?.send('SendMessage', messageText);
+    sendMessage(dialogId: number, messageText: string) {
+        connection?.send('SendMessage', dialogId, messageText);
     },
     getCurrentDialogId(userId: number) {
         return instance.get<GetCurrentDialogId>(`dialogs?toid=` + userId)
@@ -78,18 +81,19 @@ type EventsNamesType = 'DIALOGS_RECEIVED'
 
 
 export type DialogType = {
-    Id: number
-    AuthorId: number
-    DialogName: string
-    Users: ProfileType[]
-    Messages: MessageType[]
-    DateCreate: Date
+    id: number
+    authorId: number
+    dialogName: string
+    users: ProfileType[]
+    messages: MessageType[]
+    dateCreate: Date
 }
 
 export type MessageType = {
-    Id: number
-    MessageText: string
-    DateCreate: Date
+    id: number
+    messageText: string
+    dateCreate: Date
+    user: ProfileType
 }
 
 type GetCurrentDialogId = {

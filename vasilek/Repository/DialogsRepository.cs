@@ -51,7 +51,10 @@ namespace vasilek.Repository
                 foreach (var use in dialog.Users)
                     use.Dialogs = null;
                 foreach (var message in dialog.Messages)
+                {
                     message.Dialog = null;
+                    message.User = null;
+                }
             }
             return dialogs;
         }
@@ -83,6 +86,31 @@ namespace vasilek.Repository
             _ctx.Dialogs.Add(dialog);
             _ctx.SaveChanges();
             return dialog.Id;
+        }
+
+        public bool AddMessageToDialog(string currentUserLogin, int dialogId, string messageText)
+        {
+            var currentUser = _userRep.GetUserByLogin(currentUserLogin);
+            var dialog = _ctx.Dialogs.Include(d => d.Users).Include(d => d.Messages).ThenInclude(m => m.User).FirstOrDefault(d => d.Id == dialogId);
+            if (dialog.Users.Any(u => u == currentUser))
+            {
+                MessageModel message = new MessageModel
+                {
+                    Dialog = dialog,
+                    User = currentUser,
+                    DateCreate = DateTime.Now,
+                    MessageText = messageText
+                };
+                dialog.Messages.Add(message);
+                _ctx.SaveChanges();
+                return true;
+            }
+            return false;
+        }
+
+        public List<UserModel> GetUsersInDialog(int dialogId)
+        {
+            return _ctx.Dialogs.Include(d => d.Users).FirstOrDefault(d => d.Id == dialogId).Users;
         }
 
     }

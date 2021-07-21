@@ -24,7 +24,6 @@ let User: React.FC<PropsType> = ({User, followingInProgress, follow, unfollow, i
     const dispatch = useDispatch();
 
     const onClick = async () => {
-        debugger
         await dispatch(requestCurrentDialogId(User.Id))
         return <Link to={"dialogs?id=" + currentDialogsId}/>
     }

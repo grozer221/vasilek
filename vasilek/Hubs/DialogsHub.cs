@@ -23,15 +23,33 @@ namespace vasilek.Hubs
             _dialogsRep = new DialogsRepository(_ctx);
             _userRep = new UserRepository(ctx);
         }
-        public async Task SendMessage(string messageText)
+        public async Task SendMessage(int dialogId, string messageText)
         {
-            //await Clients.Others.ReceiveNotification();
+            var currentUser = _ctx.Users.FirstOrDefault(u => u.Login == Context.User.Identity.Name);
+            if (_dialogsRep.AddMessageToDialog(Context.User.Identity.Name, dialogId, messageText))
+            {
+                var users = _dialogsRep.GetUsersInDialog(dialogId);
+                var usersLogins = users.Select(u => u.Login).ToList();
+                await Clients.All.ReceiveNotification(new MessageModel
+                {
+                    MessageText = messageText,
+                    DateCreate = DateTime.Now,
+                    User = currentUser
+                });
+            }
+            else
+                await Clients.All.ReceiveNotification(new MessageModel
+                {
+                    MessageText = "error",
+                    DateCreate = DateTime.Now,
+                });
         }
         
         public override async Task OnConnectedAsync()
         {
             var dialogs = _dialogsRep.GetDialogsByUserLogin(Context.User.Identity.Name);
             await Clients.Caller.ReceiveDialogs(dialogs);
+            await base.OnConnectedAsync();
         }
 
         //public override async Task OnDisconnectedAsync(Exception exception)

@@ -36,8 +36,8 @@ const Dialogs: React.FC = () => {
             <div className={s.dialogs}>
                 <Menu theme="light" mode="vertical" style={{width: 300}}>
                     {dialogs.map(obj => (
-                            <Menu.Item key={obj.Id}>
-                                <Link to={'/dialogs?id=' + obj.Id}>{obj.DialogName}</Link>
+                            <Menu.Item key={obj.id}>
+                                <Link to={'/dialogs?id=' + obj.id}>{obj.dialogName}</Link>
                             </Menu.Item>
                         )
                     )}
@@ -47,7 +47,7 @@ const Dialogs: React.FC = () => {
                 {
                     dialogs && currentDialogId && (
                         <div>
-                            {dialogs?.find((dialog => dialog?.Id === currentDialogId))?.Messages.map(obj => <Message key={obj.Id} message={obj.MessageText}/>)}
+                            {dialogs?.find((dialog => dialog?.id === currentDialogId))?.messages.map(obj => <Message key={obj.id} message={obj.messageText}/>)}
                             <AddMessageForm/>
                         </div>
                     )
@@ -75,8 +75,8 @@ const AddMessageForm: React.FC = () => {
         if (!!parsed.id) {
             e.preventDefault();
             const isMessageProvided = _message && _message !== '';
-            if (isMessageProvided && isAuth) {
-                //dispatch(sendMessage(currentDialogId, _message));
+            if (isMessageProvided && isAuth && currentDialogId) {
+                dispatch(sendMessage(currentDialogId, _message));
                 setMessage('');
             }
         }
