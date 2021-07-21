@@ -47,6 +47,9 @@ namespace vasilek.Migrations
                     b.Property<DateTime>("DateCreate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("DialogName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Dialogs");
@@ -88,9 +91,14 @@ namespace vasilek.Migrations
                     b.Property<string>("MessageText")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DialogId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Messages");
                 });
@@ -178,7 +186,13 @@ namespace vasilek.Migrations
                         .WithMany("Messages")
                         .HasForeignKey("DialogId");
 
+                    b.HasOne("vasilek.Models.UserModel", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
                     b.Navigation("Dialog");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("vasilek.Models.PhotoModel", b =>

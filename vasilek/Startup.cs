@@ -78,7 +78,8 @@ namespace vasilek
                 endpoints.MapControllerRoute("DefaultApiWithId", "api/{controller}/{id}", new { id = RouteParameter.Optional }, new { id = @"\d+" });
                 endpoints.MapControllerRoute("DefaultApiWithId", "api/{controller}/{count}/{page}", new { id = RouteParameter.Optional }, new { id = @"\d+" });
                 endpoints.MapControllerRoute("DefaultApiWithAction", "api/{controller}/{action}");
-                endpoints.MapHub<ChatHub>("api/chat");
+                //endpoints.MapHub<ChatHub>("api/chat");
+                endpoints.MapHub<DialogsHub>("socket/dialogs");
             });
 
             app.UseSpa(spa =>

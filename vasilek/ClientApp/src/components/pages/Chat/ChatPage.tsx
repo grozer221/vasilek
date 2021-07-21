@@ -12,7 +12,7 @@ import TextArea from "antd/es/input/TextArea";
 import {Avatar, Input} from "antd";
 import {CheckCircleTwoTone} from "@ant-design/icons";
 
-const AddMessageForm = () => {
+const AddMessageForm: React.FC = () => {
     const isAuth = useSelector(s_getIsAuth);
     const [_message, setMessage] = useState('');
     const status = useSelector((state: AppStateType) => state.chat.status);

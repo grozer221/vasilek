@@ -1,64 +1,115 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import s from './Dialogs.module.css';
 import Message from './Message/Message';
-import {InjectedFormProps, reduxForm} from 'redux-form';
-import {createField, Textarea} from '../common/FormsControls/FormsControls';
-import {maxLengthCreator, required} from '../../utills/validators/validators';
-import {actions} from "../../redux/dialogs-reducer";
+import {actions, sendMessage} from "../../redux/dialogs-reducer";
 import {useDispatch, useSelector} from "react-redux";
-import {s_getDialogs, s_getMessages} from "../../redux/dialogs-selectors";
+import {s_getCurrentDialogId, s_getDialogs} from "../../redux/dialogs-selectors";
 import {Menu} from "antd";
-import {Link} from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
+import queryString from "querystring";
+import TextArea from "antd/es/input/TextArea";
+import {s_getIsAuth} from "../../redux/auth-selectors";
 
-const maxLength100 = maxLengthCreator(100);
-
-
-export type NewMessageFormValuesType = {
-    newMessageBody: string
-}
-export type NewMessageFormValuesTypeKeys = Extract<keyof NewMessageFormValuesType, string>;
 
 const Dialogs: React.FC = () => {
     const dialogs = useSelector(s_getDialogs);
-    const messages = useSelector(s_getMessages);
+    const currentDialogId = useSelector(s_getCurrentDialogId);
+    const history = useHistory();
     const dispatch = useDispatch();
-    let addNewMessage = (values: { newMessageBody: string }) => {
-        dispatch(actions.sendMessage(values.newMessageBody));
-    };
+
+    const updateDialogId = () => {
+        const parsed = queryString.parse(history.location.search.substr(1)) as QueryParamsType;
+        if (!!parsed.id)
+            dispatch(actions.setCurrentDialogId(+parsed.id));
+    }
+
+    useEffect(() => {
+        updateDialogId();
+    }, []);
+
+    useEffect(() => {
+        updateDialogId();
+    }, [history.location.search])
 
     return (
         <div className={s.wrapper_dialogs}>
             <div className={s.dialogs}>
-                <Menu theme="light" mode="vertical" defaultSelectedKeys={['1']}>
+                <Menu theme="light" mode="vertical" style={{width: 300}}>
                     {dialogs.map(obj => (
                             <Menu.Item key={obj.Id}>
-                                <Link to={'/dialogs/' + obj.Id}>{obj.Login}</Link>
+                                <Link to={'/dialogs?id=' + obj.Id}>{obj.DialogName}</Link>
                             </Menu.Item>
                         )
                     )}
                 </Menu>
             </div>
             <div className={s.messages}>
-                <div>{messages.map(obj => <Message key={obj.Id} message={obj.Message}/>)}</div>
-                <AddMessageFormRedux onSubmit={addNewMessage}/>
+                {
+                    dialogs && currentDialogId && (
+                        <div>
+                            {dialogs?.find((dialog => dialog?.Id === currentDialogId))?.Messages.map(obj => <Message key={obj.Id} message={obj.MessageText}/>)}
+                            <AddMessageForm/>
+                        </div>
+                    )
+
+                }
             </div>
         </div>
     );
 };
 
-const AddMessageForm: React.FC<InjectedFormProps<NewMessageFormValuesType>> = ({handleSubmit, error}) => {
+type QueryParamsType = {
+    id?: number
+}
+
+const AddMessageForm: React.FC = () => {
+    const isAuth = useSelector(s_getIsAuth);
+    const currentDialogId = useSelector(s_getCurrentDialogId);
+    const [_message, setMessage] = useState('');
+    const history = useHistory();
+
+    const dispatch = useDispatch();
+
+    const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        const parsed = queryString.parse(history.location.search.substr(1)) as QueryParamsType;
+        if (!!parsed.id) {
+            e.preventDefault();
+            const isMessageProvided = _message && _message !== '';
+            if (isMessageProvided && isAuth) {
+                //dispatch(sendMessage(currentDialogId, _message));
+                setMessage('');
+            }
+        }
+
+    }
+
+    const onMessageUpdate = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setMessage(e.target.value);
+    }
+
+    const onEnterPress = (e: any) => {
+        if (e.keyCode == 13 && e.shiftKey == false) {
+            e.preventDefault();
+            onSubmit(e);
+        }
+    }
     return (
-        <form onSubmit={handleSubmit}>
+        <form className={s.form_input_message} onSubmit={onSubmit}>
             <div>
-                {createField<NewMessageFormValuesTypeKeys>("Enter your message", "newMessageBody", [required, maxLength100], Textarea)}
+                <TextArea
+                    placeholder="Input message"
+                    onKeyDown={onEnterPress}
+                    allowClear
+                    onChange={onMessageUpdate}
+                    value={_message}
+                    cols={132}
+                />
             </div>
             <div>
-                <button>Send</button>
+                <button>Submit</button>
             </div>
         </form>
     );
 };
-
-const AddMessageFormRedux = reduxForm<NewMessageFormValuesType>({form: 'dialogMessageForm'})(AddMessageForm);
 
 export default Dialogs;

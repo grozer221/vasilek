@@ -14,7 +14,7 @@ namespace vasilek.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     AuthorId = table.Column<int>(type: "int", nullable: false),
-                    RecipientId = table.Column<int>(type: "int", nullable: false),
+                    DialogName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DateCreate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -42,36 +42,15 @@ namespace vasilek.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Messages",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DialogId = table.Column<int>(type: "int", nullable: false),
-                    MessageText = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DateCreate = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Messages", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Messages_Dialogs_DialogId",
-                        column: x => x.DialogId,
-                        principalTable: "Dialogs",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "DialogModelUserModel",
                 columns: table => new
                 {
                     DialogsId = table.Column<int>(type: "int", nullable: false),
-                    usersId = table.Column<int>(type: "int", nullable: false)
+                    UsersId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DialogModelUserModel", x => new { x.DialogsId, x.usersId });
+                    table.PrimaryKey("PK_DialogModelUserModel", x => new { x.DialogsId, x.UsersId });
                     table.ForeignKey(
                         name: "FK_DialogModelUserModel_Dialogs_DialogsId",
                         column: x => x.DialogsId,
@@ -79,8 +58,8 @@ namespace vasilek.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_DialogModelUserModel_Users_usersId",
-                        column: x => x.usersId,
+                        name: "FK_DialogModelUserModel_Users_UsersId",
+                        column: x => x.UsersId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -92,7 +71,8 @@ namespace vasilek.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    SubscriberId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -102,7 +82,35 @@ namespace vasilek.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Messages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DialogId = table.Column<int>(type: "int", nullable: true),
+                    UserId = table.Column<int>(type: "int", nullable: true),
+                    MessageText = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateCreate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Messages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Messages_Dialogs_DialogId",
+                        column: x => x.DialogId,
+                        principalTable: "Dialogs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Messages_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -111,8 +119,8 @@ namespace vasilek.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    PhotoName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -122,13 +130,13 @@ namespace vasilek.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_DialogModelUserModel_usersId",
+                name: "IX_DialogModelUserModel_UsersId",
                 table: "DialogModelUserModel",
-                column: "usersId");
+                column: "UsersId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Follows_UserId",
@@ -139,6 +147,11 @@ namespace vasilek.Migrations
                 name: "IX_Messages_DialogId",
                 table: "Messages",
                 column: "DialogId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_UserId",
+                table: "Messages",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Photos_UserId",

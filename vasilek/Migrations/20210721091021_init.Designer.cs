@@ -10,8 +10,8 @@ using vasilek;
 namespace vasilek.Migrations
 {
     [DbContext(typeof(AppDatabaseContext))]
-    [Migration("20210720152905_updated_photos")]
-    partial class updated_photos
+    [Migration("20210721091021_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -26,12 +26,12 @@ namespace vasilek.Migrations
                     b.Property<int>("DialogsId")
                         .HasColumnType("int");
 
-                    b.Property<int>("usersId")
+                    b.Property<int>("UsersId")
                         .HasColumnType("int");
 
-                    b.HasKey("DialogsId", "usersId");
+                    b.HasKey("DialogsId", "UsersId");
 
-                    b.HasIndex("usersId");
+                    b.HasIndex("UsersId");
 
                     b.ToTable("DialogModelUserModel");
                 });
@@ -49,8 +49,8 @@ namespace vasilek.Migrations
                     b.Property<DateTime>("DateCreate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("RecipientId")
-                        .HasColumnType("int");
+                    b.Property<string>("DialogName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -87,15 +87,20 @@ namespace vasilek.Migrations
                     b.Property<DateTime>("DateCreate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("DialogId")
+                    b.Property<int?>("DialogId")
                         .HasColumnType("int");
 
                     b.Property<string>("MessageText")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DialogId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Messages");
                 });
@@ -163,7 +168,7 @@ namespace vasilek.Migrations
 
                     b.HasOne("vasilek.Models.UserModel", null)
                         .WithMany()
-                        .HasForeignKey("usersId")
+                        .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -181,11 +186,15 @@ namespace vasilek.Migrations
                 {
                     b.HasOne("vasilek.Models.DialogModel", "Dialog")
                         .WithMany("Messages")
-                        .HasForeignKey("DialogId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DialogId");
+
+                    b.HasOne("vasilek.Models.UserModel", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Dialog");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("vasilek.Models.PhotoModel", b =>

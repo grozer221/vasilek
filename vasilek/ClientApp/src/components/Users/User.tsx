@@ -1,12 +1,15 @@
 import React from 'react';
 import s from './Users.module.css';
 import userWithoutPhoto from '../../assets/images/man.png';
-import {Link, NavLink} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import {ProfileType} from "../../types/types";
 import {urls} from "../../api/api";
 import {Avatar, Button, Card} from "antd";
 import Meta from "antd/es/card/Meta";
 import {EditOutlined} from "@ant-design/icons";
+import {useDispatch, useSelector} from "react-redux";
+import {requestCurrentDialogId} from "../../redux/dialogs-reducer";
+import {s_getCurrentDialogId} from "../../redux/dialogs-selectors";
 
 type PropsType = {
     User: ProfileType
@@ -17,6 +20,15 @@ type PropsType = {
 }
 
 let User: React.FC<PropsType> = ({User, followingInProgress, follow, unfollow, isAuth}) => {
+    const currentDialogsId = useSelector(s_getCurrentDialogId);
+    const dispatch = useDispatch();
+
+    const onClick = async () => {
+        debugger
+        await dispatch(requestCurrentDialogId(User.Id))
+        return <Link to={"dialogs?id=" + currentDialogsId}/>
+    }
+
     return (
         <Card size="small" style={{width: 270, margin: 15}}>
             <Meta avatar={
@@ -41,10 +53,7 @@ let User: React.FC<PropsType> = ({User, followingInProgress, follow, unfollow, i
 
                           )
                           }
-                          {isAuth &&
-                          <Link to="">
-                              <EditOutlined size={64}/>
-                          </Link>}
+                          {isAuth && <EditOutlined size={64} onClick={onClick}/>}
                       </div>
                   }
             />

@@ -1,9 +1,9 @@
-import { AppStateType } from './redux-store';
+import {AppStateType} from './redux-store';
 
 export const s_getDialogs = (state: AppStateType) => {
-  return state.dialogsPage.Dialogs;
+    return state.dialogsPage.Dialogs;
 }
 
-export const s_getMessages = (state: AppStateType) => {
-  return state.dialogsPage.Messages;
+export const s_getCurrentDialogId = (state: AppStateType) => {
+    return state.dialogsPage.CurrentDialogId;
 }

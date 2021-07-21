@@ -1,3 +1,7 @@
 .wrapper_dialogs{
     display: flex;
 }
+
+.form_input_message button {
+    display: none;
+}

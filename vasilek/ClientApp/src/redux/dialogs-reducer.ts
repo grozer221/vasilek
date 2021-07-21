@@ -1,59 +1,73 @@
 import {BaseThunkType, InferActionsTypes} from "./redux-store";
-import {usersAPI} from "../api/users-api";
+import {dialogsAPI, DialogType} from "../api/dialogs-api";
+import {Dispatch} from "redux";
+import {ProfileType} from "../types/types";
 import {ResponseCodes} from "../api/api";
-import {FilterType} from "./users-reducer";
-
-type DialogType = {
-    Id: number,
-    Login: string,
-}
-
-type MessageType = {
-    Id: number,
-    Message: string,
-}
+import {usersAPI} from "../api/users-api";
 
 let initialState = {
-    Dialogs: [
-        {Id: 1, Login: 'Grozer'},
-        {Id: 2, Login: 'Prozer'},
-        {Id: 3, Login: 'Zhozer'},
-        {Id: 4, Login: 'Lozer'}
-    ] as Array<DialogType>,
-    Messages: [
-        {Id: 1, Message: 'fffffff'},
-        {Id: 2, Message: 'asrgrea'},
-        {Id: 3, Message: 'ffffbbbbfagff'}
-    ] as Array<MessageType>
+    Dialogs: [] as Array<DialogType>,
+    CurrentDialogId: null as number | null,
 };
 
 const dialogsReducer = (state = initialState, action: ActionsTypes): InitialStateType => {
     switch (action.type) {
-        case 'SEND_MESSAGE':
-            let body = action.newMessageBody;
+        case 'SET_CURRENT_DIALOG_ID':
+            return{
+                ...state,
+                CurrentDialogId: action.id
+            };
+        case 'DIALOGS_RECEIVED':
             return {
                 ...state,
-                Messages: [...state.Messages, {Id: 4, Message: body}]
+                Dialogs: action.dialogs
             };
-        case 'GET_DIALOG_WITH_USER':
-                return {
-                    ...state,
-
-                }
         default:
             return state;
     }
 };
 
 export const actions = {
-    sendMessage: (newMessageBody: string) => ({type: 'SEND_MESSAGE', newMessageBody} as const),
-    setDialogWithUser: (dialog: DialogType) => ({type: 'GET_DIALOG_WITH_USER', dialog} as const),
+    setCurrentDialogId: (id: number) => ({
+        type: 'SET_CURRENT_DIALOG_ID',
+        id: id
+    } as const),
+    dialogsReceived: (dialogs: DialogType[]) => ({
+        type: 'DIALOGS_RECEIVED',
+        dialogs: dialogs
+    } as const),
 }
 
-export const getAndSetDialogByUserId = (page: number, pageSize: number, filter: FilterType): ThunkType =>
-    async (dispatch) => {
+let _newDialogsHandler: ((dialogs: DialogType[]) => void) | null = null
+const newDialogsHandlerCreator = (dispatch: Dispatch) => {
+    if (_newDialogsHandler === null) {
+        _newDialogsHandler = (dialogs) => {
+            dispatch(actions.dialogsReceived(dialogs));
+        }
+    }
+    return _newDialogsHandler
+}
 
+export const requestCurrentDialogId = (userId: number): ThunkType =>
+    async (dispatch) => {
+        let data = await dialogsAPI.getCurrentDialogId(userId);
+        if (data.ResultCode === ResponseCodes.Success) {
+            dispatch(actions.setCurrentDialogId(data.Data));
+        }
     };
+
+export const startDialogsListening = (): ThunkType => async (dispatch) => {
+    dialogsAPI.start();
+    dialogsAPI.subscribe('DIALOGS_RECEIVED', newDialogsHandlerCreator(dispatch));
+};
+
+export const stopDialogsListening = (): ThunkType => async (dispatch) => {
+    dialogsAPI.unsubscribe('DIALOGS_RECEIVED', newDialogsHandlerCreator(dispatch));
+};
+
+export const sendMessage = (messageText: string): ThunkType => async (dispatch) => {
+    dialogsAPI.sendMessage(messageText);
+};
 
 export default dialogsReducer;
 

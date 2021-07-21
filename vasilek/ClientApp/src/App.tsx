@@ -15,6 +15,7 @@ import Profile from "./components/Profile/Profile";
 import {s_getInitialised} from "./redux/app-selectors";
 import Dialogs from "./components/Dialogs/Dialogs";
 import {s_getIsAuth} from "./redux/auth-selectors";
+import {startDialogsListening, stopDialogsListening} from "./redux/dialogs-reducer";
 
 const {Content, Footer} = Layout;
 
@@ -25,11 +26,11 @@ const App: React.FC = (props) => {
 
     useEffect(() => {
         if (isAuth)
-            dispatch(startMessagesListening());
+            dispatch(startDialogsListening());
         dispatch(initialiseApp());
         return () => {
             if (isAuth)
-                dispatch(stopMessagesListening());
+                dispatch(stopDialogsListening());
         }
     }, [isAuth]);
 
