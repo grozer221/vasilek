@@ -5,15 +5,15 @@ import {Dispatch} from 'react';
 import {usersAPI} from "../api/users-api";
 
 const initialState = {
-    Users: [] as Array<ProfileType>,
-    PageSize: 16,
-    UsersCount: 0,
-    CurrentPage: 1,
-    IsFetching: false,
-    FollowingInProgress: [] as Array<number>,
-    Filter: {
-        Term: '',
-        Friends: false
+    users: [] as Array<ProfileType>,
+    pageSize: 16,
+    usersCount: 0,
+    currentPage: 1,
+    isFetching: false,
+    followingInProgress: [] as Array<number>,
+    filter: {
+        term: '',
+        friends: false
     }
 };
 
@@ -21,20 +21,20 @@ const initialState = {
 const usersReducer = (state = initialState, action: ActionsTypes): InitialStateType => {
     switch (action.type) {
         case 'SET_USERS':
-            return {...state, Users: action.users, UsersCount: action.usersCount};
+            return {...state, users: action.users, usersCount: action.usersCount};
         case 'SET_CURRENT_PAGE':
-            return {...state, CurrentPage: action.currentPage};
+            return {...state, currentPage: action.currentPage};
         case 'TOGGLE_IS_FETCHING':
-            return {...state, IsFetching: action.isFetching};
+            return {...state, isFetching: action.isFetching};
         case 'TOGGLE_IS_FOLLOWING_PROGRESS':
             return {
                 ...state,
-                FollowingInProgress: action.isFetching
-                    ? [...state.FollowingInProgress, action.userId]
-                    : state.FollowingInProgress.filter(id => id !== action.userId)
+                followingInProgress: action.isFetching
+                    ? [...state.followingInProgress, action.userId]
+                    : state.followingInProgress.filter(id => id !== action.userId)
             };
         case 'SET_FILTER' :
-            return {...state, Filter: action.payload}
+            return {...state, filter: action.payload}
 
         default:
             return state;
@@ -60,9 +60,9 @@ export const getFriends = (page: number, pageSize: number): ThunkType =>
         dispatch(actions.toggleIsFetching(true));
         dispatch(actions.setCurrentPage(page));
         let data = await usersAPI.getFriends(page, pageSize);
-        if (data.ResultCode === ResponseCodes.Success) {
+        if (data.resultCode === ResponseCodes.Success) {
             dispatch(actions.toggleIsFetching(false));
-            dispatch(actions.setUsers(data.Data.Users, data.Data.Count));
+            dispatch(actions.setUsers(data.data.users, data.data.count));
         }
     };
 
@@ -71,20 +71,20 @@ export const requestUsers = (page: number, pageSize: number, filter: FilterType)
         dispatch(actions.toggleIsFetching(true));
         dispatch(actions.setCurrentPage(page));
         dispatch(actions.setFilter(filter));
-        let data = await usersAPI.getUsers(page, pageSize, filter.Term, filter.Friends);
-        if (data.ResultCode === ResponseCodes.Success) {
+        let data = await usersAPI.getUsers(page, pageSize, filter.term, filter.friends);
+        if (data.resultCode === ResponseCodes.Success) {
             dispatch(actions.toggleIsFetching(false));
-            dispatch(actions.setUsers(data.Data.Users, data.Data.Count));
+            dispatch(actions.setUsers(data.data.users, data.data.count));
         }
     };
 
 const _followUnfollowFlow = async (dispatch: Dispatch<ActionsTypes>, userId: number, apiMethod: any, users: ProfileType[], usersCount: number) => {
     dispatch(actions.toggleFollowingProgress(true, userId));
     let data = await apiMethod(userId);
-    if (data.ResultCode === ResponseCodes.Success) {
+    if (data.resultCode === ResponseCodes.Success) {
         for (let i = 0; i < users.length; i++)
-            if (users[i].Id === userId)
-                users[i].IsFollowed = !users[i].IsFollowed
+            if (users[i].id === userId)
+                users[i].isFollowed = !users[i].isFollowed
         dispatch(actions.setUsers(users, usersCount));
     }
     dispatch(actions.toggleFollowingProgress(false, userId));
@@ -103,6 +103,6 @@ export const unfollow = (userId: number, users: ProfileType[], usersCount: numbe
 export default usersReducer;
 
 type InitialStateType = typeof initialState;
-export type FilterType = typeof initialState.Filter;
+export type FilterType = typeof initialState.filter;
 type ActionsTypes = InferActionsTypes<typeof actions>;
 type ThunkType = BaseThunkType<ActionsTypes>;

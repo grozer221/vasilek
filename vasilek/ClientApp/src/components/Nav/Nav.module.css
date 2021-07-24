@@ -1,0 +1,16 @@
+.nav{
+}
+
+.nav button{
+    border: none;
+    background-color: #242831;
+    padding: 7px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+}
+
+.nav button:hover{
+    background-color: #48536c;
+}

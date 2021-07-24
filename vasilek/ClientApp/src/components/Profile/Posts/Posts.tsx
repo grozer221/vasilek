@@ -8,7 +8,7 @@ import {PostType} from "../../../types/types";
 const maxLength10 = maxLengthCreator(10);
 
 type MapPropsType = {
-    Posts: Array<PostType>
+    posts: Array<PostType>
 }
 
 type MapDispatchType = {
@@ -23,7 +23,7 @@ const Posts: React.FC<MapPropsType & MapDispatchType> = props => {
         <div>
             <AddNewPostFormRedux onSubmit={onAddPost}/>
             <div>
-                {props.Posts.map(obj => <Post key={obj.Id} Message={obj.Message} LikesCount={obj.LikesCount}/>)}
+                {props.posts.map(obj => <Post key={obj.id} message={obj.message} likesCount={obj.likesCount}/>)}
             </div>
         </div>
     );

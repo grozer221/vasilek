@@ -25,7 +25,7 @@ export const UsersSearchForm: React.FC<PropsType> = React.memo((props) => {
             <div className={s.users_search_form}>
                 <Formik
                     enableReinitialize
-                    initialValues={{term: props.filter.Term}}
+                    initialValues={{term: props.filter.term}}
                     validate={usersSearchFormValidate}
                     onSubmit={submit}
                 >

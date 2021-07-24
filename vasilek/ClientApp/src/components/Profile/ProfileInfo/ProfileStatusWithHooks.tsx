@@ -26,13 +26,13 @@ const ProfileStatusWithHooks: React.FC<any> = () => {
     };
 
     return (
-        <div>
-            <span><b>Status</b>: </span>
+        <>
+            <div>Status:</div>
             {editMode
                 ? <input onChange={onStatusChange} autoFocus={true} onBlur={deactivateEditMode} value={_status === null ? '' : _status}/>
                 : <span onDoubleClick={activateEditMode}>{status || '--'}</span>
             }
-        </div>
+        </>
     );
 };
 

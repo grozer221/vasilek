@@ -21,17 +21,17 @@ export const usersAPI = {
 };
 
 export type UsersType = {
-    ResultCode: ResponseCodes,
-    Messages: Array<string>
-    Data: DataUsersType
+    resultCode: ResponseCodes,
+    messages: Array<string>
+    data: DataUsersType
 }
 
 type DataUsersType = {
-    Users: Array<ProfileType>
-    Count: number
+    users: Array<ProfileType>
+    count: number
 }
 type FollowType = {
-    ResultCode: ResponseCodes,
-    Messages: Array<string>
-    Data: Array<number>
+    resultCode: ResponseCodes,
+    messages: Array<string>
+    data: Array<number>
 }

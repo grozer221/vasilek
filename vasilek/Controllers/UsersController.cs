@@ -2,6 +2,7 @@
 using vasilek.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace vasilek.Controllers
 {
@@ -9,8 +10,12 @@ namespace vasilek.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private AppDatabaseContext _ctx;
-        private UserRepository _userRep;
+        JsonSerializerSettings JsonSettings = new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
+        private readonly AppDatabaseContext _ctx;
+        private readonly UserRepository _userRep;
         public UsersController(AppDatabaseContext ctx)
         {
             _ctx = ctx;
@@ -21,7 +26,7 @@ namespace vasilek.Controllers
         public string Get([FromQuery]bool friends, [FromQuery] string term, [FromQuery] int page = 1, [FromQuery] int count = 5)
         {
             if (friends == true && !HttpContext.User.Identity.IsAuthenticated)
-                return JsonConvert.SerializeObject(new ResponseModel() { ResultCode = 1, Messages = new string[] { "User must be authorized to see friends" } });
+                return JsonConvert.SerializeObject(new ResponseModel() { ResultCode = 1, Messages = new string[] { "User must be authorized to see friends" } }, JsonSettings);
             ResponseUserModel data = new ResponseUserModel();
             int usersCount = 0;
             if (friends == false && term == null)
@@ -54,7 +59,7 @@ namespace vasilek.Controllers
                     Count = usersCount
                 };
             }
-            return JsonConvert.SerializeObject(new ResponseModel() { ResultCode = 0, Data = data });
+            return JsonConvert.SerializeObject(new ResponseModel() { ResultCode = 0, Data = data }, JsonSettings);
 
         }
     }

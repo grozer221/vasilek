@@ -4,37 +4,37 @@ import {profileAPI} from "../api/profile-api";
 import {BaseThunkType, InferActionsTypes} from "./redux-store";
 
 let initialState = {
-    Posts: [
-        {Id: 1, LikesCount: 1, Message: 'ааааа'},
-        {Id: 2, LikesCount: 2, Message: 'ббббб'},
-        {Id: 2, LikesCount: 3, Message: 'ввввв'}
+    posts: [
+        {id: 1, likesCount: 1, message: 'ааааа'},
+        {id: 2, likesCount: 2, message: 'ббббб'},
+        {id: 3, likesCount: 3, message: 'ввввв'}
     ] as Array<PostType>,
-    Profile: null as ProfileType | null,
-    Status: null as string | null,
+    profile: null as ProfileType | null,
+    status: null as string | null,
 };
 
 const profileReducer = (state = initialState, action: ActionsType): InitialStateType => {
     switch (action.type) {
         case 'ADD_POST':
             let newPost = {
-                Id: 5,
-                Message: action.newPostText,
-                LikesCount: 0
+                id: 5,
+                message: action.newPostText,
+                likesCount: 0
             };
             return {
                 ...state,
-                Posts: [...state.Posts, newPost],
+                posts: [...state.posts, newPost],
             };
         case 'SET_USER_PROFILE':
             if (action.profile === null)
-                return {...state, Profile: action.profile};
-            return {...state, Profile: action.profile, Status: action.profile.Status};
+                return {...state, profile: action.profile};
+            return {...state, profile: action.profile, status: action.profile.status};
         case 'SET_STATUS':
-            return {...state, Status: action.status};
+            return {...state, status: action.status};
         case 'DELETE_POST':
-            return {...state, Posts: state.Posts.filter(p => p.Id != action.postId)};
+            return {...state, posts: state.posts.filter(p => p.id != action.postId)};
         case 'SAVE_PHOTO_SUCCESS':
-            return {...state, Profile: {...state.Profile, AvaPhoto: action.avaPhoto} as ProfileType};
+            return {...state, profile: {...state.profile, avaPhoto: action.avaPhoto} as ProfileType};
 
         default:
             return state;
@@ -53,26 +53,26 @@ export const actions = {
 
 export const getUserProfile = (userId: number | undefined): ThunkType => async (dispatch) => {
     let data = await profileAPI.getProfile(userId);
-    if (data.ResultCode === ResponseCodes.Success)
-        dispatch(actions.setUserProfile(data.Data));
+    if (data.resultCode === ResponseCodes.Success)
+        dispatch(actions.setUserProfile(data.data));
 };
 
 export const updateStatus = (status: string | null): ThunkType => async (dispatch) => {
     let data = await profileAPI.updateStatus(status);
-    if (data.ResultCode === ResponseCodes.Success)
+    if (data.resultCode === ResponseCodes.Success)
         dispatch(actions.setStatus(status));
 };
 
 export const savePhoto = (file: File): ThunkType => async (dispatch) => {
     let data = await profileAPI.savePhoto(file);
-    if (data.ResultCode === ResponseCodes.Success)
-        dispatch(actions.savePhotoSuccess(data.Data));
+    if (data.resultCode === ResponseCodes.Success)
+        dispatch(actions.savePhotoSuccess(data.data));
 };
 
 export const updateProfile = (profile: ProfileType): ThunkType => async (dispatch) => {
     let data = await profileAPI.updateProfile(profile);
-    if (data.ResultCode === ResponseCodes.Success)
-        dispatch(actions.setUserProfile(data.Data));
+    if (data.resultCode === ResponseCodes.Success)
+        dispatch(actions.setUserProfile(data.data));
 };
 
 export default profileReducer;

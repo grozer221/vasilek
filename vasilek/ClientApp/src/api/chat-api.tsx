@@ -36,9 +36,8 @@ const createConnection = () => {
                                 <div>{lastMessage.messageText}</div>
                                 <div><small>{lastMessage.time}</small></div>
                             </div>),
-                        icon: <Avatar shape="square" size={32}
-                                      icon={<img
-                                          src={lastMessage.avaPhoto ? urls.pathToUsersPhotos + lastMessage.avaPhoto : userWithoutPhoto}/>}
+                        icon: <Avatar size={32}
+                                      src={lastMessage.avaPhoto ? urls.pathToUsersPhotos + lastMessage.avaPhoto : userWithoutPhoto}
                         />,
                         duration: 10,
                         placement: "bottomRight"

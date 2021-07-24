@@ -40,11 +40,11 @@ export const Users: React.FC = (props) => {
             let actualPage = currentPage;
             if (!!parsed.page) actualPage = Number(parsed.page);
             let actualFilter = filter;
-            if (!!parsed.term) actualFilter = {...actualFilter, Term: parsed.term as string};
+            if (!!parsed.term) actualFilter = {...actualFilter, term: parsed.term as string};
             if (parsed.friends === 'true')
-                actualFilter = {...actualFilter, Friends: true};
+                actualFilter = {...actualFilter, friends: true};
             else
-                actualFilter = {...actualFilter, Friends: false};
+                actualFilter = {...actualFilter, friends: false};
 
             if (!isAuth && parsed.friends === 'true') {
                 history.push({pathname: '/login'});
@@ -56,8 +56,8 @@ export const Users: React.FC = (props) => {
 
         useEffect(() => {
             const query: QueryParamsType = {}
-            if (!!filter.Term) query.term = filter.Term;
-            if (filter.Friends) query.friends = String(filter.Friends);
+            if (!!filter.term) query.term = filter.term;
+            if (filter.friends) query.friends = String(filter.friends);
             if (currentPage !== 1) query.page = String(currentPage);
             history.push({
                 pathname: '/users',
@@ -77,7 +77,7 @@ export const Users: React.FC = (props) => {
         }
 
         const onTermChanged = (term: string) => {
-            dispatch(requestUsers(1, pageSize, {...filter, Term: term}));
+            dispatch(requestUsers(1, pageSize, {...filter, term: term}));
             return new Promise(function (resolve, reject) {
             });
         }
@@ -91,8 +91,8 @@ export const Users: React.FC = (props) => {
 
                         <div className={s.wrapper_users}>
                             {users.map(obj =>
-                                <User User={obj}
-                                      key={obj.Id}
+                                <User user={obj}
+                                      key={obj.id}
                                       followingInProgress={followingInProgress}
                                       follow={_follow}
                                       unfollow={_unfollow}

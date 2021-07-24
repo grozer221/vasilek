@@ -1,15 +1,96 @@
-.ant-layout{
-    background-color: white;
-}
-
-.site_layout{
-    margin: 80px auto 0 auto;
-    width: 1200px;
-    background-color: white;
-}
-
 input {
     outline: none;
+}
+
+::-webkit-scrollbar {
+    width: 8px; /* ширина scrollbar */
+}
+
+::-webkit-scrollbar-track {
+    background-color: #E8EBF2;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #282C35;
+    border-radius: 20px; /* закругления плашки */
+}
+
+.container {
+    width: 100%;
+    min-height: 100vh;
+}
+
+.content {
+    width: 100%;
+    min-height: 100vh;
+    display: grid;
+    grid-template-areas:"hamburger logo search  actions  profile"
+                        "links     nav  dialogs messages profile";
+    grid-auto-rows: 1fr 9fr;
+    grid-auto-columns: 1fr 4fr 6fr 14fr 5fr;
+}
+
+.wrapper_hamburger {
+    grid-area: hamburger;
+    background-color: #1E222B;
+    color: white;
+}
+
+.wrapper_links {
+    grid-area: links;
+    background-color: #1E222B;
+    color: white;
+}
+
+.wrapper_logo {
+    grid-area: logo;
+    background-color: #242831;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.wrapper_logo img{
+    height: 10vh;
+    overflow: hidden;
+}
+
+.wrapper_nav {
+    grid-area: nav;
+    background-color: #242831;
+    color: white;
+    padding: 0 7px;
+}
+
+.wrapper_search {
+    grid-area: search;
+    background-color: #282C35;
+    color: white;
+}
+
+.wrapper_dialogs {
+    grid-area: dialogs;
+    background-color: #282C35;
+    height: 90vh;
+    color: white;
+}
+
+.wrapper_actions {
+    grid-area: actions;
+    background-color: #E8EBF2;
+    height: 10vh;
+}
+
+.wrapper_messages {
+    grid-area: messages;
+    background-color: #E8EBF2;
+    height: 90vh;
+}
+
+.wrapper_profile {
+    grid-area: profile;
+    background-color: #fff;
 }
 
 

@@ -9,6 +9,7 @@ let connection: HubConnection | null = null;
 
 const subscribers = {
     'DIALOGS_RECEIVED': [] as DialogsReceivedSubscriberType[],
+    'MESSAGE_RECEIVED': [] as MessageReceivedSubscriberType[],
 }
 
 const createConnection = () => {
@@ -25,26 +26,30 @@ const createConnection = () => {
                 subscribers['DIALOGS_RECEIVED'].forEach(s => s(dialogs))
             });
 
-            // connection?.on('ReceiveMessage', (message: MessageType) => {
-            //     subscribers['MESSAGE_RECEIVED'].forEach(s => s(message))
-            // });
-
             connection?.on('ReceiveNotification', (message: MessageType) => {
-                debugger
                 if (message) {
                     notification.open({
-                        message: message.user.NickName,
+                        message: message.user.nickName,
                         description: (
                             <div>
                                 <div>{message.messageText}</div>
-                                <div><small>{message.dateCreate}</small></div>
-                            </div>),
-                        // icon: <Avatar shape="square" size={32}
-                        //               src={message.avaPhoto ? urls.pathToUsersPhotos + message.avaPhoto : userWithoutPhoto}
-                        // />,
+                                <div>
+                                    <small>{message.dateCreate.toString().substr(11, 5)}</small>
+                                </div>
+                            </div>
+                        ),
+                        icon: <Avatar shape="square" size={32}
+                                      src={message.user.avaPhoto ? urls.pathToUsersPhotos + message.user.avaPhoto : userWithoutPhoto}
+                        />,
                         duration: 10,
                         placement: "topRight"
                     });
+                }
+            });
+
+            connection?.on('ReceiveMessage', (dialogId: number, message: MessageType) => {
+                if (message) {
+                    subscribers['MESSAGE_RECEIVED'].forEach(s => s(dialogId, message))
                 }
             });
         })
@@ -55,7 +60,7 @@ export const dialogsAPI = {
     start() {
         createConnection();
     },
-    subscribe(eventName: EventsNamesType, callback: DialogsReceivedSubscriberType) {
+    subscribe(eventName: EventsNamesType, callback: DialogsReceivedSubscriberType | MessageReceivedSubscriberType) {
         // @ts-ignore
         subscribers[eventName].push(callback);
         return () => {
@@ -63,7 +68,7 @@ export const dialogsAPI = {
             subscribers[eventName] = subscribers[eventName].filter(s => s !== callback);
         }
     },
-    unsubscribe(eventName: EventsNamesType, callback: DialogsReceivedSubscriberType) {
+    unsubscribe(eventName: EventsNamesType, callback: DialogsReceivedSubscriberType | MessageReceivedSubscriberType) {
         // @ts-ignore
         subscribers[eventName] = subscribers[eventName].filter(s => s !== callback);
     },
@@ -77,16 +82,19 @@ export const dialogsAPI = {
 }
 
 type DialogsReceivedSubscriberType = (dialogs: DialogType[]) => void
-type EventsNamesType = 'DIALOGS_RECEIVED'
+type MessageReceivedSubscriberType = (dialogId: number, message: MessageType) => void
+type EventsNamesType = 'DIALOGS_RECEIVED' | 'MESSAGE_RECEIVED'
 
 
 export type DialogType = {
     id: number
     authorId: number
     dialogName: string
+    dialogPhoto: string
     users: ProfileType[]
     messages: MessageType[]
     dateCreate: Date
+    dateChanged: Date
 }
 
 export type MessageType = {
@@ -97,7 +105,7 @@ export type MessageType = {
 }
 
 type GetCurrentDialogId = {
-    ResultCode: ResponseCodes,
-    Messages: Array<string>
-    Data: number
+    resultCode: ResponseCodes,
+    messages: Array<string>
+    data: number
 }

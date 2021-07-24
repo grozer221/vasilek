@@ -1,7 +1,38 @@
-.wrapper_dialogs{
-    display: flex;
+.dialogs {
+    overflow-y: scroll;
 }
 
-.form_input_message button {
-    display: none;
+.dialogs::-webkit-scrollbar-track {
+    background-color: #282C35;
+}
+
+.dialogs::-webkit-scrollbar-thumb{
+    background-color: #282C35;
+}
+
+.dialog {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    background-color: #282C35;
+    border: none;
+    padding: 7px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.dialog:hover {
+    background-color: #272a32;
+}
+
+.active {
+    background-color: #1E222B;
+}
+
+.active:hover {
+    background-color: #1E222B;
+}
+
+.dialog_avatar {
+    margin-right: 10px;
 }

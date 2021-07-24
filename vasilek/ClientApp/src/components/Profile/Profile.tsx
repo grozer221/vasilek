@@ -1,7 +1,6 @@
 import React, {useEffect} from 'react';
 import s from './Profile.module.css';
-import ProfileInfo from './ProfileInfo/ProfileInfo';
-import PostsContainer from './Posts/PostsContainer';
+import {ProfileInfo} from './ProfileInfo/ProfileInfo';
 import {useDispatch, useSelector} from "react-redux";
 import {s_getCurrentUserId, s_getIsAuth} from "../../redux/auth-selectors";
 import {useHistory} from "react-router-dom";
@@ -29,7 +28,7 @@ const Profile: React.FC = () => {
     return (
         <div>
             <ProfileInfo userId={userId} />
-            <PostsContainer/>
+            {/*<PostsContainer/>*/}
         </div>
     );
 }

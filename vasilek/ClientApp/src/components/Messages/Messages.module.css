@@ -1,0 +1,66 @@
+.messagesAndForm{
+    height: 90vh;
+    display: grid;
+    grid-template-areas: "messages"
+                         "form_input";
+    grid-auto-rows:  15fr 1fr;
+    grid-gap: 7px;
+    margin-left: 7px;
+}
+
+.messages {
+    grid-area: messages;
+    overflow-y: scroll;
+}
+
+.form_input_message{
+    grid-area: form_input;
+    margin: 0 7px 7px 0;
+}
+
+.others_message{
+    text-align: left;
+}
+.others_message_border{
+    border-radius: 10px 10px 10px 0;
+}
+
+.my_message{
+    text-align: right;
+}
+.my_message_border{
+    border-radius: 10px 10px 0 10px;
+}
+
+.message {
+    max-width: 90%;
+    background-color: #1E222B;
+    display: inline-block;
+    padding: 3px 10px;
+    margin: 3px;
+}
+
+.message_content {
+    display: flex;
+    color: white;
+}
+
+.message_text {
+    margin-right: 5px;
+    word-wrap: anywhere;
+    text-align: left;
+}
+
+.actions {
+    margin: 0 10px;
+    height: 100%;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+
+.actions .nickname{
+    font-size: 16px;
+
+}
+

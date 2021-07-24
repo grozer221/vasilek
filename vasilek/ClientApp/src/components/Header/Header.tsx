@@ -43,7 +43,7 @@ export const Header: React.FC = () => {
 
     return (
         <header className={s.header}>
-            <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['1']}>
+            <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['1']} style={{width:'80%'}}>
                 <Menu.Item key="1">
                     <Link to="/profile">Profile</Link>
                 </Menu.Item>
@@ -71,7 +71,7 @@ export const Header: React.FC = () => {
                     <div>
                         <Dropdown overlay={menu} trigger={['click']}>
                             <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-                                {currentUser?.NickName}
+                                {currentUser?.nickName}
                                 <DownOutlined/>
                             </a>
                         </Dropdown>
@@ -80,7 +80,7 @@ export const Header: React.FC = () => {
                         <Link to="/profile">
                             <Avatar
                                 icon={<img
-                                    src={currentUser?.AvaPhoto === null ? userWithoutPhoto : urls.pathToUsersPhotos + currentUser?.AvaPhoto}
+                                    src={currentUser?.avaPhoto === null ? userWithoutPhoto : urls.pathToUsersPhotos + currentUser?.avaPhoto}
                                     alt="Ava"
                                 />}/>
                         </Link>

@@ -5,8 +5,8 @@ import {BaseThunkType, InferActionsTypes} from "./redux-store";
 import {ProfileType} from "../types/types";
 
 let initialState = {
-    CurrentUser: {} as ProfileType | null,
-    IsAuth: false as boolean
+    currentUser: {} as ProfileType | null,
+    isAuth: false as boolean
 };
 
 const authReducer = (state = initialState, action: ActionsType): InitialStateType => {
@@ -25,28 +25,28 @@ const authReducer = (state = initialState, action: ActionsType): InitialStateTyp
 export const actions = {
     setAuthUserData: (user: ProfileType | null, isAuth: boolean) => ({
         type: 'SET_USER_DATA',
-        payload: {CurrentUser: user, IsAuth: isAuth}
+        payload: {currentUser: user, isAuth: isAuth}
     } as const),
 }
 
 
 export const getAuthUserData = (): ThunkType => async (dispatch) => {
     let data = await authAPI.isAuth();
-    if (data.ResultCode === ResponseCodes.Success)
-        dispatch(actions.setAuthUserData(data.Data, true));
+    if (data.resultCode === ResponseCodes.Success)
+        dispatch(actions.setAuthUserData(data.data, true));
 };
 
 export const login = (login: string, password: string): ThunkType => async (dispatch) => {
     let data = await authAPI.login(login, password);
-    if (data.ResultCode === ResponseCodes.Success)
-        dispatch(actions.setAuthUserData(data.Data, true));
+    if (data.resultCode === ResponseCodes.Success)
+        dispatch(actions.setAuthUserData(data.data, true));
     else
-        dispatch(stopSubmit('login', {_error: data.Messages}));
+        dispatch(stopSubmit('login', {_error: data.messages}));
 };
 
 export const logout = (): ThunkType => async (dispatch) => {
     let data = await authAPI.logout();
-    if (data.ResultCode === ResponseCodes.Success)
+    if (data.resultCode === ResponseCodes.Success)
         dispatch(actions.setAuthUserData(null, false));
 };
 

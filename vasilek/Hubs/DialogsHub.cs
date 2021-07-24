@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,26 +26,13 @@ namespace vasilek.Hubs
         }
         public async Task SendMessage(int dialogId, string messageText)
         {
-            var currentUser = _ctx.Users.FirstOrDefault(u => u.Login == Context.User.Identity.Name);
-            if (_dialogsRep.AddMessageToDialog(Context.User.Identity.Name, dialogId, messageText))
-            {
-                var users = _dialogsRep.GetUsersInDialog(dialogId);
-                var usersLogins = users.Select(u => u.Login).ToList();
-                await Clients.All.ReceiveNotification(new MessageModel
-                {
-                    MessageText = messageText,
-                    DateCreate = DateTime.Now,
-                    User = currentUser
-                });
-            }
-            else
-                await Clients.All.ReceiveNotification(new MessageModel
-                {
-                    MessageText = "error",
-                    DateCreate = DateTime.Now,
-                });
+            MessageModel message = _dialogsRep.AddMessageToDialog(Context.User.Identity.Name, dialogId, messageText);
+            var usersLogins = _dialogsRep.GetUsersLoginsInDialog(dialogId);
+            await Clients.Users(usersLogins).ReceiveMessage(dialogId, message);
+            usersLogins.Remove(Context.User.Identity.Name);
+            await Clients.Users(usersLogins).ReceiveNotification(message);
         }
-        
+
         public override async Task OnConnectedAsync()
         {
             var dialogs = _dialogsRep.GetDialogsByUserLogin(Context.User.Identity.Name);

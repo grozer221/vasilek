@@ -5,21 +5,21 @@ import {Login} from './components/Login/Login';
 import {useDispatch, useSelector} from 'react-redux';
 import {initialiseApp} from './redux/app-reducer';
 import Loading from './components/common/Loading/Loading';
-import {Users} from "./components/Users/Users";
 import 'antd/dist/antd.css';
-import {BackTop, Button, Layout, Result} from 'antd';
-import {Header} from "./components/Header/Header";
-import {ChatPage} from "./components/pages/Chat/ChatPage";
-import {startMessagesListening, stopMessagesListening} from "./redux/chat-reducer";
-import Profile from "./components/Profile/Profile";
 import {s_getInitialised} from "./redux/app-selectors";
-import Dialogs from "./components/Dialogs/Dialogs";
 import {s_getIsAuth} from "./redux/auth-selectors";
 import {startDialogsListening, stopDialogsListening} from "./redux/dialogs-reducer";
+import {s_getCurrentDialogId} from "./redux/dialogs-selectors";
+import {Messages} from "./components/Messages/Messages";
+import {Dialogs} from "./components/Dialogs/Dialogs";
+import {Button, Result} from "antd";
+import {Nav} from "./components/Nav/Nav";
+import logo from '../src/assets/images/logo.png';
+import Profile from "./components/Profile/Profile";
+import {Actions} from "./components/Messages/Actions";
+import {SearchForm} from "./components/Users/SearchForm";
 
-const {Content, Footer} = Layout;
-
-const App: React.FC = (props) => {
+export const App: React.FC = () => {
     const isAuth = useSelector(s_getIsAuth);
     const initialised = useSelector(s_getInitialised);
     const dispatch = useDispatch();
@@ -34,54 +34,61 @@ const App: React.FC = (props) => {
         }
     }, [isAuth]);
 
-    const requireAuth = () => {
-        if (!isAuth)
-            return <Redirect to="/login"/>
-    }
-
     if (!initialised)
         return <Loading/>;
 
     return (
-        <Layout style={{backgroundColor:'white'}}>
-            <Header/>
-            <Content  className="site_layout">
-                <Switch>
-                    <ProtectedRoute exact path="/" component={Profile}/>
-                    <Route path="/profile" component={Profile}/>
-                    <ProtectedRoute path="/dialogs" component={Dialogs}/>
-                    <Route exact path="/users" render={() => <Users/>}/>
-                    <ProtectedRoute exact path="/users?friends=true" component={Users}/>
-                    <Route path="/login" render={() => <Login/>}/>
-                    <ProtectedRoute path="/chat" component={ChatPage}/>
-                    <Route path="*" render={() => <Result
-                        status="404"
-                        title="404"
-                        subTitle="Sorry, the page you visited does not exist."
-                        extra={<Button type="primary">Back Home</Button>}
-                    />}/>
-                </Switch>
-            </Content>
-            <BackTop />
-        </Layout>
+        <div className='container'>
+            <Switch>
+                <Route exact path="/" render={() => <MainPage/>}/>
+                <Route path="/login" render={() => <Login/>}/>
+                <Route path="*" render={() => <Result
+                    status="404"
+                    title="404"
+                    subTitle="Sorry, the page you visited does not exist."
+                    extra={<Button type="primary">Back Home</Button>}
+                />}/>
+            </Switch>
+        </div>
     );
 }
 
-// @ts-ignore
-const ProtectedRoute = ({path, component: Component, ...rest}) => {
+const MainPage: React.FC = () => {
     const isAuth = useSelector(s_getIsAuth);
+    const currentDialogId = useSelector(s_getCurrentDialogId);
     return (
-        <Route
-            path={path}
-            {...rest}
-            render={props => {
-                if (isAuth)
-                    return <Component {...props} />
-                else
-                    return <Redirect to="/login"/>
-            }}
-        />
-    );
+        <>
+            {!isAuth ? <Redirect to='/login'/> :
+                <div className="content">
+                    <div className='wrapper_hamburger'>
+                        hamburger
+                    </div>
+                    <div className='wrapper_links'>
+                        links
+                    </div>
+                    <div className='wrapper_logo'>
+                        <img src={logo} alt="logo"/>
+                    </div>
+                    <div className='wrapper_nav'>
+                        <Nav/>
+                    </div>
+                    <div className='wrapper_search'>
+                        <SearchForm/>
+                    </div>
+                    <div className='wrapper_dialogs'>
+                        <Dialogs/>
+                    </div>
+                    <div className='wrapper_actions'>
+                        <Actions/>
+                    </div>
+                    <div className='wrapper_messages'>
+                        {currentDialogId && <Messages/>}
+                    </div>
+                    <div className='wrapper_profile'>
+                        <Profile/>
+                    </div>
+                </div>
+            }
+        </>
+    )
 };
-
-export default App;

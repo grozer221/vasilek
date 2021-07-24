@@ -17,11 +17,11 @@ export const authAPI = {
 };
 
 type LoginType = {
-    ResultCode: ResponseCodes
-    Messages: Array<string>
-    Data: ProfileType
+    resultCode: ResponseCodes
+    messages: Array<string>
+    data: ProfileType
 }
 
 type LogoutType = {
-    ResultCode: ResponseCodes
+    resultCode: ResponseCodes
 }

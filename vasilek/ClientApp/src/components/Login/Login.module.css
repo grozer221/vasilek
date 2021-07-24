@@ -2,4 +2,18 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 100vh;
+}
+
+.login_form {
+    max-width: 300px;
+}
+.login_form .login_form_forgot {
+    float: right;
+}
+.login_form .ant-col-rtl .login_form_forgot {
+    float: left;
+}
+.login_form .login_form_button {
+    width: 100%;
 }

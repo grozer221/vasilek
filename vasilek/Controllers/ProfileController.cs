@@ -8,6 +8,7 @@ using System;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace vasilek.Controllers
 {
@@ -15,6 +16,10 @@ namespace vasilek.Controllers
     [ApiController]
     public class ProfileController : ControllerBase
     {
+        JsonSerializerSettings JsonSettings = new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
         private AppDatabaseContext _ctx;
         private ProfileRepository _profileRep;
         private UserRepository _userRep;
@@ -34,7 +39,7 @@ namespace vasilek.Controllers
             {
                 ResultCode = 0,
                 Data = _profileRep.GetProfileById(id)
-            });
+            }, JsonSettings);
         }
 
         [HttpPut]
@@ -44,7 +49,7 @@ namespace vasilek.Controllers
             {
                 ResultCode = 0,
                 Data = _profileRep.EditProfileByLogin(HttpContext.User.Identity.Name, updatedUser)
-            });
+            }, JsonSettings);
         }
 
         [HttpPut("{status}")]
@@ -55,12 +60,12 @@ namespace vasilek.Controllers
                 {
                     ResultCode = 1,
                     Messages = new string[] { "Error" }
-                }); 
+                }, JsonSettings); 
             return JsonConvert.SerializeObject(new ResponseModel()
             {
                 ResultCode = 0,
                 Data = status
-            });
+            }, JsonSettings);
         }
 
         [HttpPost]
@@ -71,11 +76,11 @@ namespace vasilek.Controllers
                 {
                     ResultCode = 1,
                     Messages = new string[] { "Photo is empty" }
-                });
+                }, JsonSettings);
             string photoName = await UploadToAzurePhoto(photo);
             _profileRep.SetAvaPhotoByLogin(HttpContext.User.Identity.Name, photoName);
             _profileRep.AddPhotoByUserLogin(HttpContext.User.Identity.Name, photoName);
-            return JsonConvert.SerializeObject(new ResponseModel() { ResultCode = 0, Data = photoName });
+            return JsonConvert.SerializeObject(new ResponseModel() { ResultCode = 0, Data = photoName }, JsonSettings);
         }
 
         [NonAction]

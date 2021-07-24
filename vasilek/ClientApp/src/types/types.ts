@@ -1,16 +1,16 @@
 export type PostType = {
-    Id: number
-    LikesCount: number
-    Message: string
+    id: number
+    likesCount: number
+    message: string
 }
 export type ProfileType = {
-    Id: number
-    Login: string
-    Password: string
-    NickName: string
-    Status: string
-    City: string
-    Country: string
-    AvaPhoto: string
-    IsFollowed: boolean
+    id: number
+    login: string
+    password: string
+    nickName: string
+    status: string
+    city: string
+    country: string
+    avaPhoto: string
+    isFollowed: boolean
 }

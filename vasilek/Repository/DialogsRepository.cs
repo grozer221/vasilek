@@ -44,6 +44,7 @@ namespace vasilek.Repository
                     List<UserModel> users = dialog.Users;
                     users.Remove(user);
                     dialog.DialogName = users[0].NickName;
+                    dialog.DialogPhoto = users[0].AvaPhoto;
                 }
                 else
                     foreach (var user1 in dialog.Users)
@@ -53,21 +54,21 @@ namespace vasilek.Repository
                 foreach (var message in dialog.Messages)
                 {
                     message.Dialog = null;
-                    message.User = null;
+                    message.User.Dialogs = null;
                 }
             }
             return dialogs;
         }
 
-        public int? WriteTo(string currentUserLogin, int toId)
+        public int WriteTo(string currentUserLogin, int toId)
         {
             var currentUser = _ctx.Users.Include(u => u.Dialogs).ThenInclude(d => d.Users).FirstOrDefault(u => u.Login == currentUserLogin);
             var currentUserDialogs = currentUser.Dialogs;
             if(currentUserDialogs.Count > 0)
             {
-                int? dialogId = currentUserDialogs?.FirstOrDefault(d => d.Users.Count == 2 && d.Users.Any(u => u.Id == toId)).Id;
-                if (dialogId != null)
-                    return dialogId;
+                var dialog = currentUserDialogs.FirstOrDefault(d => d.Users.Count == 2 && d.Users.Any(u => u.Id == toId));
+                if (dialog != null)
+                    return dialog.Id;
             }
             return CreateNewDialog(currentUserLogin, _userRep.GetUserByLogin(currentUserLogin), _userRep.GetUserById(toId));
         }
@@ -88,29 +89,28 @@ namespace vasilek.Repository
             return dialog.Id;
         }
 
-        public bool AddMessageToDialog(string currentUserLogin, int dialogId, string messageText)
+        public MessageModel AddMessageToDialog(string currentUserLogin, int dialogId, string messageText)
         {
-            var currentUser = _userRep.GetUserByLogin(currentUserLogin);
-            var dialog = _ctx.Dialogs.Include(d => d.Users).Include(d => d.Messages).ThenInclude(m => m.User).FirstOrDefault(d => d.Id == dialogId);
-            if (dialog.Users.Any(u => u == currentUser))
+            UserModel currentUser = _userRep.GetUserByLogin(currentUserLogin);
+            DialogModel dialog = _ctx.Dialogs.Include(d => d.Users).Include(d => d.Messages).ThenInclude(m => m.User).FirstOrDefault(d => d.Id == dialogId);
+            MessageModel message = new MessageModel
             {
-                MessageModel message = new MessageModel
-                {
-                    Dialog = dialog,
-                    User = currentUser,
-                    DateCreate = DateTime.Now,
-                    MessageText = messageText
-                };
-                dialog.Messages.Add(message);
-                _ctx.SaveChanges();
-                return true;
-            }
-            return false;
+                Dialog = dialog,
+                User = currentUser,
+                DateCreate = DateTime.Now,
+                MessageText = messageText
+            };
+            dialog.DateChanged = DateTime.Now;
+            dialog.Messages.Add(message);
+            _ctx.SaveChanges();
+            message.Dialog = null;
+            message.User.Dialogs = null;
+            return message;
         }
 
-        public List<UserModel> GetUsersInDialog(int dialogId)
+        public List<string> GetUsersLoginsInDialog(int dialogId)
         {
-            return _ctx.Dialogs.Include(d => d.Users).FirstOrDefault(d => d.Id == dialogId).Users;
+            return _ctx.Dialogs.Include(d => d.Users).FirstOrDefault(d => d.Id == dialogId).Users.Select(u => u.Login).ToList();
         }
 
     }

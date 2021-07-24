@@ -7,12 +7,13 @@ import {urls} from "../../../api/api";
 import {useDispatch, useSelector} from "react-redux";
 import {s_getProfile} from "../../../redux/profile-selectors";
 import {savePhoto} from "../../../redux/profile-reducer";
+import {Avatar} from "antd";
 
 type PropsType = {
     userId: number | undefined
 }
 
-const ProfileInfo: React.FC<PropsType> = (props) => {
+export const ProfileInfo: React.FC<PropsType> = (props) => {
     const profile = useSelector(s_getProfile);
     const dispatch = useDispatch();
 
@@ -27,29 +28,24 @@ const ProfileInfo: React.FC<PropsType> = (props) => {
 
     return (
         <div className={s.wrapper_profile}>
-            <div>
-                <div><img className={s.photo}
-                          src={profile.AvaPhoto ? urls.pathToUsersPhotos + profile.AvaPhoto : man}/>
+            <div className={s.wrapper_photo}>
+                <Avatar className={s.photo}
+                     src={profile.avaPhoto ? urls.pathToUsersPhotos + profile.avaPhoto : man}/>
+            </div>
+            <div className={s.wrapper_nick}>
+                <strong>{profile?.nickName}</strong>
+            </div>
+            <div className={s.wrapper_info}>
+                <div><ProfileStatusWithHooks/></div>
+                <div>
+                    <div>City:</div>
+                    <div>{profile?.city}</div>
                 </div>
                 <div>
-                    <input type="file" onChange={onMainPhotoSelected}/>
+                    <div>Country:</div>
+                    <div>{profile?.country}</div>
                 </div>
             </div>
-            <ProfileData/>
         </div>
     );
 }
-
-const ProfileData: React.FC = () => {
-    const profile = useSelector(s_getProfile);
-    return (
-        <div>
-            <div><b>NickName</b>: {profile?.NickName}</div>
-            <div><ProfileStatusWithHooks/></div>
-            <div><b>City</b>: {profile?.City}</div>
-            <div><b>Country</b>: {profile?.Country}</div>
-        </div>
-    );
-}
-
-export default ProfileInfo;

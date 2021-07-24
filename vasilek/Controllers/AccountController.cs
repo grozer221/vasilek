@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using vasilek.Repository;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace vasilek.Controllers
 {
@@ -16,6 +17,10 @@ namespace vasilek.Controllers
     [ApiController]
     public class AccountController : Controller
     {
+        JsonSerializerSettings JsonSettings = new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
         private AppDatabaseContext _ctx;
         private ProfileRepository _profileRep; 
         private UserRepository _userRep; 
@@ -34,13 +39,13 @@ namespace vasilek.Controllers
                 {
                     ResultCode = 0,
                     Data = _profileRep.GetProfileByLogin(HttpContext.User.Identity.Name)
-                });
+                }, JsonSettings);
             return JsonConvert.SerializeObject(new ResponseModel()
             {
                 ResultCode = 1,
                 Messages = new string[] { "User unautorised" },
                 Data = null,
-            });
+            }, JsonSettings);
         }
 
         [HttpPost]
@@ -56,14 +61,14 @@ namespace vasilek.Controllers
                     {
                         ResultCode = 0,
                         Data = _userRep.GetUserByLogin(model.Login)
-                    });
+                    }, JsonSettings);
                 }
             }
             return JsonConvert.SerializeObject(new ResponseModel()
             {
                 ResultCode = 1,
                 Messages = new string[] { "Login or password invalid" },
-            });
+            }, JsonSettings);
         }
 
         [HttpPost]
@@ -81,14 +86,14 @@ namespace vasilek.Controllers
                     {
                         ResultCode = 0,
                         Data = model
-                    });
+                    }, JsonSettings);
                 }
             }
             return JsonConvert.SerializeObject(new ResponseModel()
             {
                 ResultCode = 1,
                 Messages = new string[] { "User with wrote login already exist" },
-            });
+            }, JsonSettings);
         }
 
         private async Task Authenticate(UserModel user)
@@ -107,7 +112,7 @@ namespace vasilek.Controllers
         public async Task<string> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return JsonConvert.SerializeObject(new ResponseModel() { ResultCode = 0 });
+            return JsonConvert.SerializeObject(new ResponseModel() { ResultCode = 0 }, JsonSettings);
         }
     }
 }
