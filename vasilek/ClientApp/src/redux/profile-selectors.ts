@@ -5,5 +5,5 @@ export const s_getProfile = (state: AppStateType) => {
 }
 
 export const s_getStatus = (state: AppStateType) => {
-  return state.profilePage.status;
+  return state.profilePage.profile?.status;
 }

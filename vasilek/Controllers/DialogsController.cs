@@ -26,11 +26,11 @@ namespace vasilek.Controllers
             _dialogsRep = new DialogsRepository(_ctx);
         }
 
-        [HttpGet]
-        public string Get([FromQuery]int toid)
-        {
-            int dialogId = _dialogsRep.WriteTo(HttpContext.User.Identity.Name, toid);
-            return JsonConvert.SerializeObject(new ResponseModel() { ResultCode = 0, Data = dialogId }, JsonSettings);
-        }
+        //[HttpGet]
+        //public string Get([FromQuery]int toid)
+        //{
+        //    int dialogId = _dialogsRep.GetDialogId(HttpContext.User.Identity.Name, toid);
+        //    return JsonConvert.SerializeObject(new ResponseModel() { ResultCode = 0, Data = dialogId }, JsonSettings);
+        //}
     }
 }

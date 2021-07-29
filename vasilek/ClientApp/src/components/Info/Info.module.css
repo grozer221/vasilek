@@ -1,0 +1,39 @@
+.wrapper_info_page{
+    display: grid;
+    grid-template-areas: "headerAndArrow"
+                         "info";
+    grid-template-rows: 1fr 10fr;
+    grid-gap: 5px;
+    height: calc(100vh - 20px);
+    padding: 0 10px 10px 10px;
+}
+
+.headerAndArrow{
+    grid-area: headerAndArrow;
+    display: flex;
+    align-items: center;
+    border-bottom: 3px solid #d5d5d5;
+
+}
+
+.headerAndArrow button{
+    border: none;
+    background-color: white;
+}
+
+.wrapper_info_page button span{
+    background-color: white;
+}
+.wrapper_info_page button span:hover{
+    background-color: #E0F4F1;
+}
+
+.info{
+    grid-area: info;
+    height: calc(90vh - 30px);
+}
+
+.info_close{
+    display: none;
+}
+

@@ -31,7 +31,7 @@ let Paginator: React.FC<PropsType> = ({itemsCount, pageSize, currentPage, onPage
             {portionNumber > 1 &&
             <div className={s.pagination} onClick={() => {
                 setPortionNumber(portionNumber - 1)
-            }}><img src={arrowLeft}/></div>}
+            }}><img src={arrowLeft} alt='arrow_left'/></div>}
             {pages
                 .filter(p => p >= leftPortionPageNumber && p <= rightPortionNumber)
                 .map(p => {
@@ -43,7 +43,7 @@ let Paginator: React.FC<PropsType> = ({itemsCount, pageSize, currentPage, onPage
             {portionCount > portionNumber &&
             <div className={s.pagination} onClick={() => {
                 setPortionNumber(portionNumber + 1)
-            }}><img src={arrowRight}/></div>}
+            }}><img src={arrowRight} alt='arrow_right'/></div>}
         </div>
     );
 };

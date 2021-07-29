@@ -35,20 +35,24 @@ namespace vasilek.Controllers
         [HttpGet("{id}")]
         public string Get(int id)
         {
+            var user = _profileRep.GetProfileById(id);
+            user.Password = null;
             return JsonConvert.SerializeObject(new ResponseModel()
             {
                 ResultCode = 0,
-                Data = _profileRep.GetProfileById(id)
+                Data = user,
             }, JsonSettings);
         }
 
         [HttpPut]
         public string Put([FromBody] UserModel updatedUser)
         {
+            var user = _profileRep.EditProfileByLogin(HttpContext.User.Identity.Name, updatedUser);
+            user.Password = null;
             return JsonConvert.SerializeObject(new ResponseModel()
             {
                 ResultCode = 0,
-                Data = _profileRep.EditProfileByLogin(HttpContext.User.Identity.Name, updatedUser)
+                Data = user,
             }, JsonSettings);
         }
 

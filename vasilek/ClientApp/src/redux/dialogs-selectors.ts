@@ -7,3 +7,4 @@ export const s_getDialogs = (state: AppStateType) => {
 export const s_getCurrentDialogId = (state: AppStateType) => {
     return state.dialogsPage.currentDialogId;
 }
+

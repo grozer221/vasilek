@@ -1,11 +1,12 @@
 import React from 'react';
-import loading from '../../../assets/images/loading.svg';
 import s from './Loading.module.css';
+import {LoadingOutlined} from "@ant-design/icons";
+import {Spin} from "antd";
 
 const Loading: React.FC = () => {
     return (
         <div className={s.wrapper_svg}>
-            <img src={loading} className={s.svg}/>
+            <Spin indicator={<LoadingOutlined style={{fontSize: 96}} spin/>}/>
         </div>
     );
 }

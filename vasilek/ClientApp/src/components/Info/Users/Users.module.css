@@ -1,0 +1,55 @@
+.wrapper_users_and_form {
+    position: relative;
+}
+
+.user {
+    display: flex;
+    justify-content: space-between;
+    border-radius: 10px;
+    padding: 7px 12px;
+    margin: 2px 0;
+}
+
+.user button {
+    border: none;
+    background-color: #EDF0F6;
+}
+
+.user button svg {
+    color: gray;
+}
+
+.user span {
+    background-color: #EDF0F6;
+}
+
+.user button {
+    display: block;
+    border: none;
+    background-color: white;
+}
+
+.user button span:hover {
+    background-color: #E0F4F1;
+}
+
+.user button span:hover svg {
+    background-color: #E0F4F1;
+    color: #00A389;
+}
+
+
+.user:hover,
+.user:hover span,
+.user:hover button {
+    background-color: #f3f3f3;
+}
+
+.user a {
+    display: flex;
+    align-items: center;
+}
+
+.user a > span {
+    margin-right: 10px;
+}

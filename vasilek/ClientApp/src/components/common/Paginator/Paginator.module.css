@@ -27,6 +27,7 @@
 
 .pagination:hover {
     background-color: #dedede;
+    color: black;
 }
 
 .pagination.selectedPage {

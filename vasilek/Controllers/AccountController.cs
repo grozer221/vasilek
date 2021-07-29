@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using vasilek.ViewModels;
 using vasilek.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -34,12 +33,17 @@ namespace vasilek.Controllers
         [HttpGet]
         public string IsAuth()
         {
+            var user = _profileRep.GetProfileByLogin(HttpContext.User.Identity.Name);
             if (HttpContext.User.Identity.IsAuthenticated)
+            {
+                user.Password = null;
                 return JsonConvert.SerializeObject(new ResponseModel()
                 {
                     ResultCode = 0,
-                    Data = _profileRep.GetProfileByLogin(HttpContext.User.Identity.Name)
+                    Data = user,
                 }, JsonSettings);
+            }
+
             return JsonConvert.SerializeObject(new ResponseModel()
             {
                 ResultCode = 1,
@@ -57,17 +61,18 @@ namespace vasilek.Controllers
                 if (user != null)
                 {
                     await Authenticate(user); // аутентификация
+                    user.Password = null;
                     return JsonConvert.SerializeObject(new ResponseModel()
                     {
                         ResultCode = 0,
-                        Data = _userRep.GetUserByLogin(model.Login)
+                        Data = user,
                     }, JsonSettings);
                 }
             }
             return JsonConvert.SerializeObject(new ResponseModel()
             {
                 ResultCode = 1,
-                Messages = new string[] { "Login or password invalid" },
+                Messages = new string[] { "Login or password is invalid" },
             }, JsonSettings);
         }
 
@@ -79,13 +84,20 @@ namespace vasilek.Controllers
                 UserModel user = await _ctx.Users.FirstOrDefaultAsync(u => u.Login == model.Login);
                 if (user == null)
                 {
-                    _ctx.Users.Add(new UserModel { Login = model.Login, Password = model.Password });
+                    user = new UserModel
+                    {
+                        Login = model.Login,
+                        Password = model.Password,
+                        NickName = model.NickName
+                    };
+                    _ctx.Users.Add(user);
                     await _ctx.SaveChangesAsync();
                     await Authenticate(user); // аутентификация
+                    user.Password = null;
                     return JsonConvert.SerializeObject(new ResponseModel()
                     {
                         ResultCode = 0,
-                        Data = model
+                        Data = user
                     }, JsonSettings);
                 }
             }

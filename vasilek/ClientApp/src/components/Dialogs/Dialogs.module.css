@@ -1,38 +1,104 @@
+.wrapper_dialogs_page {
+    display: grid;
+    grid-template-areas: "myProfile"
+                         "dialogs";
+    grid-template-rows: 1fr 10fr;
+    grid-gap: 5px;
+}
+
+.myProfile {
+    grid-area: myProfile;
+    border-bottom: 3px solid #d5d5d5;
+}
+
 .dialogs {
+    height: calc(90vh - 30px);
     overflow-y: scroll;
+    grid-area: dialogs;
 }
 
 .dialogs::-webkit-scrollbar-track {
-    background-color: #282C35;
-}
-
-.dialogs::-webkit-scrollbar-thumb{
-    background-color: #282C35;
+    background-color: white;
 }
 
 .dialog {
     display: flex;
     width: 100%;
+    justify-content: space-between;
     align-items: center;
-    background-color: #282C35;
+    background-color: white;
     border: none;
-    padding: 7px;
+    padding: 7px 12px;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 10px;
+    color: black;
+    margin: 2px 0;
+}
+
+.avaAndName {
+    display: flex;
+    align-items: center;
+}
+
+.dialog button span {
+    background-color: white;
+}
+
+.dialog button span:hover {
+    background-color: #E0F4F1;
 }
 
 .dialog:hover {
-    background-color: #272a32;
+    background-color: #f3f3f3;
 }
 
 .active {
-    background-color: #1E222B;
+    background-color: #f3f3f3;
 }
 
-.active:hover {
-    background-color: #1E222B;
+.active button {
+    background-color: #f3f3f3;
 }
 
 .dialog_avatar {
     margin-right: 10px;
+}
+
+
+.dialog button {
+    border: none;
+    background-color: white;
+}
+
+.dialog button svg {
+    color: gray;
+}
+
+.dialog button span {
+    background-color: white;
+}
+
+.dialog button span:hover {
+    background-color: #E0F4F1;
+}
+
+.dialog:hover button,
+.active button,
+.dialog:hover button span {
+    background-color: #f3f3f3;
+}
+
+.dialog button:hover span {
+    background-color: #E0F4F1;
+}
+
+.dialog button span:hover svg {
+    background-color: #E0F4F1;
+    color: #00A389;
+}
+
+
+.deleteAndLastChanged {
+    display: flex;
+    flex-direction: column;
 }

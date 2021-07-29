@@ -1,30 +1,26 @@
-.wrapper_profile{
-    height: 100vh;
+.wrapper_profile {
     display: grid;
     grid-template: "photo"
                     "nick"
                     "info";
-    grid-template-rows: 4fr 1fr 10fr ;
-
+    grid-template-rows: 10fr 1fr 10fr;
+    position: relative;
+    border-radius: 5px;
 }
 
-.wrapper_profile .photo{
-    width: 75%;
-}
-
-.wrapper_photo{
+.wrapper_photo {
     grid-area: photo;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.wrapper_nick{
+.wrapper_nick {
     grid-area: nick;
     text-align: center;
 }
 
-.wrapper_info{
+.wrapper_info {
     grid-area: info;
     margin: 0 25px;
 }
@@ -36,11 +32,11 @@
     margin: 20px 0;
 }
 
-.wrapper_info input{
+.wrapper_info input {
     text-align: right;
     width: 60%;
 }
 
-.wrapper_nick strong{
+.wrapper_nick strong {
     font-size: 16px;
 }

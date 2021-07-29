@@ -2,14 +2,18 @@ import {ProfileType} from "../types/types";
 import {HubConnection, HubConnectionBuilder} from "@microsoft/signalr";
 import {Avatar, message, notification} from "antd";
 import React from "react";
-import {instance, ResponseCodes, urls} from "./api";
+import {urls} from "./api";
 import userWithoutPhoto from "../assets/images/man.png";
 
 let connection: HubConnection | null = null;
 
 const subscribers = {
     'DIALOGS_RECEIVED': [] as DialogsReceivedSubscriberType[],
+    'DIALOG_RECEIVED': [] as DialogReceivedSubscriberType[],
     'MESSAGE_RECEIVED': [] as MessageReceivedSubscriberType[],
+    'DIALOG_ID_RECEIVED': [] as DialogIdReceivedSubscriberType[],
+    'SET_CURRENT_DIALOG_ID': [] as SetCurrentDialogIdSubscriberType[],
+    'DELETE_DIALOG': [] as DeleteDialogSubscriberType[],
 }
 
 const createConnection = () => {
@@ -24,6 +28,22 @@ const createConnection = () => {
 
             connection?.on('ReceiveDialogs', (dialogs: DialogType[]) => {
                 subscribers['DIALOGS_RECEIVED'].forEach(s => s(dialogs))
+            });
+
+            connection?.on('ReceiveDialog', (dialog: DialogType) => {
+                subscribers['DIALOG_RECEIVED'].forEach(s => s(dialog))
+            });
+
+            connection?.on('ReceiveDialogId', (dialogId: number) => {
+                subscribers['DIALOG_ID_RECEIVED'].forEach(s => s(dialogId))
+            });
+
+            connection?.on('SetCurrentDialogId', (dialogId: number) => {
+                subscribers['SET_CURRENT_DIALOG_ID'].forEach(s => s(dialogId))
+            });
+
+            connection?.on('DeleteDialog', (dialogId: number) => {
+                subscribers['DELETE_DIALOG'].forEach(s => s(dialogId))
             });
 
             connection?.on('ReceiveNotification', (message: MessageType) => {
@@ -60,7 +80,7 @@ export const dialogsAPI = {
     start() {
         createConnection();
     },
-    subscribe(eventName: EventsNamesType, callback: DialogsReceivedSubscriberType | MessageReceivedSubscriberType) {
+    subscribe(eventName: EventsNamesType, callback: CallbackType) {
         // @ts-ignore
         subscribers[eventName].push(callback);
         return () => {
@@ -68,22 +88,43 @@ export const dialogsAPI = {
             subscribers[eventName] = subscribers[eventName].filter(s => s !== callback);
         }
     },
-    unsubscribe(eventName: EventsNamesType, callback: DialogsReceivedSubscriberType | MessageReceivedSubscriberType) {
+    unsubscribe(eventName: EventsNamesType, callback: CallbackType) {
         // @ts-ignore
         subscribers[eventName] = subscribers[eventName].filter(s => s !== callback);
     },
     sendMessage(dialogId: number, messageText: string) {
         connection?.send('SendMessage', dialogId, messageText);
     },
-    getCurrentDialogId(userId: number) {
-        return instance.get<GetCurrentDialogId>(`dialogs?toid=` + userId)
-            .then(res => res.data);
+    getDialogByUserId(userId: number) {
+        connection?.send('GetDialogByUserId', userId);
+    },
+    deleteDialog(dialogId: number) {
+        connection?.send('DeleteDialog', dialogId);
     },
 }
 
 type DialogsReceivedSubscriberType = (dialogs: DialogType[]) => void
+type DialogReceivedSubscriberType = (dialog: DialogType) => void
+type DialogIdReceivedSubscriberType = (dialogId: number) => void
+type SetCurrentDialogIdSubscriberType = (dialogId: number) => void
 type MessageReceivedSubscriberType = (dialogId: number, message: MessageType) => void
-type EventsNamesType = 'DIALOGS_RECEIVED' | 'MESSAGE_RECEIVED'
+type DeleteDialogSubscriberType = (dialogId: number) => void
+
+type EventsNamesType =
+    'DIALOGS_RECEIVED'
+    | 'MESSAGE_RECEIVED'
+    | 'DIALOG_RECEIVED'
+    | 'DIALOG_ID_RECEIVED'
+    | 'SET_CURRENT_DIALOG_ID'
+    | 'DELETE_DIALOG'
+
+type CallbackType =
+    DialogsReceivedSubscriberType
+    | MessageReceivedSubscriberType
+    | DialogReceivedSubscriberType
+    | DialogIdReceivedSubscriberType
+    | SetCurrentDialogIdSubscriberType
+    | DeleteDialogSubscriberType
 
 
 export type DialogType = {
@@ -102,10 +143,4 @@ export type MessageType = {
     messageText: string
     dateCreate: Date
     user: ProfileType
-}
-
-type GetCurrentDialogId = {
-    resultCode: ResponseCodes,
-    messages: Array<string>
-    data: number
 }

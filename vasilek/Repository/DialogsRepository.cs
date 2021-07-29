@@ -16,77 +16,65 @@ namespace vasilek.Repository
             _userRep = new UserRepository(_ctx);
         }
 
-        //public bool CreateDialogByUsersIds(int authorId, int recipientId)
-        //{
-        //    var users = _ctx.Users.Include(u => u.Dialogs).ThenInclude(d => d.Users);
-        //    var author = users.FirstOrDefault(u => u.Id == authorId);
-        //    var recipient = users.FirstOrDefault(u => u.Id == recipientId);
-        //    author.Dialogs.Add(new DialogModel
-        //    {
-        //        AuthorId = authorId,
-        //        Users = new List<UserModel> { recipient },
-        //        DateCreate = DateTime.Now
-        //    });
-        //    return true;
-        //}
-
         public List<DialogModel> GetDialogsByUserLogin(string userLogin)
         {
-            var user = _ctx.Users
+            var currentUser = _ctx.Users
             .Include(u => u.Dialogs).ThenInclude(d => d.Messages)
             .Include(u => u.Dialogs).ThenInclude(d => d.Users)
             .FirstOrDefault(u => u.Login == userLogin);
-            var dialogs = user.Dialogs;
+            var dialogs = currentUser.Dialogs;
             foreach (var dialog in dialogs)
             {
                 if (dialog.Users.Count <= 2)
                 {
                     List<UserModel> users = dialog.Users;
-                    users.Remove(user);
+                    users.Remove(currentUser);
                     dialog.DialogName = users[0].NickName;
                     dialog.DialogPhoto = users[0].AvaPhoto;
+                    users.Add(currentUser);
                 }
                 else
-                    foreach (var user1 in dialog.Users)
-                        dialog.DialogName += user1.NickName + ", "; 
+                    foreach (var user in dialog.Users)
+                        dialog.DialogName += user.NickName + ", "; 
                 foreach (var use in dialog.Users)
                     use.Dialogs = null;
                 foreach (var message in dialog.Messages)
                 {
                     message.Dialog = null;
                     message.User.Dialogs = null;
+                    message.User.Password = null;
                 }
             }
             return dialogs;
         }
 
-        public int WriteTo(string currentUserLogin, int toId)
+        public DialogModel GetDialog(string currentUserLogin, int toId)
         {
-            var currentUser = _ctx.Users.Include(u => u.Dialogs).ThenInclude(d => d.Users).FirstOrDefault(u => u.Login == currentUserLogin);
+            var currentUser = _ctx.Users.Include(u => u.Dialogs).ThenInclude(d => d.Users).Include(u => u.Dialogs).ThenInclude(d => d.Messages).FirstOrDefault(u => u.Login == currentUserLogin);
             var currentUserDialogs = currentUser.Dialogs;
             if(currentUserDialogs.Count > 0)
             {
                 var dialog = currentUserDialogs.FirstOrDefault(d => d.Users.Count == 2 && d.Users.Any(u => u.Id == toId));
                 if (dialog != null)
-                    return dialog.Id;
+                    return dialog;
             }
-            return CreateNewDialog(currentUserLogin, _userRep.GetUserByLogin(currentUserLogin), _userRep.GetUserById(toId));
+            return null;
         }
 
-        private int CreateNewDialog(string authorLogin, UserModel user1, UserModel user2)
+        public DialogModel CreateNewDialog(UserModel author, UserModel user2)
         {
             List<UserModel> users = new List<UserModel>();
-            users.Add(user1);
+            users.Add(author);
             users.Add(user2);
             DialogModel dialog = new DialogModel
             {
-                AuthorId = _userRep.GetUserIdByLogin(authorLogin),
+                AuthorId = author.Id,
                 Users = users,
                 DateCreate = DateTime.Now,
             };
             _ctx.Dialogs.Add(dialog);
             _ctx.SaveChanges();
-            return dialog.Id;
+            return dialog;
         }
 
         public MessageModel AddMessageToDialog(string currentUserLogin, int dialogId, string messageText)
@@ -105,6 +93,7 @@ namespace vasilek.Repository
             _ctx.SaveChanges();
             message.Dialog = null;
             message.User.Dialogs = null;
+            message.User.Password = null;
             return message;
         }
 
@@ -113,5 +102,16 @@ namespace vasilek.Repository
             return _ctx.Dialogs.Include(d => d.Users).FirstOrDefault(d => d.Id == dialogId).Users.Select(u => u.Login).ToList();
         }
 
+        public bool DeleteDialog(int dialogId)
+        {
+            var dialog = _ctx.Dialogs.Include(d => d.Messages).ThenInclude(m => m.User).Include(d => d.Users).FirstOrDefault(d => d.Id == dialogId);
+            if (dialog == null)
+                return false;
+            var messages = dialog.Messages;
+            _ctx.Messages.RemoveRange(messages);
+            _ctx.Dialogs.Remove(dialog);
+            _ctx.SaveChanges();
+            return true;
+        }
     }
 }

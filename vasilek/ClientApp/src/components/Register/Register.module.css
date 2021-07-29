@@ -1,0 +1,17 @@
+.wrapper_register_form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.register_form {
+    background-color: #EDF0F6;
+    padding: 150px 100px;
+    border-radius: 10px;
+}
+
+.button_submit{
+    width: 100%;
+}
+

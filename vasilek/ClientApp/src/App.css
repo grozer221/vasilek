@@ -7,93 +7,63 @@ input {
 }
 
 ::-webkit-scrollbar-track {
-    background-color: #E8EBF2;
+    background-color: #EDF0F6;
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: #282C35;
+    background-color: #CFD3E4;
     border-radius: 20px; /* закругления плашки */
 }
 
 .container {
     width: 100%;
     min-height: 100vh;
+    padding: 10px;
 }
 
 .content {
     width: 100%;
-    min-height: 100vh;
+    height: calc(100vh - 20px);
     display: grid;
-    grid-template-areas:"hamburger logo search  actions  profile"
-                        "links     nav  dialogs messages profile";
-    grid-auto-rows: 1fr 9fr;
-    grid-auto-columns: 1fr 4fr 6fr 14fr 5fr;
+    grid-template-areas:"nav dialogs messages info_page";
+    grid-auto-columns: 1fr 6fr 14fr 6fr;
+    grid-gap: 10px;
 }
 
-.wrapper_hamburger {
-    grid-area: hamburger;
-    background-color: #1E222B;
-    color: white;
+.content > div {
 }
 
-.wrapper_links {
-    grid-area: links;
-    background-color: #1E222B;
-    color: white;
-}
-
-.wrapper_logo {
-    grid-area: logo;
-    background-color: #242831;
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.wrapper_logo img{
-    height: 10vh;
-    overflow: hidden;
-}
-
-.wrapper_nav {
+.nav {
     grid-area: nav;
-    background-color: #242831;
-    color: white;
-    padding: 0 7px;
 }
 
-.wrapper_search {
-    grid-area: search;
-    background-color: #282C35;
-    color: white;
-}
-
-.wrapper_dialogs {
+.dialogs {
     grid-area: dialogs;
-    background-color: #282C35;
-    height: 90vh;
-    color: white;
 }
 
-.wrapper_actions {
-    grid-area: actions;
-    background-color: #E8EBF2;
-    height: 10vh;
-}
-
-.wrapper_messages {
+.messages {
     grid-area: messages;
-    background-color: #E8EBF2;
-    height: 90vh;
 }
 
-.wrapper_profile {
-    grid-area: profile;
-    background-color: #fff;
+.info_page {
+    grid-area: info_page;
 }
 
+.info_page_close {
+    grid-auto-columns: 1fr 6fr 19fr 1fr;
+}
 
+.react-contextmenu-item{
+    cursor: pointer;
+    padding: 2px 5px;
+}
 
+.react-contextmenu-item:hover{
+    background-color: #E0F4F1;
+    color: #00A389;
+}
 
+.displayNone{
+    display: none;
+}
 

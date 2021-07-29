@@ -20,12 +20,8 @@ export const s_getIsFetching = (state: AppStateType) => {
   return state.usersPage.isFetching;
 }
 
-export const s_getFollowingInProgress = (state: AppStateType) => {
-  return state.usersPage.followingInProgress;
-}
-
-export const s_getFilter = (state: AppStateType) => {
-    return state.usersPage.filter;
+export const s_getTerm = (state: AppStateType) => {
+    return state.usersPage.term;
 }
 
 

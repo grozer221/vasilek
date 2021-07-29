@@ -1,13 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace vasilek.ViewModels
+namespace vasilek.Models
 {
     public class LoginModel
     {
-        [Required(ErrorMessage = "Не указан логин")]
+        [Required(ErrorMessage = "Not entered Login")]
         public string Login { get; set; }
 
-        [Required(ErrorMessage = "Не указан пароль")]
+        [Required(ErrorMessage = "Not entered Password")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
     }
