@@ -5,7 +5,7 @@ import {usersAPI} from "../api/users-api";
 
 const initialState = {
     users: [] as Array<ProfileType>,
-    pageSize: 9,
+    pageSize: 8,
     usersCount: 0,
     currentPage: 1,
     isFetching: false,

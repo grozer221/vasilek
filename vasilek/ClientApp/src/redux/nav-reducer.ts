@@ -1,7 +1,6 @@
 import {BaseThunkType, InferActionsTypes} from "./redux-store";
 
 let initialState = {
-    isEnabledUsersMode: false,
 }
 
 const navReducer = (state = initialState, action: any/*ActionsType*/): InitialStateType => {

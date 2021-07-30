@@ -28,6 +28,14 @@ namespace vasilek.Repository
         {
             return _ctx.Users.Find(id);
         }
+        
+        public UserModel GetUserWithPhotosByLoginAndPass(string login, string password)
+        {
+            var user = _ctx.Users.Include(u => u.Photos).FirstOrDefault(u => u.Login == login && u.Password == password);
+            foreach (var photo in user.Photos)
+                photo.User = null;
+            return user;
+        }
 
 
 

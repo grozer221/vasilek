@@ -3,6 +3,8 @@ import {InferActionsTypes} from "./redux-store";
 
 let initialState = {
     initialised: false,
+    formError: '',
+    formSuccess: null as null | boolean,
 };
 
 export type InitialStateType = typeof initialState;
@@ -15,6 +17,16 @@ const appReducer = (state = initialState, action: ActionsTypes): InitialStateTyp
                 ...state,
                 initialised: true,
             };
+        case 'SET_FORM_ERROR':
+            return {
+                ...state,
+                formError: action.error
+            };
+        case 'SET_FORM_SUCCESS':
+            return {
+                ...state,
+                formSuccess: action.success
+            };
         default:
             return state;
     }
@@ -22,6 +34,14 @@ const appReducer = (state = initialState, action: ActionsTypes): InitialStateTyp
 
 export const actions = {
     initialisedSuccess: () => ({type: 'INITIALISED_SUCCESS'} as const),
+    setFormError: (error: string) => ({
+        type: 'SET_FORM_ERROR',
+        error: error
+    } as const),
+    setFormSuccess: (success: boolean | null) => ({
+        type: 'SET_FORM_SUCCESS',
+        success: success
+    } as const),
 }
 
 export const initialiseApp = () => (dispatch: any) => {

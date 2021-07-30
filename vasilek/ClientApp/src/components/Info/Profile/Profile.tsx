@@ -5,14 +5,11 @@ import {s_getCurrentUser} from "../../../redux/auth-selectors";
 import {useHistory} from "react-router-dom";
 import queryString from "querystring";
 import {actions, getUserProfile} from "../../../redux/profile-reducer";
-import {actions as actionDialogs} from "../../../redux/dialogs-reducer";
-import {Avatar} from "antd";
+import {Avatar, Carousel} from "antd";
 import {urls} from "../../../api/api";
 import man from "../../../assets/images/man.png";
-import ProfileStatus from "./ProfileStatus";
 import {s_getProfile} from "../../../redux/profile-selectors";
 import {ProfileType} from "../../../types/types";
-import {CloseOutlined} from "@ant-design/icons";
 
 export const Profile: React.FC = () => {
     const currentUser = useSelector(s_getCurrentUser);
@@ -37,18 +34,25 @@ export const Profile: React.FC = () => {
 
     return (
         <div className={s.wrapper_profile}>
-            <div className={s.wrapper_photo}>
-                <Avatar size={128} className={s.photo}
-                        src={profile?.avaPhoto ? urls.pathToUsersPhotos + profile.avaPhoto : man}/>
+            <div className={s.wrapper_photos}>
+                <Carousel style={{width: '200px'}}>
+                    <Avatar size={200} className={s.photo}
+                            src={profile?.avaPhoto ? urls.pathToUsersPhotos + profile.avaPhoto : man}/>
+                    {profile?.photos
+                    && profile?.photos.length > 1
+                    && profile.photos.filter(p => p.photoName !== profile.avaPhoto).map(p =>
+                        <div className={s.wrapper_photo}>
+                            <Avatar size={200} src={urls.pathToUsersPhotos + p.photoName}/>
+                        </div>)}
+                </Carousel>
             </div>
             <div className={s.wrapper_nick}>
                 <strong>{profile?.nickName}</strong>
             </div>
             <div className={s.wrapper_info}>
-                <div><ProfileStatus/></div>
                 <div>
-                    <div>City:</div>
-                    <div>{profile?.city}</div>
+                    <div>Status:</div>
+                    <div>{profile?.status}</div>
                 </div>
                 <div>
                     <div>Country:</div>

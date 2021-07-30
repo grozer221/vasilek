@@ -1,16 +1,17 @@
-export type PostType = {
+export type PhotoType = {
     id: number
-    likesCount: number
-    message: string
+    photoName: string
+    user: ProfileType
 }
+
 export type ProfileType = {
     id: number
     login: string
     password: string
     nickName: string
     status: string
-    city: string
     country: string
-    avaPhoto: string
+    avaPhoto: string | null
     isFollowed: boolean
+    photos: PhotoType[]
 }

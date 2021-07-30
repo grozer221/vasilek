@@ -15,6 +15,7 @@
     height: calc(90vh - 30px);
     overflow-y: scroll;
     grid-area: dialogs;
+    position: relative;
 }
 
 .dialogs::-webkit-scrollbar-track {
@@ -74,7 +75,7 @@
     color: gray;
 }
 
-.dialog button span {
+.dialog button span{
     background-color: white;
 }
 
@@ -84,6 +85,7 @@
 
 .dialog:hover button,
 .active button,
+.active button span,
 .dialog:hover button span {
     background-color: #f3f3f3;
 }
@@ -97,8 +99,15 @@
     color: #00A389;
 }
 
-
 .deleteAndLastChanged {
     display: flex;
     flex-direction: column;
+}
+
+.message_when_no_dialogs{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
 }

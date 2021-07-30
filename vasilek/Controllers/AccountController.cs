@@ -33,9 +33,9 @@ namespace vasilek.Controllers
         [HttpGet]
         public string IsAuth()
         {
-            var user = _profileRep.GetProfileByLogin(HttpContext.User.Identity.Name);
             if (HttpContext.User.Identity.IsAuthenticated)
             {
+                var user = _profileRep.GetProfileWithPhotosByLogin(HttpContext.User.Identity.Name);
                 user.Password = null;
                 return JsonConvert.SerializeObject(new ResponseModel()
                 {
@@ -43,7 +43,6 @@ namespace vasilek.Controllers
                     Data = user,
                 }, JsonSettings);
             }
-
             return JsonConvert.SerializeObject(new ResponseModel()
             {
                 ResultCode = 1,
@@ -57,7 +56,7 @@ namespace vasilek.Controllers
         {
             if (ModelState.IsValid)
             {
-                UserModel user = await _ctx.Users.FirstOrDefaultAsync(u => u.Login == model.Login && u.Password == model.Password);
+                UserModel user = _userRep.GetUserWithPhotosByLoginAndPass(model.Login, model.Password);
                 if (user != null)
                 {
                     await Authenticate(user); // аутентификация
@@ -90,8 +89,7 @@ namespace vasilek.Controllers
                         Password = model.Password,
                         NickName = model.NickName
                     };
-                    _ctx.Users.Add(user);
-                    await _ctx.SaveChangesAsync();
+                    _userRep.AddUser(user);
                     await Authenticate(user); // аутентификация
                     user.Password = null;
                     return JsonConvert.SerializeObject(new ResponseModel()

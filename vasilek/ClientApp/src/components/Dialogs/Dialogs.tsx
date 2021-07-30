@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import s from './Dialogs.module.css';
 import {actions, deleteDialog} from "../../redux/dialogs-reducer";
 import {useDispatch, useSelector} from "react-redux";
@@ -6,38 +6,15 @@ import {s_getCurrentDialogId, s_getDialogs} from "../../redux/dialogs-selectors"
 import {Avatar, Modal} from "antd";
 import {urls} from "../../api/api";
 import userWithoutPhoto from "../../assets/images/man.png";
-import {Link, useHistory} from 'react-router-dom';
-import * as queryString from "querystring";
 import {DeleteOutlined, ExclamationCircleOutlined} from "@ant-design/icons";
-import {DialogType} from "../../api/dialogs-api";
 
 const {confirm} = Modal;
-
-type QueryParamsType = { id?: number }
 
 export const Dialogs: React.FC = () => {
     const dialogs = useSelector(s_getDialogs);
     const currentDialogId = useSelector(s_getCurrentDialogId);
-    const history = useHistory();
     const dispatch = useDispatch();
 
-    const updateDialogId = () => {
-        const parsed = queryString.parse(history.location.search.substr(1)) as QueryParamsType;
-        let dialog: DialogType[] | null = dialogs.filter(dialog => dialog.id === Number(parsed.id))
-        if (!!parsed.id && dialog.length > 0)
-            dispatch(actions.setCurrentDialogId(+parsed.id));
-        else
-            history.push('/');
-    }
-
-    useEffect(() => {
-        updateDialogId();
-    }, []);
-
-    useEffect(() => {
-        if (!!history.location.search)
-            updateDialogId();
-    }, [history.location.search])
 
     const showConfirm = (dialogId: number, dialogName: string) => {
         confirm({
@@ -51,11 +28,13 @@ export const Dialogs: React.FC = () => {
 
     return (
         <div className={s.wrapper_dialogs_page}>
-            <div className={s.myProfile}>1</div>
+            <div className={s.myProfile}>             </div>
             <div className={s.dialogs}>
-                {dialogs.map(dialog => (
-                        <Link to={'/dialog?id=' + dialog.id} key={dialog.id}>
-                            <button className={[s.dialog, currentDialogId === dialog.id ? s.active : ''].join(' ')}>
+                {dialogs.length > 0
+                    ? dialogs.map(dialog => (
+                            <button key={dialog.id}
+                                    className={[s.dialog, currentDialogId === dialog.id ? s.active : ''].join(' ')}
+                                    onClick={() => dispatch(actions.setCurrentDialogId(dialog.id))}>
                                 <div className={s.avaAndName}>
                                     <Avatar size={48}
                                             src={dialog.dialogPhoto ? urls.pathToUsersPhotos + dialog.dialogPhoto : userWithoutPhoto}
@@ -71,9 +50,10 @@ export const Dialogs: React.FC = () => {
                                         : dialog.dateCreate.toString().substr(11, 5)}</small>
                                 </div>
                             </button>
-                        </Link>
+                        )
                     )
-                )}
+                    : <div className={s.message_when_no_dialogs}>Go to users page <br/> and <br/> write anyone)</div>
+                }
             </div>
         </div>
     );

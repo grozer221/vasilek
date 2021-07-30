@@ -2,15 +2,14 @@ import React from 'react';
 import {Link, useHistory} from 'react-router-dom';
 import s from './Nav.module.css';
 import {logout} from "../../redux/auth-reducer";
-import {Avatar, message} from "antd";
+import {Avatar} from "antd";
 import {useDispatch, useSelector} from "react-redux";
 import {actions} from "../../redux/dialogs-reducer";
 import {s_getCurrentUser} from "../../redux/auth-selectors";
 import logo from '../../../src/assets/images/logo.png';
 import {urls} from "../../api/api";
 import userWithoutPhoto from '../../assets/images/man.png';
-import {ExclamationOutlined, LogoutOutlined, SettingOutlined, UserOutlined} from "@ant-design/icons";
-
+import {ExclamationOutlined, LogoutOutlined, SettingOutlined, UsergroupAddOutlined} from "@ant-design/icons";
 
 export const Nav: React.FC = () => {
     const currentUser = useSelector(s_getCurrentUser)
@@ -18,7 +17,6 @@ export const Nav: React.FC = () => {
     const history = useHistory();
     const logoutCallback = () => {
         dispatch(logout());
-        message.info('You logout');
         history.push({pathname: "/login"});
     }
 
@@ -34,7 +32,7 @@ export const Nav: React.FC = () => {
             <div className={s.nav_items}>
                 <button>
                     <Link to={'/users'}>
-                        <Avatar size={40} icon={<UserOutlined/>}/>
+                        <Avatar size={40} icon={<UsergroupAddOutlined/>}/>
                     </Link>
                 </button>
                 <button>
@@ -48,7 +46,7 @@ export const Nav: React.FC = () => {
                     </Link>
                 </button>
                 <button>
-                    <Link to={''}>
+                    <Link to={'/settings'}>
                         <Avatar size={40} icon={<SettingOutlined/>}/>
                     </Link>
                 </button>
@@ -60,7 +58,7 @@ export const Nav: React.FC = () => {
             </div>
             <div>
                 <Avatar size={40}
-                        src={urls.pathToUsersPhotos ? urls.pathToUsersPhotos + currentUser?.avaPhoto : userWithoutPhoto}/>
+                        src={currentUser.avaPhoto ? urls.pathToUsersPhotos + currentUser.avaPhoto : userWithoutPhoto}/>
             </div>
         </div>
     );

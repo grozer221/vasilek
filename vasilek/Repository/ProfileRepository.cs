@@ -19,26 +19,16 @@ namespace vasilek.Repository
             return _ctx.Users.Find(id);
         }
 
-        public bool UpdateStatusByLogin(string login, string status)
-        {
-            UserModel user = _ctx.Users.FirstOrDefault(u => u.Login == login);
-            if (user == null)
-                return false;
-            user.Status = status;
-            _ctx.SaveChanges();
-            return true;
-        }
-
         public UserModel EditProfileByLogin(string login, UserModel updatedUser)
         {
-            UserModel user = _ctx.Users.FirstOrDefault(u => u.Login == login);
+            UserModel user = _ctx.Users.Include(u => u.Photos).FirstOrDefault(u => u.Login == login);
             user.Login = updatedUser.Login;
-            user.Password = updatedUser.Password;
             user.NickName = updatedUser.NickName;
-            user.Photos = updatedUser.Photos;
-            user.City = updatedUser.City;
+            user.Status = updatedUser.Status;
             user.Country = updatedUser.Country;
             _ctx.SaveChanges();
+            foreach (var photo in user.Photos)
+                photo.User = null;
             return user;
         }
 
@@ -46,16 +36,52 @@ namespace vasilek.Repository
         {
             return _ctx.Users.FirstOrDefault(u => u.Login == login);
         }
+        
+        public UserModel GetProfileWithPhotosByLogin(string login)
+        {
+            var user = _ctx.Users.Include(u => u.Photos).FirstOrDefault(u => u.Login == login);
+            foreach (var photo in user.Photos)
+                photo.User = null;
+            return user;
+        }
+        
+        public UserModel GetProfileWithPhotosById(int id)
+        {
+            var user = _ctx.Users.Include(u => u.Photos).FirstOrDefault(u => u.Id == id);
+            foreach (var photo in user.Photos)
+                photo.User = null;
+            return user;
+        }
 
-        public bool AddPhotoByUserLogin(string login, string photoName)
+        public PhotoModel AddPhotoByUserLogin(string login, string photoName)
         {
             UserModel user = _ctx.Users.Include(u => u.Photos).FirstOrDefault(u => u.Login == login);
             if (user == null)
+                return null;
+            var photo = new PhotoModel { User = user, PhotoName = photoName };
+            _ctx.Photos.Add(photo);
+            _ctx.SaveChanges();
+            photo.User = null;
+            return photo;
+        }
+        
+        public bool DeletePhotoByUserLogin(string login, string photoName)
+        {
+            var photo = _ctx.Photos.Include(p => p.User).FirstOrDefault(u => u.PhotoName == photoName);
+            if (photo == null || photo.User.Login != login)
                 return false;
-            user.Photos.Add(new PhotoModel() { PhotoName = photoName });
+            photo.User = null;
+            _ctx.Photos.Remove(photo);
             _ctx.SaveChanges();
             return true;
         }
+
+        public void SetAvaPhotoByUserLogin(string login, string photoName)
+        {
+            _userRep.GetUserByLogin(login).AvaPhoto = photoName;
+            _ctx.SaveChanges();
+        }
+
 
         public bool SetAvaPhotoByLogin(string login, string photoName)
         {
@@ -63,6 +89,16 @@ namespace vasilek.Repository
             if (user == null)
                 return false;
             user.AvaPhoto = photoName;
+            _ctx.SaveChanges();
+            return true;
+        }
+        
+        public bool ChangePasswordByLogin(string login, ChangePassModel changePass)
+        {
+            UserModel user = _ctx.Users.FirstOrDefault(u => u.Login == login && u.Password == changePass.OldPassword);
+            if (user == null)
+                return false;
+            user.Password = changePass.Password;
             _ctx.SaveChanges();
             return true;
         }

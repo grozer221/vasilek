@@ -8,6 +8,7 @@ import thunkMiddleware, {ThunkAction} from 'redux-thunk';
 import {reducer as formReducer} from 'redux-form';
 import appReducer from './app-reducer';
 import chatReducer from "./chat-reducer";
+import {dialogInfoReducer} from "./dialoginfo-reducer";
 
 let rootReducer = combineReducers({
     dialogsPage: dialogsReducer,
@@ -18,6 +19,7 @@ let rootReducer = combineReducers({
     form: formReducer,
     app: appReducer,
     chat: chatReducer,
+    dialogInfo: dialogInfoReducer,
 })
 
 type RootReducerType = typeof rootReducer;

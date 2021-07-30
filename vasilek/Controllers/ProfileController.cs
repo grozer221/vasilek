@@ -35,7 +35,7 @@ namespace vasilek.Controllers
         [HttpGet("{id}")]
         public string Get(int id)
         {
-            var user = _profileRep.GetProfileById(id);
+            var user = _profileRep.GetProfileWithPhotosById(id);
             user.Password = null;
             return JsonConvert.SerializeObject(new ResponseModel()
             {
@@ -56,22 +56,6 @@ namespace vasilek.Controllers
             }, JsonSettings);
         }
 
-        [HttpPut("{status}")]
-        public string Status(string status)
-        {
-            if (!_profileRep.UpdateStatusByLogin(HttpContext.User.Identity.Name, status))
-                return JsonConvert.SerializeObject(new ResponseModel()
-                {
-                    ResultCode = 1,
-                    Messages = new string[] { "Error" }
-                }, JsonSettings); 
-            return JsonConvert.SerializeObject(new ResponseModel()
-            {
-                ResultCode = 0,
-                Data = status
-            }, JsonSettings);
-        }
-
         [HttpPost]
         public async Task<string> Photo(IFormFile photo)
         {
@@ -82,9 +66,37 @@ namespace vasilek.Controllers
                     Messages = new string[] { "Photo is empty" }
                 }, JsonSettings);
             string photoName = await UploadToAzurePhoto(photo);
-            _profileRep.SetAvaPhotoByLogin(HttpContext.User.Identity.Name, photoName);
-            _profileRep.AddPhotoByUserLogin(HttpContext.User.Identity.Name, photoName);
-            return JsonConvert.SerializeObject(new ResponseModel() { ResultCode = 0, Data = photoName }, JsonSettings);
+            //_profileRep.SetAvaPhotoByLogin(HttpContext.User.Identity.Name, photoName);
+            var savedPhoto = _profileRep.AddPhotoByUserLogin(HttpContext.User.Identity.Name, photoName);
+            return JsonConvert.SerializeObject(new ResponseModel() { ResultCode = 0, Data = savedPhoto}, JsonSettings);
+        }
+        
+        [HttpDelete("{photoName}")]
+        public string Photo(string photoName)
+        {
+            if (photoName == "")
+                return JsonConvert.SerializeObject(new ResponseModel()
+                {
+                    ResultCode = 1,
+                    Messages = new string[] { "Photo is empty" }
+                }, JsonSettings);
+            //_profileRep.SetAvaPhotoByLogin(HttpContext.User.Identity.Name, photoName);
+            if(_profileRep.DeletePhotoByUserLogin(HttpContext.User.Identity.Name, photoName))
+                return JsonConvert.SerializeObject(new ResponseModel() { ResultCode = 0 }, JsonSettings);
+            else
+                return JsonConvert.SerializeObject(new ResponseModel() { ResultCode = 1, Messages = new string[] { "It is not you photo"} }, JsonSettings);
+        }
+
+        [HttpPut]
+        public string Photo([FromBody]PhotoModel photo)
+        {
+            string photoName;
+            if (photo.PhotoName == "")
+                photoName = null;
+            else
+                photoName = photo.PhotoName;
+            _profileRep.SetAvaPhotoByUserLogin(HttpContext.User.Identity.Name, photoName);
+            return JsonConvert.SerializeObject(new ResponseModel { ResultCode = 0 }, JsonSettings);
         }
 
         [NonAction]
@@ -99,6 +111,17 @@ namespace vasilek.Controllers
             cloudBlockBlob.Properties.ContentType = photo.ContentType;
             await cloudBlockBlob.UploadFromStreamAsync(photo.OpenReadStream());
             return photoName;
+        }
+
+        [HttpPut]
+        public string Password([FromBody] ChangePassModel changePass)
+        {
+            if(changePass.Password != changePass.ConfirmPassword)
+                return JsonConvert.SerializeObject(new ResponseModel { ResultCode = 1, Messages = new string[] { "Passwords do not match" } }, JsonSettings);
+            if (_profileRep.ChangePasswordByLogin(HttpContext.User.Identity.Name, changePass))
+                return JsonConvert.SerializeObject(new ResponseModel { ResultCode = 0 }, JsonSettings);
+            else
+                return JsonConvert.SerializeObject(new ResponseModel { ResultCode = 1, Messages = new string[] { "Old password entered incorrect" } }, JsonSettings);
         }
     }
 }

@@ -6,9 +6,10 @@
     grid-template-rows: 10fr 1fr 10fr;
     position: relative;
     border-radius: 5px;
+    width: 80%;
 }
 
-.wrapper_photo {
+.wrapper_photos {
     grid-area: photo;
     display: flex;
     justify-content: center;

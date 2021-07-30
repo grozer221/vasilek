@@ -1,5 +1,12 @@
 .wrapper_users_and_form {
     position: relative;
+    width: 80%;
+    margin-top: 50px;
+}
+
+.wrapper_users{
+    height: calc(90vh - 70px);
+    overflow-y: scroll;
 }
 
 .user {
@@ -11,21 +18,16 @@
 }
 
 .user button {
+    display: block;
     border: none;
-    background-color: #EDF0F6;
+    background-color: white;
 }
 
 .user button svg {
     color: gray;
 }
 
-.user span {
-    background-color: #EDF0F6;
-}
-
-.user button {
-    display: block;
-    border: none;
+.user button span {
     background-color: white;
 }
 

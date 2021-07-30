@@ -1,5 +1,6 @@
 import {instance, ResponseCodes} from "./api";
-import {ProfileType} from "../types/types";
+import {PhotoType, ProfileType} from "../types/types";
+import {ChangePassType} from "../components/Info/Settings/Settings";
 
 export const profileAPI = {
     getProfile(userId: number | undefined) {
@@ -13,15 +14,27 @@ export const profileAPI = {
     savePhoto(photo: any) {
         let formData = new FormData;
         formData.append("photo", photo);
-        return instance.post<UpdateType>('profile/photo', formData, {
+        return instance.post<SavePhotoType>('profile/photo', formData, {
             headers: {'Content-Type': 'multipart-form-data'}
         })
+            .then(res => res.data);
+    },
+    deletePhotoFromUser(photoName: string) {
+        return instance.delete<UserType>('profile/photo/' + photoName)
+            .then(res => res.data);
+    },
+    setAvaPhotoForUser(photo: PhotoType | null) {
+        return instance.put<UserType>('profile/photo', photo)
             .then(res => res.data);
     },
     updateProfile(profile: ProfileType) {
         return instance.put<UserType>('profile/put', profile)
             .then(res => res.data);
-    }
+    },
+    changePassword(changePass: ChangePassType) {
+        return instance.put<UserType>('profile/password', changePass)
+            .then(res => res.data);
+    },
 }
 
 type UpdateType = {
@@ -29,6 +42,13 @@ type UpdateType = {
     messages: Array<string>
     data: string
 }
+
+type SavePhotoType = {
+    resultCode: ResponseCodes,
+    messages: Array<string>
+    data: PhotoType
+}
+
 type UserType = {
     resultCode: ResponseCodes,
     messages: Array<string>

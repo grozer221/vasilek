@@ -1,13 +1,12 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import s from './Users.module.css';
 import userWithoutPhoto from '../../../assets/images/man.png';
-import {Link, useHistory} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import {ProfileType} from "../../../types/types";
 import {urls} from "../../../api/api";
 import {Avatar} from "antd";
 import {EditOutlined} from "@ant-design/icons";
-import {useDispatch, useSelector} from "react-redux";
-import {s_getCurrentDialogId} from "../../../redux/dialogs-selectors";
+import {useDispatch} from "react-redux";
 import {getDialogByUserId} from "../../../redux/dialogs-reducer";
 
 type PropsType = {
@@ -15,18 +14,7 @@ type PropsType = {
 }
 
 export const User: React.FC<PropsType> = ({user}) => {
-    const currentDialogsId = useSelector(s_getCurrentDialogId);
     const dispatch = useDispatch();
-    const history = useHistory();
-
-    const onClick = async () => {
-        dispatch(getDialogByUserId(user.id));
-    }
-
-    useEffect(() => {
-        if (currentDialogsId !== null)
-            history.push('/dialog?id=' + currentDialogsId);
-    }, [currentDialogsId]);
 
     return (
         <div className={s.user}>
@@ -36,7 +24,7 @@ export const User: React.FC<PropsType> = ({user}) => {
                 <div>{user.nickName}</div>
             </Link>
             <button>
-                <Avatar icon={<EditOutlined onClick={onClick}/>}/>
+                <Avatar icon={<EditOutlined onClick={() => dispatch(getDialogByUserId(user.id))}/>}/>
             </button>
         </div>
     );

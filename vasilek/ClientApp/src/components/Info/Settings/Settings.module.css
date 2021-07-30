@@ -1,0 +1,88 @@
+.wrapper_form_edit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    grid-gap: 15px;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.wrapper_photos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.headerAndArrow button {
+    border: none;
+    background-color: #EDF0F6;
+}
+
+.wrapper_photo_upload{
+    position: relative;
+    height: 40px;
+}
+
+.btn_tertiary {
+    height: 40px;
+    width: 50px;
+    margin: auto;
+    display: block;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+
+.input_file {
+    width: .1px;
+    height: .1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1
+}
+
+.js_fileName{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: -2;
+}
+
+
+.photo_edit button svg {
+    color: gray;
+}
+
+.photo_edit button span {
+    background-color: white;
+}
+
+.photo_edit button {
+    border: none;
+    background-color: white;
+}
+
+.photo_edit button span:hover {
+    background-color: #E0F4F1;
+}
+
+.photo_edit button span:hover svg {
+    background-color: #E0F4F1;
+    color: #00A389;
+}
+
+.button_change_pass{
+    text-align: center;
+}
+
+.form_error{
+    color: red;
+    text-align: center;
+    margin-bottom: 15px;
+}

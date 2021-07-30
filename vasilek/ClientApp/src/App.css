@@ -47,6 +47,7 @@ input {
 
 .info_page {
     grid-area: info_page;
+    height: calc(100vh - 20px);
 }
 
 .info_page_close {
