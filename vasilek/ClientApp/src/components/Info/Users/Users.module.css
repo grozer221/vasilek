@@ -1,15 +1,22 @@
 .wrapper_users_and_form {
     position: relative;
-    width: 80%;
-    margin-top: 50px;
+    width: 90%;
+    height: 95%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    grid-gap: 10px;
 }
 
 .wrapper_users{
-    height: calc(90vh - 70px);
+    width: 100%;
+    height: 100%;
     overflow-y: scroll;
 }
 
 .user {
+    height: 100%;
     display: flex;
     justify-content: space-between;
     border-radius: 10px;
@@ -54,4 +61,8 @@
 
 .user a > span {
     margin-right: 10px;
+}
+
+.users_search_form{
+    width: 100%;
 }

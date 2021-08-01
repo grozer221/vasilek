@@ -5,11 +5,13 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace vasilek.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         JsonSerializerSettings JsonSettings = new JsonSerializerSettings
@@ -25,13 +27,11 @@ namespace vasilek.Controllers
         }
 
         [HttpGet]
-        public string Get([FromQuery]bool friends, [FromQuery] string term, [FromQuery] int page = 1, [FromQuery] int count = 9)
+        public string Get([FromQuery] string term, [FromQuery] int page = 1, [FromQuery] int count = 9)
         {
-            if (friends == true && !HttpContext.User.Identity.IsAuthenticated)
-                return JsonConvert.SerializeObject(new ResponseModel() { ResultCode = 1, Messages = new string[] { "User must be authorized to see friends" } }, JsonSettings);
             ResponseUserModel data = new ResponseUserModel();
             int usersCount = 0;
-            if (friends == false && term == null)
+            if (term == null)
             {
                 List<UserModel> users = _userRep.GetUsersByLogin(HttpContext.User.Identity.Name, ref usersCount, count, --page * count).ToList();
                 foreach (var user in users)
@@ -42,31 +42,9 @@ namespace vasilek.Controllers
                     Count = usersCount,
                 };
             }
-            else if (friends == false & term != null)
+            else if (term != null)
             {
                 List<UserModel> users = _userRep.GetUsersWithTermByLogin(HttpContext.User.Identity.Name, term, ref usersCount, count, --page * count).ToList();
-                foreach (var user in users)
-                    user.Password = null;
-                data = new ResponseUserModel()
-                {
-                    Users = users.AsQueryable(),
-                    Count = usersCount,
-                };
-            }
-            else if (friends == true && term == null)
-            {
-                List<UserModel> users = _userRep.GetFriends(_userRep.GetUserIdByLogin(HttpContext.User.Identity.Name), ref usersCount, count, --page * count).ToList();
-                foreach (var user in users)
-                    user.Password = null;
-                data = new ResponseUserModel()
-                {
-                    Users = users.AsQueryable(),
-                    Count = usersCount,
-                };
-            }
-            else if (friends == true && term != null)
-            {
-                List<UserModel> users = _userRep.GetFriendsWithTerm(_userRep.GetUserIdByLogin(HttpContext.User.Identity.Name), term, ref usersCount, count, --page * count).ToList();
                 foreach (var user in users)
                     user.Password = null;
                 data = new ResponseUserModel()

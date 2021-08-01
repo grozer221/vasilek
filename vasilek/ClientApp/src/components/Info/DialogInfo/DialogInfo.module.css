@@ -1,65 +1,87 @@
-.wrapper_dialog_info{
+.wrapper_dialog_info {
     text-align: center;
     display: flex;
     flex-direction: column;
     grid-gap: 10px;
     width: 80%;
+    position: relative;
 }
 
-.wrapper_users{
+.wrapper_users {
     overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    grid-gap: 5px;
 }
 
-.wrapper_user{
+.user {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user_info {
     display: flex;
     align-items: center;
     grid-gap: 10px;
     padding: 5px;
     border-radius: 10px;
+    position: relative;
 }
 
-.wrapper_user:hover{
-    background-color: #F3F3F3;
-}
-
-.name_and_who_is_author{
+.name_and_who_is_author {
     display: flex;
     align-items: center;
     grid-gap: 10px;
 }
 
-.members{
+.members {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin: 0 5px;
 }
 
-.members button {
-    display: block;
+.user:hover,
+.user:hover button,
+.user:hover button span
+{
+    background-color: #f3f3f3;
+}
+
+.wrapper_dialog_info button {
     border: none;
     background-color: white;
 }
 
-.members button svg {
+.wrapper_dialog_info button svg {
     color: gray;
 }
 
-.members button span {
+.wrapper_dialog_info button span {
     background-color: white;
 }
 
-.members button span:hover {
+.wrapper_dialog_info button span:hover {
     background-color: #E0F4F1;
 }
 
-.members button span:hover svg {
+.wrapper_dialog_info button:hover span {
+    background-color: #E0F4F1;
+}
+
+.wrapper_dialog_info button span:hover svg {
     background-color: #E0F4F1;
     color: #00A389;
 }
 
-.members_and_users{
-    display: flex;
-    flex-direction: column;
-    grid-gap: 10px;
+.user button span:hover svg{
+    color: red;
 }
+
+
+
+
+
+
+

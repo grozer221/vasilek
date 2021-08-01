@@ -14,5 +14,8 @@ namespace vasilek.Interfaces
         Task ReceiveNotification(MessageModel messageModel);
         Task SetCurrentDialogId(int id);
         Task DeleteDialog(int dialogId);
+        Task AddUsersToDialog(int dialogId, List<UserModel> usersInDialog);
+        Task RemoveDialog(int dialogId);
+        Task RemoveUserFromDialog(int dialogId, int userId);
     }
 }

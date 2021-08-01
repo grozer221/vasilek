@@ -44,7 +44,7 @@ const ChangePass: React.FC = () => {
     };
 
     useEffect(() => {
-        if (formSuccess) {
+        if (formSuccess === true) {
             history.push('/settings')
             message.success('You successfully changed password');
             dispatch(appActions.setFormSuccess(null));

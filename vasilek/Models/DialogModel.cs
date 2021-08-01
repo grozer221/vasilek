@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace vasilek.Models
 {
@@ -12,6 +11,7 @@ namespace vasilek.Models
         public int AuthorId { get; set; }
         public string DialogName { get; set; }
         public string DialogPhoto { get; set; }
+        public bool IsDialogBetween2 { get; set; }
         public virtual List<UserModel> Users { get; set; }
         public virtual List<MessageModel> Messages { get; set; }
         public DateTime DateCreate { get; set; }

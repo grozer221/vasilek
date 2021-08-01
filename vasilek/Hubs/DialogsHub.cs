@@ -43,7 +43,7 @@ namespace vasilek.Hubs
             {
                 foreach (var user in dialog.Users)
                     user.Dialogs = null;
-                if (dialog.Users.Count <= 2)
+                if (dialog.Users.Count <= 2 && dialog.IsDialogBetween2)
                 {
                     List<UserModel> users = dialog.Users;
                     users.Remove(currentUser);
@@ -59,8 +59,7 @@ namespace vasilek.Hubs
             }
             else
             {
-                dialog = _dialogsRep.CreateNewDialog(currentUser, _userRep.GetUserById(userId));
-
+                dialog = _dialogsRep.CreateNewDialogBetween2(currentUser, _userRep.GetUserById(userId));
                 var usersLogins = _dialogsRep.GetUsersLoginsInDialog(dialog.Id);
                 foreach (string userLogin in usersLogins)
                 {
@@ -82,7 +81,6 @@ namespace vasilek.Hubs
                 }
                 await Clients.Caller.SetCurrentDialogId(dialog.Id);
             }
-
         }
 
         public async Task DeleteDialog(int dialogId)
@@ -90,6 +88,29 @@ namespace vasilek.Hubs
             var usersLogins = _dialogsRep.GetUsersLoginsInDialog(dialogId);
             if (_dialogsRep.DeleteDialog(dialogId))
                 await Clients.Users(usersLogins).DeleteDialog(dialogId);
+        }
+        
+        public async Task AddUsersToDialog(int dialogId, int[] usersIds)
+        {
+            var dialog = _dialogsRep.AddUsersToDialog(dialogId, usersIds);
+            var usersInDialog = dialog.Users;
+            await Clients.Caller.AddUsersToDialog(dialogId, usersInDialog);
+            var usersLoginsInDialog = usersInDialog.Select(u => u.Login).ToList();
+            usersLoginsInDialog.Remove(Context.User.Identity.Name);
+            await Clients.Users(usersLoginsInDialog).ReceiveDialog(dialog);
+        }
+        
+        public async Task RemoveUserFromDialog(int dialogId, int userId)
+        {
+            var user = _userRep.GetUserById(userId);
+            var dialog = _dialogsRep.GetDialogById(dialogId);
+            if (dialog.AuthorId != _userRep.GetUserIdByLogin(Context.User.Identity.Name))
+                return;
+            _dialogsRep.RemoveUserFromDialog(dialog, user);
+            var usersInDialog = dialog.Users;
+            var usersLoginsInDialog = usersInDialog.Select(u => u.Login).ToList();
+            await Clients.User(user.Login).RemoveDialog(dialogId);
+            await Clients.Users(usersLoginsInDialog).RemoveUserFromDialog(dialogId, userId);
         }
 
         public override async Task OnConnectedAsync()

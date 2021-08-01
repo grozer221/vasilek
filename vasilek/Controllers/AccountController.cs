@@ -80,7 +80,13 @@ namespace vasilek.Controllers
         {
             if (ModelState.IsValid)
             {
-                UserModel user = await _ctx.Users.FirstOrDefaultAsync(u => u.Login == model.Login);
+                if (model.Password != model.ConfirmPassword)
+                    return JsonConvert.SerializeObject(new ResponseModel()
+                    {
+                        ResultCode = 1,
+                        Messages = new string[] { "Password do not match" },
+                    }, JsonSettings);
+                UserModel user = _userRep.GetUserByLogin(model.Login);
                 if (user == null)
                 {
                     user = new UserModel
@@ -99,6 +105,7 @@ namespace vasilek.Controllers
                     }, JsonSettings);
                 }
             }
+
             return JsonConvert.SerializeObject(new ResponseModel()
             {
                 ResultCode = 1,

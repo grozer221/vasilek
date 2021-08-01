@@ -1,4 +1,7 @@
-import {InferActionsTypes} from "./redux-store";
+import {BaseThunkType, InferActionsTypes} from "./redux-store";
+import {profileAPI} from "../api/profile-api";
+import {ResponseCodes} from "../api/api";
+import {dialogsAPI} from "../api/dialogs-api";
 
 let initialState = {
     currentDialogInfoId: null as number | null,
@@ -24,5 +27,10 @@ export const actions = {
     } as const),
 }
 
+export const addUsersToDialog = (dialogId: number, usersIds: number[]): ThunkType => async (dispatch) => {
+    dialogsAPI.addUsersToDialog(dialogId, usersIds);
+};
+
 export type InitialStateType = typeof initialState;
 type ActionsTypes = InferActionsTypes<typeof actions>
+type ThunkType = BaseThunkType<ActionsTypes>;

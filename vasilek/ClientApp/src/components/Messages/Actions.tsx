@@ -16,7 +16,7 @@ export const Actions: React.FC = () => {
     return (
         <div className={s.actions}>
             {currentDialogId &&
-            <Link to={'/dialoginfo?id=' + currentDialogId} onClick={() => dispatch(actions.setCurrentDialogInfoId(currentDialogId))}>
+            <Link to={'/dialoginfo'} onClick={() => dispatch(actions.setCurrentDialogInfoId(currentDialogId))}>
                 <div className={s.dialogsPhotoAndName}>
                     <div>
                         <Avatar

@@ -33,3 +33,8 @@
 .login_form .login_form_button {
     width: 100%;
 }
+
+.form_error{
+    color: red;
+    text-align: center;
+}

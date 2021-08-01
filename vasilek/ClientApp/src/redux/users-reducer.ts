@@ -5,7 +5,7 @@ import {usersAPI} from "../api/users-api";
 
 const initialState = {
     users: [] as Array<ProfileType>,
-    pageSize: 8,
+    pageSize: 12,
     usersCount: 0,
     currentPage: 1,
     isFetching: false,
@@ -16,7 +16,17 @@ const initialState = {
 const usersReducer = (state = initialState, action: ActionsTypes): InitialStateType => {
     switch (action.type) {
         case 'SET_USERS':
-            return {...state, users: action.users, usersCount: action.usersCount};
+            return {
+                ...state,
+                users: [...action.users],
+                usersCount: action.usersCount
+            };
+        case 'ADD_USERS':
+            return {
+                ...state,
+                users: state.users.length > 0 ? [...state.users, ...action.users] : [...action.users],
+                usersCount: action.usersCount
+            };
         case 'SET_CURRENT_PAGE':
             return {...state, currentPage: action.currentPage};
         case 'TOGGLE_IS_FETCHING':
@@ -32,6 +42,7 @@ const usersReducer = (state = initialState, action: ActionsTypes): InitialStateT
 
 export const actions = {
     setUsers: (users: Array<ProfileType>, usersCount: number) => ({type: 'SET_USERS', users, usersCount} as const),
+    addUsers: (users: Array<ProfileType>, usersCount: number) => ({type: 'ADD_USERS', users, usersCount} as const),
     setCurrentPage: (currentPage: number) => ({type: 'SET_CURRENT_PAGE', currentPage} as const),
     toggleIsFetching: (isFetching: boolean) => ({type: 'TOGGLE_IS_FETCHING', isFetching} as const),
     toggleFollowingProgress: (isFetching: boolean, userId: number) => ({
@@ -43,15 +54,19 @@ export const actions = {
     setTerm: (term: string) => ({type: 'SET_TERM', payload: term} as const)
 }
 
-export const requestUsers = (page: number, pageSize: number, term: string): ThunkType =>
+export const requestAndSetUsers = (page: number, pageSize: number, term: string): ThunkType =>
     async (dispatch) => {
-        dispatch(actions.toggleIsFetching(true));
-        dispatch(actions.setCurrentPage(page));
-        dispatch(actions.setTerm(term));
         let data = await usersAPI.getUsers(page, pageSize, term);
         if (data.resultCode === ResponseCodes.Success) {
-            dispatch(actions.toggleIsFetching(false));
             dispatch(actions.setUsers(data.data.users, data.data.count));
+        }
+    };
+
+export const requestAndAddUsers = (page: number, pageSize: number, term: string): ThunkType =>
+    async (dispatch) => {
+        let data = await usersAPI.getUsers(page, pageSize, term);
+        if (data.resultCode === ResponseCodes.Success) {
+            dispatch(actions.addUsers(data.data.users, data.data.count));
         }
     };
 

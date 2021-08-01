@@ -96,7 +96,7 @@
 
 .dialog button span:hover svg {
     background-color: #E0F4F1;
-    color: #00A389;
+    color: red;
 }
 
 .deleteAndLastChanged {

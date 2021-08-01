@@ -111,12 +111,20 @@ export const login = (login: string, password: string): ThunkType => async (disp
     let data = await authAPI.login(login, password);
     if (data.resultCode === ResponseCodes.Success)
         dispatch(actions.setAuthUserData(data.data, true));
+    else if(data.resultCode === ResponseCodes.Error){
+        dispatch(appActions.setFormSuccess(false));
+        dispatch(appActions.setFormError(data.messages[0]));
+    }
 };
 
 export const register = (login: string, password: string, confirmPassword: string, nickName: string): ThunkType => async (dispatch) => {
     let data = await authAPI.register(login, password, confirmPassword, nickName);
     if (data.resultCode === ResponseCodes.Success)
         dispatch(actions.setAuthUserData(data.data, true));
+    else if(data.resultCode === ResponseCodes.Error){
+        dispatch(appActions.setFormSuccess(false));
+        dispatch(appActions.setFormError(data.messages[0]));
+    }
 };
 
 export const logout = (): ThunkType => async (dispatch) => {

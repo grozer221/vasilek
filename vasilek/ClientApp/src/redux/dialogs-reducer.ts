@@ -1,6 +1,7 @@
 import {BaseThunkType, InferActionsTypes} from "./redux-store";
 import {dialogsAPI, DialogType, MessageType} from "../api/dialogs-api";
 import {Dispatch} from "redux";
+import {ProfileType} from "../types/types";
 
 let initialState = {
     dialogs: [] as Array<DialogType>,
@@ -29,8 +30,7 @@ const dialogsReducer = (state = initialState, action: ActionsTypes): InitialStat
                 ...state,
                 dialogs: state.dialogs.filter(d => d.id !== action.dialogId)
             };
-        case
-        'MESSAGE_RECEIVED':
+        case 'MESSAGE_RECEIVED':
             return {
                 ...state,
                 dialogs: state.dialogs.map((d) => d.id === action.dialogId
@@ -38,7 +38,37 @@ const dialogsReducer = (state = initialState, action: ActionsTypes): InitialStat
                         ...d,
                         messages: d.messages ? [...d.messages, action.message] : [action.message]
                     }
-                    : d).sort((prev: DialogType, next: DialogType) => next.dateChanged.toString().localeCompare(prev.dateChanged.toString()))
+                    : d
+                ).sort((prev: DialogType, next: DialogType) => next.dateChanged.toString().localeCompare(prev.dateChanged.toString()))
+            };
+        case 'ADD_USERS_TO_DIALOG':
+            return {
+                ...state,
+                dialogs: state.dialogs.map(d =>
+                    d.id === action.dialogId
+                        ? {
+                            ...d,
+                            users: [...d.users, ...action.usersInDialog]
+                        }
+                        : d
+                ).sort((prev: DialogType, next: DialogType) => next.dateChanged.toString().localeCompare(prev.dateChanged.toString()))
+            };
+        case 'REMOVE_DIALOG':
+            return {
+                ...state,
+                dialogs: state.dialogs.filter(d => d.id !== action.dialogId)
+            };
+        case 'REMOVE_USER_FROM_DIALOG':
+            return {
+                ...state,
+                dialogs: state.dialogs.map(dialog =>
+                    dialog.id === action.dialogId
+                        ? {
+                            ...dialog,
+                            users: dialog.users.filter(user => user.id !== action.userId)
+                        }
+                        : dialog
+                )
             };
         default:
             return state;
@@ -48,24 +78,38 @@ const dialogsReducer = (state = initialState, action: ActionsTypes): InitialStat
 export const actions = {
     setCurrentDialogId: (id: number | null) => ({
         type: 'SET_CURRENT_DIALOG_ID',
-        id: id
+        id: id,
     } as const),
     dialogsReceived: (dialogs: DialogType[]) => ({
         type: 'DIALOGS_RECEIVED',
-        dialogs: dialogs
+        dialogs: dialogs,
     } as const),
     dialogReceived: (dialog: DialogType) => ({
         type: 'DIALOG_RECEIVED',
-        dialog: dialog
+        dialog: dialog,
     } as const),
     messageReceived: (dialogId: number, message: MessageType) => ({
         type: 'MESSAGE_RECEIVED',
         dialogId: dialogId,
-        message: message
+        message: message,
     } as const),
     deleteDialog: (dialogId: number) => ({
         type: 'DELETE_DIALOG',
         dialogId: dialogId,
+    } as const),
+    addUsersToDialog: (dialogId: number, usersInDialog: ProfileType[]) => ({
+        type: 'ADD_USERS_TO_DIALOG',
+        dialogId: dialogId,
+        usersInDialog: usersInDialog,
+    } as const),
+    removeDialog: (dialogId: number) => ({
+        type: 'REMOVE_DIALOG',
+        dialogId: dialogId,
+    } as const),
+    removeUserFromDialog: (dialogId: number, userId: number) => ({
+        type: 'REMOVE_USER_FROM_DIALOG',
+        dialogId: dialogId,
+        userId: userId,
     } as const),
 }
 
@@ -129,6 +173,36 @@ const deleteDialogHandlerCreator = (dispatch: Dispatch) => {
     return _deleteDialogHandler
 }
 
+let _addUsersToDialogDialogHandler: ((dialogId: number, usersInDialog: ProfileType[]) => void) | null = null
+const addUsersToDialogHandlerCreator = (dispatch: Dispatch) => {
+    if (_addUsersToDialogDialogHandler === null) {
+        _addUsersToDialogDialogHandler = (dialogId, usersInDialog) => {
+            dispatch(actions.addUsersToDialog(dialogId, usersInDialog));
+        }
+    }
+    return _addUsersToDialogDialogHandler
+}
+
+let _removeDialogHandler: ((dialogId: number) => void) | null = null
+const removeDialogHandlerCreator = (dispatch: Dispatch) => {
+    if (_removeDialogHandler === null) {
+        _removeDialogHandler = (dialogId) => {
+            dispatch(actions.removeDialog(dialogId));
+        }
+    }
+    return _removeDialogHandler
+}
+
+let _removeUserFromDialogHandler: ((dialogId: number, userId: number) => void) | null = null
+const removeUserFromDialogHandlerCreator = (dispatch: Dispatch) => {
+    if (_removeUserFromDialogHandler === null) {
+        _removeUserFromDialogHandler = (dialogId, userId) => {
+            dispatch(actions.removeUserFromDialog(dialogId, userId));
+        }
+    }
+    return _removeUserFromDialogHandler
+}
+
 export const startDialogsListening = (): ThunkType => async (dispatch) => {
     dialogsAPI.start();
     dialogsAPI.subscribe('DIALOGS_RECEIVED', newDialogsHandlerCreator(dispatch));
@@ -137,6 +211,9 @@ export const startDialogsListening = (): ThunkType => async (dispatch) => {
     dialogsAPI.subscribe('SET_CURRENT_DIALOG_ID', _setCurrentDialogIdHandlerCreator(dispatch));
     dialogsAPI.subscribe('MESSAGE_RECEIVED', newMessageHandlerCreator(dispatch));
     dialogsAPI.subscribe('DELETE_DIALOG', deleteDialogHandlerCreator(dispatch));
+    dialogsAPI.subscribe('ADD_USER_TO_DIALOG', addUsersToDialogHandlerCreator(dispatch));
+    dialogsAPI.subscribe('REMOVE_DIALOG', removeDialogHandlerCreator(dispatch));
+    dialogsAPI.subscribe('REMOVE_USER_FROM_DIALOG', removeUserFromDialogHandlerCreator(dispatch));
 };
 
 export const stopDialogsListening = (): ThunkType => async (dispatch) => {
@@ -146,6 +223,9 @@ export const stopDialogsListening = (): ThunkType => async (dispatch) => {
     dialogsAPI.unsubscribe('SET_CURRENT_DIALOG_ID', _setCurrentDialogIdHandlerCreator(dispatch));
     dialogsAPI.unsubscribe('MESSAGE_RECEIVED', newMessageHandlerCreator(dispatch));
     dialogsAPI.unsubscribe('DELETE_DIALOG', deleteDialogHandlerCreator(dispatch));
+    dialogsAPI.unsubscribe('ADD_USER_TO_DIALOG', addUsersToDialogHandlerCreator(dispatch));
+    dialogsAPI.unsubscribe('REMOVE_DIALOG', removeDialogHandlerCreator(dispatch));
+    dialogsAPI.unsubscribe('REMOVE_USER_FROM_DIALOG', removeUserFromDialogHandlerCreator(dispatch));
 };
 
 export const sendMessage = (dialogId: number, messageText: string): ThunkType => async (dispatch) => {
@@ -159,6 +239,14 @@ export const getDialogByUserId = (userId: number): ThunkType => async (dispatch)
 export const deleteDialog = (dialogId: number): ThunkType => async (dispatch) => {
     dialogsAPI.deleteDialog(dialogId);
     dispatch(actions.setCurrentDialogId(null));
+};
+
+export const addUsersToDialog = (dialogId: number, usersId: number[]): ThunkType => async (dispatch) => {
+    dialogsAPI.addUsersToDialog(dialogId, usersId);
+};
+
+export const deleteUsersFromDialog = (dialogId: number, userId: number): ThunkType => async (dispatch) => {
+    dialogsAPI.deleteUserFromDialog(dialogId, userId);
 };
 
 export default dialogsReducer;

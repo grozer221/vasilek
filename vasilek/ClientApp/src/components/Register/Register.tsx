@@ -1,10 +1,12 @@
 import React from 'react';
 import {Button, Form, Input} from 'antd';
 import s from './Register.module.css';
-import {login, register} from "../../redux/auth-reducer";
+import {register} from "../../redux/auth-reducer";
 import {useDispatch, useSelector} from "react-redux";
-import {Redirect} from "react-router-dom";
+import {Link, Redirect} from "react-router-dom";
 import {s_getIsAuth} from "../../redux/auth-selectors";
+import {s_getFormError, s_getFormSuccess} from "../../redux/app-selectors";
+import {actions as appActions} from "../../redux/app-reducer";
 
 const formItemLayout = {
     labelCol: {
@@ -31,6 +33,8 @@ const tailFormItemLayout = {
 
 export const Register = () => {
     const isAuth = useSelector(s_getIsAuth);
+    const formError = useSelector(s_getFormError);
+    const formSuccess = useSelector(s_getFormSuccess);
     const dispatch = useDispatch();
     const [form] = Form.useForm();
 
@@ -38,78 +42,83 @@ export const Register = () => {
         dispatch(register(values.login, values.password, values.confirmPassword, values.nickName));
     };
 
-    if(isAuth)
+    if (isAuth)
         return <Redirect to='/'/>
 
     return (
         <div className={s.wrapper_register_form}>
-            <Form
-                {...formItemLayout}
-                form={form}
-                name="register"
-                onFinish={onFinish}
-                scrollToFirstError
-                className={s.register_form}
-            >
-                <Form.Item
-                    name="login"
-                    label="Login"
+            <div className={s.form_register_background}>
+                <Form
+                    {...formItemLayout}
+                    form={form}
+                    name="register"
+                    onFinish={onFinish}
+                    scrollToFirstError
+                    className={s.register_form}
                 >
-                    <Input/>
-                </Form.Item>
+                    <Form.Item
+                        name="login"
+                        label="Login"
+                    >
+                        <Input onChange={() => dispatch(appActions.setFormError(''))}/>
+                    </Form.Item>
 
-                <Form.Item
-                    name="password"
-                    label="Password"
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Please input your password!',
-                        },
-                    ]}
-                    hasFeedback
-                >
-                    <Input.Password/>
-                </Form.Item>
-
-                <Form.Item
-                    name="confirmPassword"
-                    label="Confirm Password"
-                    dependencies={['password']}
-                    hasFeedback
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Please confirm your password!',
-                        },
-                        ({getFieldValue}) => ({
-                            validator(_, value) {
-                                if (!value || getFieldValue('password') === value) {
-                                    return Promise.resolve();
-                                }
-                                return Promise.reject(new Error('The two passwords that you entered do not match!'));
+                    <Form.Item
+                        name="password"
+                        label="Password"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Please input your password!',
                             },
-                        }),
-                    ]}
-                >
-                    <Input.Password/>
-                </Form.Item>
+                        ]}
+                        hasFeedback
+                    >
+                        <Input.Password onChange={() => dispatch(appActions.setFormError(''))}/>
+                    </Form.Item>
 
-                <Form.Item
-                    name="nickName"
-                    label="Nickname"
-                    tooltip="What do you want others to call you?"
-                    rules={[{required: true, message: 'Please input your nickname!', whitespace: true}]}
-                >
-                    <Input/>
-                </Form.Item>
+                    <Form.Item
+                        name="confirmPassword"
+                        label="Confirm Password"
+                        dependencies={['password']}
+                        hasFeedback
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Please confirm your password!',
+                            },
+                            ({getFieldValue}) => ({
+                                validator(_, value) {
+                                    if (!value || getFieldValue('password') === value) {
+                                        return Promise.resolve();
+                                    }
+                                    return Promise.reject(new Error('The two passwords that you entered do not match!'));
+                                },
+                            }),
+                        ]}
+                    >
+                        <Input.Password onChange={() => dispatch(appActions.setFormError(''))}/>
+                    </Form.Item>
 
-                <Form.Item {...tailFormItemLayout}>
-                    <Button className={s.button_submit} type="primary" htmlType="submit">
-                        Register
-                    </Button>
-                </Form.Item>
-            </Form>
+                    <Form.Item
+                        name="nickName"
+                        label="Nickname"
+                        tooltip="What do you want others to call you?"
+                        rules={[{required: true, message: 'Please input your nickname!', whitespace: true}]}
+                    >
+                        <Input onChange={() => dispatch(appActions.setFormError(''))}/>
+                    </Form.Item>
+
+                    <div className={s.form_error}>{formError}</div>
+
+                    <Form.Item {...tailFormItemLayout}>
+                        <Button className={s.button_submit} type="primary" htmlType="submit">
+                            Register
+                        </Button>
+                        Or <Link to="/login">login now!</Link>
+                    </Form.Item>
+                </Form>
+            </div>
         </div>
     );
 };

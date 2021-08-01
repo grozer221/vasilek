@@ -14,6 +14,9 @@ const subscribers = {
     'DIALOG_ID_RECEIVED': [] as DialogIdReceivedSubscriberType[],
     'SET_CURRENT_DIALOG_ID': [] as SetCurrentDialogIdSubscriberType[],
     'DELETE_DIALOG': [] as DeleteDialogSubscriberType[],
+    'ADD_USER_TO_DIALOG': [] as AddUsersToDialogSubscriberType[],
+    'REMOVE_DIALOG': [] as RemoveDialogSubscriberType[],
+    'REMOVE_USER_FROM_DIALOG': [] as RemoveUserFromDialogSubscriberType[],
 }
 
 const createConnection = () => {
@@ -44,6 +47,18 @@ const createConnection = () => {
 
             connection?.on('DeleteDialog', (dialogId: number) => {
                 subscribers['DELETE_DIALOG'].forEach(s => s(dialogId))
+            });
+
+            connection?.on('AddUsersToDialog', (dialogId: number, usersInDialog: ProfileType[]) => {
+                subscribers['ADD_USER_TO_DIALOG'].forEach(s => s(dialogId, usersInDialog))
+            });
+
+            connection?.on('RemoveDialog', (dialogId: number) => {
+                subscribers['REMOVE_DIALOG'].forEach(s => s(dialogId))
+            });
+
+            connection?.on('RemoveUserFromDialog', (dialogId: number, userId: number) => {
+                subscribers['REMOVE_USER_FROM_DIALOG'].forEach(s => s(dialogId, userId))
             });
 
             connection?.on('ReceiveNotification', (message: MessageType) => {
@@ -101,6 +116,12 @@ export const dialogsAPI = {
     deleteDialog(dialogId: number) {
         connection?.send('DeleteDialog', dialogId);
     },
+    addUsersToDialog(dialogId: number, usersIds: number[]) {
+        connection?.send('AddUsersToDialog', dialogId, usersIds);
+    },
+    deleteUserFromDialog(dialogId: number, userId: number) {
+        connection?.send('RemoveUserFromDialog', dialogId, userId);
+    },
 }
 
 type DialogsReceivedSubscriberType = (dialogs: DialogType[]) => void
@@ -109,6 +130,9 @@ type DialogIdReceivedSubscriberType = (dialogId: number) => void
 type SetCurrentDialogIdSubscriberType = (dialogId: number) => void
 type MessageReceivedSubscriberType = (dialogId: number, message: MessageType) => void
 type DeleteDialogSubscriberType = (dialogId: number) => void
+type AddUsersToDialogSubscriberType = (dialogId: number, usersInDialog: ProfileType[]) => void
+type RemoveDialogSubscriberType = (dialogId: number) => void
+type RemoveUserFromDialogSubscriberType = (dialogId: number, userId: number) => void
 
 type EventsNamesType =
     'DIALOGS_RECEIVED'
@@ -117,6 +141,9 @@ type EventsNamesType =
     | 'DIALOG_ID_RECEIVED'
     | 'SET_CURRENT_DIALOG_ID'
     | 'DELETE_DIALOG'
+    | 'ADD_USER_TO_DIALOG'
+    | 'REMOVE_DIALOG'
+    | 'REMOVE_USER_FROM_DIALOG'
 
 type CallbackType =
     DialogsReceivedSubscriberType
@@ -125,6 +152,9 @@ type CallbackType =
     | DialogIdReceivedSubscriberType
     | SetCurrentDialogIdSubscriberType
     | DeleteDialogSubscriberType
+    | AddUsersToDialogSubscriberType
+    | RemoveDialogSubscriberType
+    | RemoveUserFromDialogSubscriberType
 
 
 export type DialogType = {
@@ -132,6 +162,7 @@ export type DialogType = {
     authorId: number
     dialogName: string
     dialogPhoto: string
+    isDialogBetween2: boolean
     users: ProfileType[]
     messages: MessageType[]
     dateCreate: Date

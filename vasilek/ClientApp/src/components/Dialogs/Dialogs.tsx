@@ -7,6 +7,7 @@ import {Avatar, Modal} from "antd";
 import {urls} from "../../api/api";
 import userWithoutPhoto from "../../assets/images/man.png";
 import {DeleteOutlined, ExclamationCircleOutlined} from "@ant-design/icons";
+import { Link } from 'react-router-dom';
 
 const {confirm} = Modal;
 
@@ -47,12 +48,13 @@ export const Dialogs: React.FC = () => {
                                     </button>
                                     <small>{dialog.messages?.length > 0
                                         ? dialog?.messages[dialog.messages.length - 1]?.dateCreate.toString().substr(11, 5)
-                                        : dialog.dateCreate.toString().substr(11, 5)}</small>
+                                        : dialog.dateCreate.toString().substr(11, 5)}
+                                    </small>
                                 </div>
                             </button>
                         )
                     )
-                    : <div className={s.message_when_no_dialogs}>Go to users page <br/> and <br/> write anyone)</div>
+                    : <div className={s.message_when_no_dialogs}>Go to <Link to={'/users'}>users page</Link> <br/> and <br/> write anyone)</div>
                 }
             </div>
         </div>

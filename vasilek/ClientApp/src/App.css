@@ -4,6 +4,7 @@ input {
 
 ::-webkit-scrollbar {
     width: 8px; /* ширина scrollbar */
+    height: 8px;
 }
 
 ::-webkit-scrollbar-track {
