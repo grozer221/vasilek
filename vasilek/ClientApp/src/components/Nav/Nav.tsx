@@ -5,6 +5,7 @@ import {logout} from "../../redux/auth-reducer";
 import {Avatar} from "antd";
 import {useDispatch, useSelector} from "react-redux";
 import {actions} from "../../redux/dialogs-reducer";
+import {actions as appActions} from "../../redux/app-reducer";
 import {s_getCurrentUser} from "../../redux/auth-selectors";
 import logo from '../../../src/assets/images/logo.png';
 import {urls} from "../../api/api";
@@ -20,32 +21,27 @@ export const Nav: React.FC = () => {
         history.push({pathname: "/login"});
     }
 
+    const clickHandler = () => {
+        dispatch(actions.setCurrentDialogId(null))
+        dispatch(appActions.setPageOpened('dialogs'))
+    }
+
     return (
         <div className={s.nav}>
             <div>
-                <button onClick={() => dispatch(actions.setCurrentDialogId(null))}>
+                <button onClick={clickHandler}>
                     <Link to={'/'}>
                         <Avatar size={40} src={logo}/>
                     </Link>
                 </button>
             </div>
             <div className={s.nav_items}>
-                <button>
+                <button onClick={() => dispatch(appActions.setPageOpened('info'))}>
                     <Link to={'/users'}>
                         <Avatar size={40} icon={<UsergroupAddOutlined/>}/>
                     </Link>
                 </button>
-                <button>
-                    <Link to={''}>
-                        <Avatar size={40} icon={<ExclamationOutlined/>}/>
-                    </Link>
-                </button>
-                <button>
-                    <Link to={''}>
-                        <Avatar size={40} icon={<ExclamationOutlined/>}/>
-                    </Link>
-                </button>
-                <button>
+                <button onClick={() => dispatch(appActions.setPageOpened('info'))}>
                     <Link to={'/settings'}>
                         <Avatar size={40} icon={<SettingOutlined/>}/>
                     </Link>

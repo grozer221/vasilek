@@ -131,9 +131,8 @@ namespace vasilek.Repository
             return true;
         }
 
-        public DialogModel AddUsersToDialog(int dialogId, int[] usersIds)
+        public DialogModel AddUsersToDialog(DialogModel dialog, int[] usersIds)
         {
-            var dialog = GetDialogById(dialogId);
             dialog.DateChanged = DateTime.Now;
             if (dialog.IsDialogBetween2)
                 dialog.IsDialogBetween2 = false;
@@ -151,6 +150,12 @@ namespace vasilek.Repository
             usersInDialog.Remove(user);
             _ctx.SaveChanges();
             return dialog;
+        }
+        
+        public void ChangeGroupName(DialogModel dialog, string newGroupName)
+        {
+            dialog.DialogName = newGroupName;
+            _ctx.SaveChanges();
         }
     }
 }

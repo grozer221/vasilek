@@ -17,5 +17,6 @@ namespace vasilek.Interfaces
         Task AddUsersToDialog(int dialogId, List<UserModel> usersInDialog);
         Task RemoveDialog(int dialogId);
         Task RemoveUserFromDialog(int dialogId, int userId);
+        Task ChangeGroupName(int dialogId, string newGroupName);
     }
 }

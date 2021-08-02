@@ -1,6 +1,7 @@
 import React from 'react';
 import s from './Dialogs.module.css';
 import {actions, deleteDialog} from "../../redux/dialogs-reducer";
+import {actions as appActions} from "../../redux/app-reducer";
 import {useDispatch, useSelector} from "react-redux";
 import {s_getCurrentDialogId, s_getDialogs} from "../../redux/dialogs-selectors";
 import {Avatar, Modal} from "antd";
@@ -27,6 +28,11 @@ export const Dialogs: React.FC = () => {
         });
     }
 
+    const clickHandler = (dialogId: number) => {
+        dispatch(actions.setCurrentDialogId(dialogId));
+        dispatch(appActions.setPageOpened('messages'));
+    }
+
     return (
         <div className={s.wrapper_dialogs_page}>
             <div className={s.myProfile}>             </div>
@@ -35,7 +41,7 @@ export const Dialogs: React.FC = () => {
                     ? dialogs.map(dialog => (
                             <button key={dialog.id}
                                     className={[s.dialog, currentDialogId === dialog.id ? s.active : ''].join(' ')}
-                                    onClick={() => dispatch(actions.setCurrentDialogId(dialog.id))}>
+                                    onClick={() => clickHandler(dialog.id)}>
                                 <div className={s.avaAndName}>
                                     <Avatar size={48}
                                             src={dialog.dialogPhoto ? urls.pathToUsersPhotos + dialog.dialogPhoto : userWithoutPhoto}

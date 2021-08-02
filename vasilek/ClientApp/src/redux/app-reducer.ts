@@ -5,10 +5,12 @@ let initialState = {
     initialised: false,
     formError: '',
     formSuccess: null as null | boolean,
+    pageOpened: 'dialogs' as PageOpenedType,
 };
 
-export type InitialStateType = typeof initialState;
-type ActionsTypes = InferActionsTypes<typeof actions>
+type PageOpenedType = 'dialogs' | 'messages' | 'info'
+
+
 
 const appReducer = (state = initialState, action: ActionsTypes): InitialStateType => {
     switch (action.type) {
@@ -27,6 +29,11 @@ const appReducer = (state = initialState, action: ActionsTypes): InitialStateTyp
                 ...state,
                 formSuccess: action.success
             };
+        case 'SET_PAGE_OPENED':
+            return {
+                ...state,
+                pageOpened: action.pageOpened
+            };
         default:
             return state;
     }
@@ -42,6 +49,10 @@ export const actions = {
         type: 'SET_FORM_SUCCESS',
         success: success
     } as const),
+    setPageOpened: (pageOpened: PageOpenedType) => ({
+        type: 'SET_PAGE_OPENED',
+        pageOpened: pageOpened
+    } as const),
 }
 
 export const initialiseApp = () => (dispatch: any) => {
@@ -53,3 +64,6 @@ export const initialiseApp = () => (dispatch: any) => {
 };
 
 export default appReducer;
+
+export type InitialStateType = typeof initialState;
+type ActionsTypes = InferActionsTypes<typeof actions>

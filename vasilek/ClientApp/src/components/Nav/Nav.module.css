@@ -38,3 +38,14 @@
 .nav .nav_items button span:hover{
     background-color: #E0F4F1;
 }
+
+@media (max-width: 900px) {
+    .nav {
+        flex-direction: row;
+        border-right: none;
+        border-bottom: 3px solid #d5d5d5;
+    }
+    .nav_items {
+        flex-direction: row;
+    }
+}

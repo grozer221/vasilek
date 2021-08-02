@@ -7,6 +7,9 @@ import {Users} from "./Users/Users";
 import {Profile} from "./Profile/Profile";
 import {Settings} from "./Settings/Settings";
 import {DialogInfo} from "./DialogInfo/DialogInfo";
+import {useMediaQuery} from "react-responsive";
+import {useDispatch} from "react-redux";
+import {actions as appActions} from '../../redux/app-reducer';
 
 type PropsType = {
     isOpenInfoPage: boolean
@@ -14,14 +17,21 @@ type PropsType = {
 }
 
 export const Info: React.FC<PropsType> = ({isOpenInfoPage, setIsOpenInfoPage}) => {
+    const isPhone = useMediaQuery({query: '(max-width: 900px)'})
+    const dispatch = useDispatch();
     return (
         <div className={s.wrapper_info_page}>
             <div className={s.header}>
                 {isOpenInfoPage
                     ? <div className={s.arrow_and_title}>
-                        <button onClick={() => setIsOpenInfoPage(false)}>
-                            <Avatar icon={<ArrowRightOutlined/>}/>
-                        </button>
+                        {isPhone
+                            ? <button onClick={() => dispatch(appActions.setPageOpened('messages'))}>
+                                <Avatar icon={<ArrowLeftOutlined/>}/>
+                            </button>
+                            : <button onClick={() => setIsOpenInfoPage(false)}>
+                                <Avatar icon={<ArrowRightOutlined/>}/>
+                            </button>
+                        }
                         <Route path={'/users'} render={() => <h2>Users</h2>}/>
                         <Route path={'/profile'} render={() => <h2>Profile</h2>}/>
                         <Route exact path={'/settings'} render={() => <h2>Settings</h2>}/>

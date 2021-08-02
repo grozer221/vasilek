@@ -12,4 +12,8 @@ export const s_getFormSuccess = (state: AppStateType) => {
   return state.app.formSuccess;
 }
 
+export const s_getPageOpened = (state: AppStateType) => {
+  return state.app.pageOpened;
+}
+
 

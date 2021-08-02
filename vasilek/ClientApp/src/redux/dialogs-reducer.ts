@@ -44,13 +44,13 @@ const dialogsReducer = (state = initialState, action: ActionsTypes): InitialStat
         case 'ADD_USERS_TO_DIALOG':
             return {
                 ...state,
-                dialogs: state.dialogs.map(d =>
-                    d.id === action.dialogId
+                dialogs: state.dialogs.map(dialog =>
+                    dialog.id === action.dialogId
                         ? {
-                            ...d,
-                            users: [...d.users, ...action.usersInDialog]
+                            ...dialog,
+                            users: [...dialog.users, ...action.usersInDialog]
                         }
-                        : d
+                        : dialog
                 ).sort((prev: DialogType, next: DialogType) => next.dateChanged.toString().localeCompare(prev.dateChanged.toString()))
             };
         case 'REMOVE_DIALOG':
@@ -69,6 +69,17 @@ const dialogsReducer = (state = initialState, action: ActionsTypes): InitialStat
                         }
                         : dialog
                 )
+            };
+        case 'CHANGE_GROUP_NAME':
+            return {
+                ...state,
+                dialogs: state.dialogs.map(dialog =>
+                    dialog.id === action.dialogId
+                        ? {
+                            ...dialog,
+                            dialogName: action.newGroupName
+                        }
+                        : dialog)
             };
         default:
             return state;
@@ -110,6 +121,11 @@ export const actions = {
         type: 'REMOVE_USER_FROM_DIALOG',
         dialogId: dialogId,
         userId: userId,
+    } as const),
+    changeGroupName: (dialogId: number, newGroupName: string) => ({
+        type: 'CHANGE_GROUP_NAME',
+        dialogId: dialogId,
+        newGroupName: newGroupName,
     } as const),
 }
 
@@ -203,6 +219,16 @@ const removeUserFromDialogHandlerCreator = (dispatch: Dispatch) => {
     return _removeUserFromDialogHandler
 }
 
+let _changeGroupNameHandler: ((dialogId: number, newGroupName: string) => void) | null = null
+const changeGroupNameHandlerCreator = (dispatch: Dispatch) => {
+    if (_changeGroupNameHandler === null) {
+        _changeGroupNameHandler = (dialogId, newGroupName) => {
+            dispatch(actions.changeGroupName(dialogId, newGroupName));
+        }
+    }
+    return _changeGroupNameHandler
+}
+
 export const startDialogsListening = (): ThunkType => async (dispatch) => {
     dialogsAPI.start();
     dialogsAPI.subscribe('DIALOGS_RECEIVED', newDialogsHandlerCreator(dispatch));
@@ -214,6 +240,7 @@ export const startDialogsListening = (): ThunkType => async (dispatch) => {
     dialogsAPI.subscribe('ADD_USER_TO_DIALOG', addUsersToDialogHandlerCreator(dispatch));
     dialogsAPI.subscribe('REMOVE_DIALOG', removeDialogHandlerCreator(dispatch));
     dialogsAPI.subscribe('REMOVE_USER_FROM_DIALOG', removeUserFromDialogHandlerCreator(dispatch));
+    dialogsAPI.subscribe('CHANGE_GROUP_NAME', changeGroupNameHandlerCreator(dispatch));
 };
 
 export const stopDialogsListening = (): ThunkType => async (dispatch) => {
@@ -226,6 +253,7 @@ export const stopDialogsListening = (): ThunkType => async (dispatch) => {
     dialogsAPI.unsubscribe('ADD_USER_TO_DIALOG', addUsersToDialogHandlerCreator(dispatch));
     dialogsAPI.unsubscribe('REMOVE_DIALOG', removeDialogHandlerCreator(dispatch));
     dialogsAPI.unsubscribe('REMOVE_USER_FROM_DIALOG', removeUserFromDialogHandlerCreator(dispatch));
+    dialogsAPI.unsubscribe('CHANGE_GROUP_NAME', changeGroupNameHandlerCreator(dispatch));
 };
 
 export const sendMessage = (dialogId: number, messageText: string): ThunkType => async (dispatch) => {
@@ -247,6 +275,10 @@ export const addUsersToDialog = (dialogId: number, usersId: number[]): ThunkType
 
 export const deleteUsersFromDialog = (dialogId: number, userId: number): ThunkType => async (dispatch) => {
     dialogsAPI.deleteUserFromDialog(dialogId, userId);
+};
+
+export const changeGroupName = (dialogId: number, newGroupName: string): ThunkType => async (dispatch) => {
+    dialogsAPI.changeGroupName(dialogId, newGroupName);
 };
 
 export default dialogsReducer;

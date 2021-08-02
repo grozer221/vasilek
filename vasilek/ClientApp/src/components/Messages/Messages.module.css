@@ -1,21 +1,20 @@
-.wrapper_messages_page{
+.wrapper_messages_page {
     display: grid;
     grid-template-areas: "actions"
                          "messageAndFrom";
     grid-template-rows: 1fr 10fr;
     background-color: #EDF0F6;
     border-radius: 10px;
-    padding: 0 3px 10px 10px;
     grid-gap: 5px;
 }
 
-.messagesAndForm{
+.messagesAndForm {
     width: 100%;
-    height: calc(90vh - 30px);
+    height: calc(90vh - 20px);
     display: grid;
     grid-template-areas: "messages"
                          "form_input";
-    grid-auto-rows:  15fr 1fr;
+    grid-auto-rows: 15fr 1fr;
     grid-gap: 7px;
     margin-right: 2px;
     position: relative;
@@ -29,42 +28,47 @@
     padding-right: 3px;
 }
 
-.form_input_message{
+.form_input_message {
     grid-area: form_input;
     padding-right: 7px;
+    margin-bottom: 5px;
 }
 
 .form_input_message form {
     display: flex;
 }
 
-.form_input_message span{
+.form_input_message span {
     background-color: #EDF0F6;
 }
 
-.form_input_message textarea{
+.form_input_message textarea {
     resize: none;
     border-radius: 10px;
     border: none;
 }
 
-.others_message{
+.others_message {
     text-align: left;
 }
-.others_message .message{
+
+.others_message .message {
     background-color: white;
 }
-.others_message_border{
+
+.others_message_border {
     border-radius: 10px 10px 10px 0;
 }
 
-.my_message{
+.my_message {
     text-align: right;
 }
-.my_message .message{
+
+.my_message .message {
     background-color: #CFD3E4;
 }
-.my_message_border{
+
+.my_message_border {
     border-radius: 10px 10px 0 10px;
 }
 
@@ -89,7 +93,6 @@
 
 .actions {
     margin: 0 10px;
-    height: 100%;
     display: flex;
     justify-content: left;
     align-items: center;
@@ -97,57 +100,78 @@
     border-bottom: 3px solid #d5d5d5;
 }
 
-.actions .dialogsPhotoAndName{
+.actions .dialogsPhotoAndName {
     display: flex;
     align-items: center;
     font-size: 16px;
+    grid-gap: 10px;
 }
 
-.dialogsPhotoAndName > div:first-child{
-    margin-right: 10px;
-}
-
-.selectADialog{
+.selectADialog {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
 
-.form_input_message button{
+.form_input_message button,
+.dialogsPhotoAndName button {
     border: none;
     background-color: #EDF0F6;
 }
 
-.form_input_message button svg{
+.form_input_message button svg,
+.dialogsPhotoAndName button svg {
     color: gray;
 }
 
-.form_input_message span{
+.form_input_message span,
+.dialogsPhotoAndName span {
     background-color: #EDF0F6;
 }
 
-.form_input_message button {
+.form_input_message button,
+.dialogsPhotoAndName button {
     display: block;
     border: none;
     background-color: #EDF0F6;
 }
 
-.form_input_message button span:hover{
+.form_input_message button span:hover,
+.dialogsPhotoAndName button span:hover {
     background-color: #E0F4F1;
 }
 
-.form_input_message button span:hover svg{
+.form_input_message button span:hover svg,
+.dialogsPhotoAndName button span:hover svg {
     background-color: #E0F4F1;
     color: #00A389;
 }
 
-.form_input_message .emoji_button{
+.form_input_message .emoji_button {
     position: relative;
 }
 
 .form_input_message .emoji {
     position: absolute;
     top: -440px;
+}
+
+@media (max-width: 900px) {
+    .wrapper_messages_page {
+        height: 100%;
+        display: block;
+    }
+
+    .actions {
+        height: 10%;
+    }
+
+    .messagesAndForm {
+        height: 90%;
+    }
+    .emoji{
+        left: -45px;
+    }
 }
 

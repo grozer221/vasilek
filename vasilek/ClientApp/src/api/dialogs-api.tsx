@@ -17,6 +17,7 @@ const subscribers = {
     'ADD_USER_TO_DIALOG': [] as AddUsersToDialogSubscriberType[],
     'REMOVE_DIALOG': [] as RemoveDialogSubscriberType[],
     'REMOVE_USER_FROM_DIALOG': [] as RemoveUserFromDialogSubscriberType[],
+    'CHANGE_GROUP_NAME': [] as ChangeGroupNameSubscriberType[],
 }
 
 const createConnection = () => {
@@ -59,6 +60,10 @@ const createConnection = () => {
 
             connection?.on('RemoveUserFromDialog', (dialogId: number, userId: number) => {
                 subscribers['REMOVE_USER_FROM_DIALOG'].forEach(s => s(dialogId, userId))
+            });
+
+            connection?.on('ChangeGroupName', (dialogId: number, newGroupName: string) => {
+                subscribers['CHANGE_GROUP_NAME'].forEach(s => s(dialogId, newGroupName))
             });
 
             connection?.on('ReceiveNotification', (message: MessageType) => {
@@ -122,6 +127,9 @@ export const dialogsAPI = {
     deleteUserFromDialog(dialogId: number, userId: number) {
         connection?.send('RemoveUserFromDialog', dialogId, userId);
     },
+    changeGroupName(dialogId: number, newGroupName: string) {
+        connection?.send('ChangeGroupName', dialogId, newGroupName);
+    },
 }
 
 type DialogsReceivedSubscriberType = (dialogs: DialogType[]) => void
@@ -133,6 +141,7 @@ type DeleteDialogSubscriberType = (dialogId: number) => void
 type AddUsersToDialogSubscriberType = (dialogId: number, usersInDialog: ProfileType[]) => void
 type RemoveDialogSubscriberType = (dialogId: number) => void
 type RemoveUserFromDialogSubscriberType = (dialogId: number, userId: number) => void
+type ChangeGroupNameSubscriberType = (dialogId: number, newGroupName: string) => void
 
 type EventsNamesType =
     'DIALOGS_RECEIVED'
@@ -144,6 +153,7 @@ type EventsNamesType =
     | 'ADD_USER_TO_DIALOG'
     | 'REMOVE_DIALOG'
     | 'REMOVE_USER_FROM_DIALOG'
+    | 'CHANGE_GROUP_NAME'
 
 type CallbackType =
     DialogsReceivedSubscriberType
@@ -155,6 +165,7 @@ type CallbackType =
     | AddUsersToDialogSubscriberType
     | RemoveDialogSubscriberType
     | RemoveUserFromDialogSubscriberType
+    | ChangeGroupNameSubscriberType
 
 
 export type DialogType = {

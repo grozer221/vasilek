@@ -6,7 +6,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {initialiseApp} from './redux/app-reducer';
 import Loading from './components/common/Loading/Loading';
 import 'antd/dist/antd.css';
-import {s_getInitialised} from "./redux/app-selectors";
+import {s_getInitialised, s_getPageOpened} from "./redux/app-selectors";
 import {s_getIsAuth} from "./redux/auth-selectors";
 import {startDialogsListening, stopDialogsListening} from "./redux/dialogs-reducer";
 import {Messages} from "./components/Messages/Messages";
@@ -15,6 +15,7 @@ import {Button, Result} from "antd";
 import {Nav} from "./components/Nav/Nav";
 import {Register} from "./components/Register/Register";
 import {Info} from "./components/Info/Info";
+import {useMediaQuery} from 'react-responsive'
 
 export const App: React.FC = () => {
     const isAuth = useSelector(s_getIsAuth);
@@ -58,7 +59,9 @@ export const App: React.FC = () => {
 }
 
 const MainPage: React.FC = () => {
+    const isPhone = useMediaQuery({query: '(max-width: 900px)'})
     const isAuth = useSelector(s_getIsAuth);
+    const pageOpened = useSelector(s_getPageOpened);
     const [isOpenInfoPage, setIsOpenInfoPage] = useState(true);
     if (!isAuth)
         return <Redirect to='/login'/>
@@ -69,15 +72,21 @@ const MainPage: React.FC = () => {
                 <div className='nav'>
                     <Nav/>
                 </div>
+                {(!isPhone || pageOpened === 'dialogs') &&
                 <div className='dialogs'>
                     <Dialogs/>
                 </div>
+                }
+                {(!isPhone || pageOpened === 'messages') &&
                 <div className='messages'>
                     <Messages/>
                 </div>
+                }
+                {(!isPhone || pageOpened === 'info') &&
                 <div className='info_page'>
                     <Info isOpenInfoPage={isOpenInfoPage} setIsOpenInfoPage={setIsOpenInfoPage}/>
                 </div>
+                }
             </div>
         </>
     )

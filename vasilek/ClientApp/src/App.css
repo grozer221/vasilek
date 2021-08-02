@@ -69,3 +69,17 @@ input {
     display: none;
 }
 
+@media (max-width: 900px) {
+    .content {
+        display: block;
+    }
+
+    .nav{
+        height: 7%;
+    }
+
+    .dialogs, .messages, .info_page{
+        height: 93%;
+    }
+}
+

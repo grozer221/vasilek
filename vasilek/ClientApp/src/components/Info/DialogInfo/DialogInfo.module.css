@@ -1,13 +1,32 @@
 .wrapper_dialog_info {
+    width: 100%;
+    height: calc(90vh - 30px);
+    display: grid;
+    grid-template: "ava"
+                    "name"
+                    "members_and_users";
+    grid-template-rows: 3fr 1fr 6fr;
     text-align: center;
+}
+
+.ava {
+    grid-area: ava;
+}
+
+.name {
+    grid-area: name;
     display: flex;
-    flex-direction: column;
-    grid-gap: 10px;
-    width: 80%;
-    position: relative;
+    justify-content: center;
+    align-items: center;
+}
+
+.members_and_users {
+    height: calc(54vh - 30px);
+    grid-area: members_and_users;
 }
 
 .wrapper_users {
+    height: 90%;
     overflow-y: scroll;
     display: flex;
     flex-direction: column;
@@ -44,8 +63,7 @@
 
 .user:hover,
 .user:hover button,
-.user:hover button span
-{
+.user:hover button span {
     background-color: #f3f3f3;
 }
 
@@ -75,8 +93,23 @@
     color: #00A389;
 }
 
-.user button span:hover svg{
+.user button span:hover svg {
     color: red;
+}
+
+.form_change_group_name {
+    display: flex;
+}
+
+h3 {
+    margin: 0;
+}
+
+
+@media (max-width: 900px) {
+    .members_and_users {
+        height: calc(50vh - 30px);
+    }
 }
 
 

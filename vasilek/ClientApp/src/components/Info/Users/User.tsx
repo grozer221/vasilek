@@ -17,7 +17,7 @@ export const User: React.FC<PropsType> = ({user}) => {
     const dispatch = useDispatch();
 
     return (
-        <div className={s.user}>
+        <div className={s.user} key={user.id}>
             <Link to={'/profile?id=' + user.id}>
                 <Avatar size={48}
                         src={user.avaPhoto !== null ? urls.pathToUsersPhotos + user.avaPhoto : userWithoutPhoto}/>

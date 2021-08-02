@@ -111,3 +111,14 @@
     transform: translate(-50%, -50%);
     text-align: center;
 }
+
+@media (max-width: 900px) {
+    .wrapper_dialogs_page{
+        height: 100%;
+    }
+
+    .dialogs{
+        height: 90%;
+    }
+}
+
