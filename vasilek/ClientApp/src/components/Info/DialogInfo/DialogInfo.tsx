@@ -17,6 +17,7 @@ import {Link, Redirect} from 'react-router-dom';
 import {SelectUsers} from "../../common/SelectUsers/SelectUsers";
 import {s_getCurrentUser} from "../../../redux/auth-selectors";
 import {changeGroupName, deleteUsersFromDialog} from "../../../redux/dialogs-reducer";
+import {OnlineIndicator} from "../../common/OnlineIndicator/OnlineIndicator";
 
 const {confirm} = Modal;
 
@@ -96,23 +97,26 @@ export const DialogInfo: React.FC = () => {
                     </button>
                 </div>
                 <div className={s.wrapper_users}>
-                    {currentDialogInfo.users.map(u =>
-                        <div className={s.user}>
-                            <Link to={'/profile?id=' + u.id} key={u.id}>
+                    {currentDialogInfo.users.map(user =>
+                        <div className={s.user} key={user.id}>
+                            <Link to={'/profile?id=' + user.id} key={user.id}>
                                 <div className={s.user_info}>
-                                    <Avatar src={u.avaPhoto ? urls.pathToUsersPhotos + u.avaPhoto : userWithoutPhoto}/>
+                                    <div className={s.user_ava}>
+                                        <Avatar src={user.avaPhoto ? urls.pathToUsersPhotos + user.avaPhoto : userWithoutPhoto}/>
+                                        {user.isOnline && <OnlineIndicator backgroundColor={'white'} width='15px' height='15px' bottom='-2px' left='23px'/>}
+                                    </div>
                                     <div className={s.name_and_who_is_author}>
-                                        <div>{u.nickName}</div>
-                                        {u.id === currentDialogInfo.authorId &&
+                                        <div>{user.nickName}</div>
+                                        {user.id === currentDialogInfo.authorId &&
                                         <Avatar size={16} icon={<StarFilled/>}/>}
                                     </div>
                                 </div>
                             </Link>
                             {currentUser.id === currentDialogInfo.authorId
-                            && u.id !== currentUser.id
+                            && user.id !== currentUser.id
                             && !currentDialogInfo.isDialogBetween2
                             && <button
-                                onClick={() => showConfirm(u.id, u.login, currentDialogInfo.id, currentDialogInfo.dialogName)}>
+                                onClick={() => showConfirm(user.id, user.login, currentDialogInfo.id, currentDialogInfo.dialogName)}>
                                 <Avatar src={<DeleteOutlined/>}/>
                             </button>
                             }

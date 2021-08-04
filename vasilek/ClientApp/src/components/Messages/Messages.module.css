@@ -25,13 +25,12 @@
     grid-area: messages;
     overflow-y: scroll;
     color: black;
-    padding-right: 3px;
+    padding: 0 4px 0 6px;
 }
 
 .form_input_message {
     grid-area: form_input;
-    padding-right: 7px;
-    margin-bottom: 5px;
+    margin: 0 7px 7px 0;
 }
 
 .form_input_message form {
@@ -76,19 +75,18 @@
     max-width: 90%;
     display: inline-block;
     padding: 3px 10px;
-    margin: 3px;
+    margin: 3px 3px 3px 7px;
 }
 
 .message_content {
     display: flex;
+    align-items: flex-end;
+    gap: 5px;
 }
 
 .message_text {
-    margin-right: 5px;
     word-wrap: anywhere;
     text-align: left;
-    display: flex;
-    align-items: center;
 }
 
 .actions {
@@ -100,11 +98,11 @@
     border-bottom: 3px solid #d5d5d5;
 }
 
-.actions .dialogsPhotoAndName {
+.dialogsPhotoAndName {
     display: flex;
     align-items: center;
     font-size: 16px;
-    grid-gap: 10px;
+    grid-gap: 7px;
 }
 
 .selectADialog {
@@ -157,6 +155,25 @@
     top: -440px;
 }
 
+.wrapper_file_upload{
+    position: relative;
+    height: 40px;
+}
+
+.user_ava{
+    position: relative;
+}
+
+.user_nick_and_online_count{
+    display: flex;
+    flex-direction: column;
+}
+
+.nick, .dialog_name{
+    font-weight: 600;
+}
+
+
 @media (max-width: 900px) {
     .wrapper_messages_page {
         height: 100%;
@@ -170,6 +187,11 @@
     .messagesAndForm {
         height: 90%;
     }
+
+    .message{
+        max-width: 80%;
+    }
+
     .emoji{
         left: -45px;
     }

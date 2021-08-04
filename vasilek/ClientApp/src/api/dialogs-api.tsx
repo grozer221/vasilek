@@ -18,6 +18,8 @@ const subscribers = {
     'REMOVE_DIALOG': [] as RemoveDialogSubscriberType[],
     'REMOVE_USER_FROM_DIALOG': [] as RemoveUserFromDialogSubscriberType[],
     'CHANGE_GROUP_NAME': [] as ChangeGroupNameSubscriberType[],
+    'TOGGLE_USER_ONLINE': [] as ToggleUserOnlineSubscriberType[],
+    'SET_DATE_LAST_ONLINE': [] as SetDateLastOnlineSubscriberType[],
 }
 
 const createConnection = () => {
@@ -64,6 +66,14 @@ const createConnection = () => {
 
             connection?.on('ChangeGroupName', (dialogId: number, newGroupName: string) => {
                 subscribers['CHANGE_GROUP_NAME'].forEach(s => s(dialogId, newGroupName))
+            });
+
+            connection?.on('ToggleUserOnline', (userLogin: string, isOnline: boolean) => {
+                subscribers['TOGGLE_USER_ONLINE'].forEach(s => s(userLogin, isOnline))
+            });
+
+            connection?.on('SetDateLastOnline', (userLogin: string, dateLastOnline: Date) => {
+                subscribers['SET_DATE_LAST_ONLINE'].forEach(s => s(userLogin, dateLastOnline))
             });
 
             connection?.on('ReceiveNotification', (message: MessageType) => {
@@ -142,6 +152,8 @@ type AddUsersToDialogSubscriberType = (dialogId: number, usersInDialog: ProfileT
 type RemoveDialogSubscriberType = (dialogId: number) => void
 type RemoveUserFromDialogSubscriberType = (dialogId: number, userId: number) => void
 type ChangeGroupNameSubscriberType = (dialogId: number, newGroupName: string) => void
+type ToggleUserOnlineSubscriberType = (userLogin: string, isOnline: boolean) => void
+type SetDateLastOnlineSubscriberType = (userLogin: string, dateLastOnline: Date) => void
 
 type EventsNamesType =
     'DIALOGS_RECEIVED'
@@ -154,6 +166,8 @@ type EventsNamesType =
     | 'REMOVE_DIALOG'
     | 'REMOVE_USER_FROM_DIALOG'
     | 'CHANGE_GROUP_NAME'
+    | 'TOGGLE_USER_ONLINE'
+    | 'SET_DATE_LAST_ONLINE'
 
 type CallbackType =
     DialogsReceivedSubscriberType
@@ -166,6 +180,8 @@ type CallbackType =
     | RemoveDialogSubscriberType
     | RemoveUserFromDialogSubscriberType
     | ChangeGroupNameSubscriberType
+    | ToggleUserOnlineSubscriberType
+    | SetDateLastOnlineSubscriberType
 
 
 export type DialogType = {

@@ -1,0 +1,14 @@
+.wrapper_circle_online{
+    position: absolute;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.circle_online{
+    background-color: #3498db;
+    width: 75%;
+    height: 75%;
+    border-radius: 50%;
+}

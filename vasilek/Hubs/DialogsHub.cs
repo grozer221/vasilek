@@ -136,9 +136,22 @@ namespace vasilek.Hubs
 
         public override async Task OnConnectedAsync()
         {
+            DateTime dateLastOnline = _dialogsRep.MakeUserOnline(Context.User.Identity.Name);
             var dialogs = _dialogsRep.GetDialogsByUserLogin(Context.User.Identity.Name);
             await Clients.Caller.ReceiveDialogs(dialogs);
+            var usersLogins = _dialogsRep.GetUsersLoginsInDialogsExeptUser(dialogs, Context.User.Identity.Name);
+            await Clients.Users(usersLogins).ToggleUserOnline(Context.User.Identity.Name, true);
             await base.OnConnectedAsync();
+        }
+
+        public override async Task OnDisconnectedAsync(Exception exception)
+        {
+            DateTime dateLastOnline = _dialogsRep.MakeUserOffline(Context.User.Identity.Name);
+            var dialogs = _dialogsRep.GetDialogsByUserLogin(Context.User.Identity.Name);
+            var usersLogins = _dialogsRep.GetUsersLoginsInDialogsExeptUser(dialogs, Context.User.Identity.Name);
+            await Clients.Users(usersLogins).ToggleUserOnline(Context.User.Identity.Name, false);
+            await Clients.Users(usersLogins).SetDateLastOnline(Context.User.Identity.Name, dateLastOnline);
+            await base.OnDisconnectedAsync(exception);
         }
     }
 }

@@ -10,10 +10,11 @@ import {urls} from "../../../api/api";
 import man from "../../../assets/images/man.png";
 import {s_getProfile} from "../../../redux/profile-selectors";
 import {ProfileType} from "../../../types/types";
+import {OnlineIndicator} from "../../common/OnlineIndicator/OnlineIndicator";
 
 export const Profile: React.FC = () => {
     const currentUser = useSelector(s_getCurrentUser);
-    const profile = useSelector(s_getProfile);
+    const profile = useSelector(s_getProfile) as ProfileType;
     const history = useHistory();
     const dispatch = useDispatch();
 
@@ -48,6 +49,9 @@ export const Profile: React.FC = () => {
             </div>
             <div className={s.wrapper_nick}>
                 <strong>{profile?.nickName}</strong>
+                <div className={s.online_status}>
+                    {profile?.isOnline ? <small>Online</small> : <small>Offline</small>}
+                </div>
             </div>
             <div className={s.wrapper_info}>
                 <div>

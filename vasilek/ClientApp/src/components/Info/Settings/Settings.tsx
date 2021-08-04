@@ -177,10 +177,8 @@ const SettingProfile: React.FC = () => {
                 </Carousel>
 
                 <div className={s.wrapper_photo_upload}>
-                    <input type="file" name="file" id="file" className={s.input_file} onChange={photoChangeHandler}/>
-                    <label htmlFor="file" className={s.btn_tertiary}>
-
-                    </label>
+                    <input type="file" name="file" id="input_profile_photo" className={s.input_file} onChange={photoChangeHandler}/>
+                    <label htmlFor="input_profile_photo" className={s.btn_tertiary}></label>
                     <button className={s.js_fileName}>
                         <Avatar icon={<UploadOutlined/>}/>
                     </button>

@@ -1,4 +1,4 @@
-import {FormAction, stopSubmit} from 'redux-form';
+import {FormAction} from 'redux-form';
 import {ResponseCodes} from '../api/api';
 import {authAPI} from "../api/auth-api";
 import {BaseThunkType, InferActionsTypes} from "./redux-store";
@@ -6,11 +6,11 @@ import {PhotoType, ProfileType} from "../types/types";
 import {profileAPI} from "../api/profile-api";
 import {ChangePassType} from "../components/Info/Settings/Settings";
 import {actions as appActions} from './app-reducer';
-import {useHistory} from "react-router-dom";
 
 let initialState = {
     currentUser: {} as ProfileType,
     isAuth: false,
+    isFetching: false,
 };
 
 const authReducer = (state = initialState, action: ActionsType): InitialStateType => {
@@ -43,6 +43,11 @@ const authReducer = (state = initialState, action: ActionsType): InitialStateTyp
                         : [action.photo],
                 } as ProfileType
             };
+        case 'SET_IS_FETCHING':
+            return {
+                ...state,
+                isFetching: action.isFetching,
+            };
 
         default:
             return state;
@@ -62,6 +67,10 @@ export const actions = {
     setUserAvaPhoto: (photoName: string | null) => ({
         type: 'SET_USER_AVA_PHOTO',
         photoName: photoName
+    } as const),
+    setIsFetching: (isFetching: boolean) => ({
+        type: 'SET_IS_FETCHING',
+        isFetching: isFetching
     } as const),
 }
 
@@ -93,8 +102,7 @@ export const changePassword = (changePass: ChangePassType): ThunkType => async (
     let data = await profileAPI.changePassword(changePass);
     if (data.resultCode === ResponseCodes.Success) {
         dispatch(appActions.setFormSuccess(true));
-    }
-    else if (data.resultCode === ResponseCodes.Error){
+    } else if (data.resultCode === ResponseCodes.Error) {
         dispatch(appActions.setFormSuccess(false));
         dispatch(appActions.setFormError(data.messages[0]));
     }
@@ -108,23 +116,27 @@ export const getAuthUserData = (): ThunkType => async (dispatch) => {
 };
 
 export const login = (login: string, password: string): ThunkType => async (dispatch) => {
+    dispatch(actions.setIsFetching(true));
     let data = await authAPI.login(login, password);
     if (data.resultCode === ResponseCodes.Success)
         dispatch(actions.setAuthUserData(data.data, true));
-    else if(data.resultCode === ResponseCodes.Error){
+    else if (data.resultCode === ResponseCodes.Error) {
         dispatch(appActions.setFormSuccess(false));
         dispatch(appActions.setFormError(data.messages[0]));
     }
+    dispatch(actions.setIsFetching(false));
 };
 
 export const register = (login: string, password: string, confirmPassword: string, nickName: string): ThunkType => async (dispatch) => {
+    dispatch(actions.setIsFetching(true));
     let data = await authAPI.register(login, password, confirmPassword, nickName);
     if (data.resultCode === ResponseCodes.Success)
         dispatch(actions.setAuthUserData(data.data, true));
-    else if(data.resultCode === ResponseCodes.Error){
+    else if (data.resultCode === ResponseCodes.Error) {
         dispatch(appActions.setFormSuccess(false));
         dispatch(appActions.setFormError(data.messages[0]));
     }
+    dispatch(actions.setIsFetching(false));
 };
 
 export const logout = (): ThunkType => async (dispatch) => {

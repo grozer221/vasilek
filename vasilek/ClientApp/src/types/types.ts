@@ -12,6 +12,9 @@ export type ProfileType = {
     status: string
     country: string
     avaPhoto: string | null
+    isOnline: boolean
+    dateLastOnline: Date
+    dateRegister: Date
     isFollowed: boolean
     photos: PhotoType[]
 }

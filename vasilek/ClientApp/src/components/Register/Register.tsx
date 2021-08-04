@@ -1,12 +1,13 @@
-import React from 'react';
-import {Button, Form, Input} from 'antd';
+import React, {useEffect} from 'react';
+import {Button, Form, Input, message, Spin} from 'antd';
 import s from './Register.module.css';
 import {register} from "../../redux/auth-reducer";
 import {useDispatch, useSelector} from "react-redux";
-import {Link, Redirect} from "react-router-dom";
-import {s_getIsAuth} from "../../redux/auth-selectors";
+import {Link, Redirect, useHistory} from "react-router-dom";
+import {s_getIsAuth, s_getIsFetching} from "../../redux/auth-selectors";
 import {s_getFormError, s_getFormSuccess} from "../../redux/app-selectors";
 import {actions as appActions} from "../../redux/app-reducer";
+import {LoadingOutlined} from "@ant-design/icons";
 
 const formItemLayout = {
     labelCol: {
@@ -35,8 +36,18 @@ export const Register = () => {
     const isAuth = useSelector(s_getIsAuth);
     const formError = useSelector(s_getFormError);
     const formSuccess = useSelector(s_getFormSuccess);
+    const isFetching = useSelector(s_getIsFetching);
+    const history = useHistory();
     const dispatch = useDispatch();
     const [form] = Form.useForm();
+
+    useEffect(() => {
+        if (formSuccess === true) {
+            history.push('/')
+            dispatch(appActions.setFormSuccess(null));
+            dispatch(appActions.setFormError(''));
+        }
+    }, [formSuccess])
 
     const onFinish = (values: { login: string, password: string, confirmPassword: string, nickName: string }) => {
         dispatch(register(values.login, values.password, values.confirmPassword, values.nickName));
@@ -112,8 +123,10 @@ export const Register = () => {
                     <div className={s.form_error}>{formError}</div>
 
                     <Form.Item {...tailFormItemLayout}>
-                        <Button className={s.button_submit} type="primary" htmlType="submit">
-                            Register
+                        <Button disabled={isFetching} className={s.button_submit} type="primary" htmlType="submit">
+                            {isFetching
+                                ? <Spin indicator={<LoadingOutlined style={{fontSize: 24}} spin/>}/>
+                                : <span>Register</span>}
                         </Button>
                         Or <Link to="/login">login now!</Link>
                     </Form.Item>

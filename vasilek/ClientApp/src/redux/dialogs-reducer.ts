@@ -81,6 +81,44 @@ const dialogsReducer = (state = initialState, action: ActionsTypes): InitialStat
                         }
                         : dialog)
             };
+        case 'TOGGLE_USER_ONLINE':
+            return {
+                ...state,
+                dialogs: state.dialogs.map(dialog =>
+                    dialog.users.filter(user => user.login === action.userLogin).length > 0
+                        ? {
+                            ...dialog,
+                            users: dialog.users.map(user =>
+                                user.login === action.userLogin
+                                    ? {
+                                        ...user,
+                                        isOnline: action.online,
+                                    }
+                                    : user
+                            )
+                        }
+                        : dialog
+                )
+            };
+        case 'SET_DATE_LAST_ONLINE':
+            return {
+                ...state,
+                dialogs: state.dialogs.map(dialog =>
+                    dialog.users.filter(user => user.login === action.userLogin).length > 0
+                        ? {
+                            ...dialog,
+                            users: dialog.users.map(user =>
+                                user.login === action.userLogin
+                                    ? {
+                                        ...user,
+                                        dateLastOnline: action.dateLastOnline,
+                                    }
+                                    : user
+                            )
+                        }
+                        : dialog
+                )
+            };
         default:
             return state;
     }
@@ -126,6 +164,16 @@ export const actions = {
         type: 'CHANGE_GROUP_NAME',
         dialogId: dialogId,
         newGroupName: newGroupName,
+    } as const),
+    toggleUserOnline: (userLogin: string, online: boolean) => ({
+        type: 'TOGGLE_USER_ONLINE',
+        userLogin: userLogin,
+        online: online,
+    } as const),
+    setDateLastOnline: (userLogin: string, dateLastOnline: Date) => ({
+        type: 'SET_DATE_LAST_ONLINE',
+        userLogin: userLogin,
+        dateLastOnline: dateLastOnline,
     } as const),
 }
 
@@ -229,6 +277,26 @@ const changeGroupNameHandlerCreator = (dispatch: Dispatch) => {
     return _changeGroupNameHandler
 }
 
+let _toggleUserOnlineHandler: ((userLogin: string, isOnline: boolean) => void) | null = null
+const toggleUserOnlineHandlerCreator = (dispatch: Dispatch) => {
+    if (_toggleUserOnlineHandler === null) {
+        _toggleUserOnlineHandler = (userLogin, isOnline) => {
+            dispatch(actions.toggleUserOnline(userLogin, isOnline));
+        }
+    }
+    return _toggleUserOnlineHandler
+}
+
+let _setDateLastOnlineHandler: ((userLogin: string, dateLastOnline: Date) => void) | null = null
+const setDateLastOnlineHandlerCreator = (dispatch: Dispatch) => {
+    if (_setDateLastOnlineHandler === null) {
+        _setDateLastOnlineHandler = (userLogin, dateLastOnline) => {
+            dispatch(actions.setDateLastOnline(userLogin, dateLastOnline));
+        }
+    }
+    return _setDateLastOnlineHandler
+}
+
 export const startDialogsListening = (): ThunkType => async (dispatch) => {
     dialogsAPI.start();
     dialogsAPI.subscribe('DIALOGS_RECEIVED', newDialogsHandlerCreator(dispatch));
@@ -241,6 +309,8 @@ export const startDialogsListening = (): ThunkType => async (dispatch) => {
     dialogsAPI.subscribe('REMOVE_DIALOG', removeDialogHandlerCreator(dispatch));
     dialogsAPI.subscribe('REMOVE_USER_FROM_DIALOG', removeUserFromDialogHandlerCreator(dispatch));
     dialogsAPI.subscribe('CHANGE_GROUP_NAME', changeGroupNameHandlerCreator(dispatch));
+    dialogsAPI.subscribe('TOGGLE_USER_ONLINE', toggleUserOnlineHandlerCreator(dispatch));
+    dialogsAPI.subscribe('SET_DATE_LAST_ONLINE', setDateLastOnlineHandlerCreator(dispatch));
 };
 
 export const stopDialogsListening = (): ThunkType => async (dispatch) => {
@@ -254,6 +324,8 @@ export const stopDialogsListening = (): ThunkType => async (dispatch) => {
     dialogsAPI.unsubscribe('REMOVE_DIALOG', removeDialogHandlerCreator(dispatch));
     dialogsAPI.unsubscribe('REMOVE_USER_FROM_DIALOG', removeUserFromDialogHandlerCreator(dispatch));
     dialogsAPI.unsubscribe('CHANGE_GROUP_NAME', changeGroupNameHandlerCreator(dispatch));
+    dialogsAPI.unsubscribe('TOGGLE_USER_ONLINE', toggleUserOnlineHandlerCreator(dispatch));
+    dialogsAPI.unsubscribe('SET_DATE_LAST_ONLINE', setDateLastOnlineHandlerCreator(dispatch));
 };
 
 export const sendMessage = (dialogId: number, messageText: string): ThunkType => async (dispatch) => {

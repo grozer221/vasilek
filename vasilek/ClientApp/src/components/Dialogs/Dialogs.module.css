@@ -16,6 +16,7 @@
     overflow-y: scroll;
     grid-area: dialogs;
     position: relative;
+    scrollbar-color: #CFD3E4 white;
 }
 
 .dialogs::-webkit-scrollbar-track {
@@ -39,6 +40,7 @@
 .avaAndName {
     display: flex;
     align-items: center;
+    position: relative;
 }
 
 .dialog button span {
@@ -65,7 +67,6 @@
     margin-right: 10px;
 }
 
-
 .dialog button {
     border: none;
     background-color: white;
@@ -86,7 +87,8 @@
 .dialog:hover button,
 .active button,
 .active button span,
-.dialog:hover button span {
+.dialog:hover button span,
+.dialog:hover .wrapper_circle_online{
     background-color: #f3f3f3;
 }
 

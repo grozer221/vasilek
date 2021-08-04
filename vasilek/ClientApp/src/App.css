@@ -1,3 +1,7 @@
+*{
+    scrollbar-color: #CFD3E4 #EDF0F6;
+    scrollbar-width: thin;
+}
 input {
     outline: none;
 }
@@ -80,6 +84,15 @@ input {
 
     .dialogs, .messages, .info_page{
         height: 93%;
+    }
+}
+
+@media (max-height: 500px){
+    .nav{
+        display: none;
+    }
+    .dialogs, .messages, .info_page{
+        height: 100%;
     }
 }
 

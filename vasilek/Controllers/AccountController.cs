@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using vasilek.Repository;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System;
 
 namespace vasilek.Controllers
 {
@@ -46,7 +47,7 @@ namespace vasilek.Controllers
             return JsonConvert.SerializeObject(new ResponseModel()
             {
                 ResultCode = 1,
-                Messages = new string[] { "User unautorised" },
+                Messages = new string[] { "User unautorized" },
                 Data = null,
             }, JsonSettings);
         }
@@ -93,7 +94,8 @@ namespace vasilek.Controllers
                     {
                         Login = model.Login,
                         Password = model.Password,
-                        NickName = model.NickName
+                        NickName = model.NickName,
+                        DateRegister = DateTime.Now,
                     };
                     _userRep.AddUser(user);
                     await Authenticate(user); // аутентификация
@@ -101,7 +103,7 @@ namespace vasilek.Controllers
                     return JsonConvert.SerializeObject(new ResponseModel()
                     {
                         ResultCode = 0,
-                        Data = user
+                        Data = user,
                     }, JsonSettings);
                 }
             }
@@ -113,6 +115,7 @@ namespace vasilek.Controllers
             }, JsonSettings);
         }
 
+        [NonAction]
         private async Task Authenticate(UserModel user)
         {
             // создаем один claim

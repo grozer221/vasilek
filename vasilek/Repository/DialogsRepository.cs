@@ -157,5 +157,33 @@ namespace vasilek.Repository
             dialog.DialogName = newGroupName;
             _ctx.SaveChanges();
         }
+        
+        public DateTime MakeUserOnline(string userLogin)
+        {
+            var user = _userRep.GetUserByLogin(userLogin);
+            user.IsOnline = true;
+            _ctx.SaveChanges();
+            return user.DateLastOnline;
+        }
+
+        public DateTime MakeUserOffline(string userLogin)
+        {
+            var user = _userRep.GetUserByLogin(userLogin);
+            user.IsOnline = false;
+            user.DateLastOnline = DateTime.Now;
+            _ctx.SaveChanges();
+            return user.DateLastOnline;
+        }
+        
+        public List<string> GetUsersLoginsInDialogsExeptUser(List<DialogModel> dialogs, string userLogin)
+        {
+            List<List<UserModel>> usersInDialog = dialogs.Select(d => d.Users).ToList();
+            List<string> usersLoginsWhichHaveAnyRelationshipWithUser = new List<string>();
+            foreach (List<UserModel> users in usersInDialog)
+                foreach(UserModel user in users)
+                    if (user.Login != userLogin && !usersLoginsWhichHaveAnyRelationshipWithUser.Any(u => u == user.Login))
+                        usersLoginsWhichHaveAnyRelationshipWithUser.Add(user.Login);
+            return usersLoginsWhichHaveAnyRelationshipWithUser;
+        }
     }
 }

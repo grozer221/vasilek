@@ -10,7 +10,7 @@ import {s_getCurrentUser} from "../../redux/auth-selectors";
 import logo from '../../../src/assets/images/logo.png';
 import {urls} from "../../api/api";
 import userWithoutPhoto from '../../assets/images/man.png';
-import {ExclamationOutlined, LogoutOutlined, SettingOutlined, UsergroupAddOutlined} from "@ant-design/icons";
+import {LogoutOutlined, SettingOutlined, UsergroupAddOutlined} from "@ant-design/icons";
 
 export const Nav: React.FC = () => {
     const currentUser = useSelector(s_getCurrentUser)
@@ -18,6 +18,7 @@ export const Nav: React.FC = () => {
     const history = useHistory();
     const logoutCallback = () => {
         dispatch(logout());
+        dispatch(actions.dialogsReceived([]));
         history.push({pathname: "/login"});
     }
 

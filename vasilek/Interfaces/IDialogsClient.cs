@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using vasilek.Models;
@@ -18,5 +19,7 @@ namespace vasilek.Interfaces
         Task RemoveDialog(int dialogId);
         Task RemoveUserFromDialog(int dialogId, int userId);
         Task ChangeGroupName(int dialogId, string newGroupName);
+        Task ToggleUserOnline(string userLogin, bool isOnline);
+        Task SetDateLastOnline(string name, DateTime dateLastOnline);
     }
 }

@@ -2,9 +2,9 @@ import React, {useEffect} from 'react';
 import s from './Login.module.css';
 import {useDispatch, useSelector} from 'react-redux';
 import {login} from '../../redux/auth-reducer';
-import {Form, Input, Button, Checkbox, message} from 'antd';
-import {LockOutlined, UserOutlined} from "@ant-design/icons";
-import {s_getIsAuth} from "../../redux/auth-selectors";
+import {Form, Input, Button, Checkbox, message, Spin} from 'antd';
+import {LoadingOutlined, LockOutlined, UserOutlined} from "@ant-design/icons";
+import {s_getIsAuth, s_getIsFetching} from "../../redux/auth-selectors";
 import {Link, Redirect, useHistory} from "react-router-dom";
 import {s_getFormError, s_getFormSuccess} from "../../redux/app-selectors";
 import {actions as appActions} from "../../redux/app-reducer";
@@ -13,6 +13,7 @@ export const Login: React.FC = () => {
     const isAuth = useSelector(s_getIsAuth);
     const formError = useSelector(s_getFormError);
     const formSuccess = useSelector(s_getFormSuccess);
+    const isFetching = useSelector(s_getIsFetching);
     const history = useHistory()
     const dispatch = useDispatch();
 
@@ -23,7 +24,6 @@ export const Login: React.FC = () => {
     useEffect(() => {
         if (formSuccess === true) {
             history.push('/')
-            message.success('You successfully logged in');
             dispatch(appActions.setFormSuccess(null));
             dispatch(appActions.setFormError(''));
         }
@@ -73,8 +73,10 @@ export const Login: React.FC = () => {
                         </a>
                     </Form.Item>
                     <Form.Item>
-                        <Button type="primary" htmlType="submit" className={s.login_form_button}>
-                            Log in
+                        <Button disabled={isFetching} type="primary" htmlType="submit" className={s.login_form_button}>
+                            {isFetching
+                                ? <Spin indicator={<LoadingOutlined style={{fontSize: 24}} spin/>}/>
+                                : <span>Log in</span>}
                         </Button>
                         Or <Link to="/register">register now!</Link>
                     </Form.Item>
