@@ -1,16 +1,16 @@
 import {getAuthUserData} from './auth-reducer';
 import {InferActionsTypes} from "./redux-store";
+import {MessageType} from "../api/dialogs-api";
 
 let initialState = {
     initialised: false,
     formError: '',
     formSuccess: null as null | boolean,
     pageOpened: 'dialogs' as PageOpenedType,
+    newMessageReceived: null as MessageType | null,
 };
 
 type PageOpenedType = 'dialogs' | 'messages' | 'info'
-
-
 
 const appReducer = (state = initialState, action: ActionsTypes): InitialStateType => {
     switch (action.type) {
@@ -34,6 +34,11 @@ const appReducer = (state = initialState, action: ActionsTypes): InitialStateTyp
                 ...state,
                 pageOpened: action.pageOpened
             };
+        case 'SET_MESSAGE_RECEIVED':
+            return {
+                ...state,
+                newMessageReceived: action.message
+            };
         default:
             return state;
     }
@@ -52,6 +57,10 @@ export const actions = {
     setPageOpened: (pageOpened: PageOpenedType) => ({
         type: 'SET_PAGE_OPENED',
         pageOpened: pageOpened
+    } as const),
+    setMessageReceived: (message: MessageType | null) => ({
+        type: 'SET_MESSAGE_RECEIVED',
+        message: message
     } as const),
 }
 

@@ -42,16 +42,16 @@ export const Actions: React.FC = () => {
                                 src={currentDialog?.dialogPhoto
                                     ? urls.pathToUsersPhotos + currentDialog?.dialogPhoto
                                     : userWithoutPhoto}/>
-                        {currentDialog.isDialogBetween2 && currentDialog.users.filter(user => user.id !== currentUserId)[0].isOnline &&
+                        {currentDialog.isDialogBetween2 && currentDialog.users.filter(user => user.id !== currentUserId)[0]?.isOnline &&
                         <OnlineIndicator backgroundColor={'#EDF0F6'} width='15px' height='15px' bottom='0' left='33px'/>
                         }
 
                     </div>
                     <div className={s.user_nick_and_online_count}>
                         <div className={s.dialog_name}>{currentDialog?.dialogName} </div>
-                        {currentDialog.isDialogBetween2 && !currentDialog.users.filter(user => user.id !== currentUserId)[0].isOnline &&
+                        {currentDialog.isDialogBetween2 && !currentDialog.users.filter(user => user.id !== currentUserId)[0]?.isOnline &&
                             <small>
-                                last seen {currentDialog.users.filter(user => user.id !== currentUserId)[0].dateLastOnline.toString().substr(5, 5)} {currentDialog.users.filter(user => user.id !== currentUserId)[0].dateLastOnline.toString().substr(11, 5)}
+                                last seen {currentDialog.users.filter(user => user.id !== currentUserId)[0]?.dateLastOnline.toString().substr(5, 5)} {currentDialog.users.filter(user => user.id !== currentUserId)[0]?.dateLastOnline.toString().substr(11, 5)}
                             </small>
                         }
                         {!currentDialog.isDialogBetween2 &&

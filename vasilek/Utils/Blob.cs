@@ -26,5 +26,15 @@ namespace vasilek.Utils
             await cloudBlockBlob.UploadFromStreamAsync(photo.OpenReadStream());
         }
 
+        public async void UploadFilesPinnedToMessage(IFormFile file, string fileName)
+        {
+            cloudBlobContainer = cloudBlobClient.GetContainerReference("files-pinned-to-message");
+            if (await cloudBlobContainer.CreateIfNotExistsAsync())
+                await cloudBlobContainer.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Off });
+            cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(fileName);
+            cloudBlockBlob.Properties.ContentType = file.ContentType;
+            await cloudBlockBlob.UploadFromStreamAsync(file.OpenReadStream());
+        }
+
     }
 }

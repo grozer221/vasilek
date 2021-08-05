@@ -26,6 +26,7 @@ export const Dialogs: React.FC = () => {
             title: <div>Do you want to delete dialog <strong>{dialogName}</strong>?</div>,
             icon: <ExclamationCircleOutlined/>,
             onOk() {
+                debugger
                 dispatch(deleteDialog(dialogId));
             },
         });
@@ -49,7 +50,7 @@ export const Dialogs: React.FC = () => {
                                     <Avatar size={48}
                                             src={dialog.dialogPhoto ? urls.pathToUsersPhotos + dialog.dialogPhoto : userWithoutPhoto}
                                             className={s.dialog_avatar}/>
-                                    {dialog.isDialogBetween2 && dialog.users.filter(user => user.id !== currentUserId)[0].isOnline &&
+                                    {dialog.isDialogBetween2 && dialog.users.filter(user => user.id !== currentUserId)[0]?.isOnline &&
                                     <OnlineIndicator backgroundColor='white' width='15px' height='15px' bottom='0' left='33px'/>
                                     }
                                     <div>{dialog.dialogName}</div>

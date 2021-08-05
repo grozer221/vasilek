@@ -12,7 +12,12 @@ import {urls} from "../../api/api";
 import userWithoutPhoto from '../../assets/images/man.png';
 import {LogoutOutlined, SettingOutlined, UsergroupAddOutlined} from "@ant-design/icons";
 
-export const Nav: React.FC = () => {
+type Props = {
+    isOpenInfoPage: boolean
+    setIsOpenInfoPage: (flag: boolean) => void
+}
+
+export const Nav: React.FC<Props> = ({isOpenInfoPage, setIsOpenInfoPage}) => {
     const currentUser = useSelector(s_getCurrentUser)
     const dispatch = useDispatch();
     const history = useHistory();
@@ -22,27 +27,33 @@ export const Nav: React.FC = () => {
         history.push({pathname: "/login"});
     }
 
-    const clickHandler = () => {
+    const clickHomeHandler = () => {
         dispatch(actions.setCurrentDialogId(null))
         dispatch(appActions.setPageOpened('dialogs'))
+    }
+
+    const clickNavItemHandler = () => {
+        dispatch(appActions.setPageOpened('info'));
+        if(!isOpenInfoPage)
+            setIsOpenInfoPage(true);
     }
 
     return (
         <div className={s.nav}>
             <div>
-                <button onClick={clickHandler}>
+                <button onClick={clickHomeHandler}>
                     <Link to={'/'}>
                         <Avatar size={40} src={logo}/>
                     </Link>
                 </button>
             </div>
             <div className={s.nav_items}>
-                <button onClick={() => dispatch(appActions.setPageOpened('info'))}>
+                <button onClick={clickNavItemHandler}>
                     <Link to={'/users'}>
                         <Avatar size={40} icon={<UsergroupAddOutlined/>}/>
                     </Link>
                 </button>
-                <button onClick={() => dispatch(appActions.setPageOpened('info'))}>
+                <button onClick={clickNavItemHandler}>
                     <Link to={'/settings'}>
                         <Avatar size={40} icon={<SettingOutlined/>}/>
                     </Link>

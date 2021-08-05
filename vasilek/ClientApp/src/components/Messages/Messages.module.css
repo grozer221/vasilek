@@ -30,11 +30,12 @@
 
 .form_input_message {
     grid-area: form_input;
-    margin: 0 7px 7px 0;
+    margin: 0 0 7px 7px;
 }
 
 .form_input_message form {
     display: flex;
+    align-items: center;
 }
 
 .form_input_message span {
@@ -118,7 +119,7 @@
     background-color: #EDF0F6;
 }
 
-.form_input_message button svg,
+.form_input_message svg,
 .dialogsPhotoAndName button svg {
     color: gray;
 }
@@ -153,6 +154,7 @@
 .form_input_message .emoji {
     position: absolute;
     top: -440px;
+    right: 10px;
 }
 
 .wrapper_file_upload{
@@ -173,6 +175,33 @@
     font-weight: 600;
 }
 
+.label_file{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 7px;
+    position: relative;
+    cursor: pointer;
+}
+
+.message_photo{
+    width: 300px;
+    margin-top: 7px;
+    border-radius: 10px;
+}
+
+.message_file{
+    padding: 3px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 6px;
+}
+
+.message_file span{
+    background-color: #a9aab7;
+}
 
 @media (max-width: 900px) {
     .wrapper_messages_page {
@@ -194,6 +223,10 @@
 
     .emoji{
         left: -45px;
+    }
+
+    .message_photo{
+        width: 200px;
     }
 }
 

@@ -1,3 +1,5 @@
+import {ResponseCodes} from "../api/api";
+
 export type PhotoType = {
     id: number
     photoName: string
@@ -17,4 +19,9 @@ export type ProfileType = {
     dateRegister: Date
     isFollowed: boolean
     photos: PhotoType[]
+}
+
+export type ResponseType = {
+    ResultCode: ResponseCodes,
+    Messages: string[],
 }

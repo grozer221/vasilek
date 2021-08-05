@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,11 +21,17 @@ namespace vasilek.Repository
         {
             return _ctx.Dialogs.Include(d => d.Users).SingleOrDefault(d => d.Id == id);
         }
+        
+        public MessageModel GetMessageById(int id)
+        {
+            return _ctx.Messages.Include(m => m.Dialog).Include(m => m.User).Include(m => m.Files).SingleOrDefault(d => d.Id == id);
+        }
 
         public List<DialogModel> GetDialogsByUserLogin(string userLogin)
         {
             var currentUser = _ctx.Users
             .Include(u => u.Dialogs).ThenInclude(d => d.Messages).ThenInclude(m => m.User)
+            .Include(u => u.Dialogs).ThenInclude(d => d.Messages).ThenInclude(m => m.Files)
             .Include(u => u.Dialogs).ThenInclude(d => d.Users)
             .FirstOrDefault(u => u.Login == userLogin);
             var dialogs = currentUser.Dialogs;
@@ -49,6 +56,8 @@ namespace vasilek.Repository
                     message.Dialog = null;
                     message.User.Dialogs = null;
                     message.User.Password = null;
+                    foreach (var file in message.Files)
+                        file.Message = null;
                 }
             }
             return dialogs;
@@ -87,10 +96,14 @@ namespace vasilek.Repository
             return dialog;
         }
 
-        public MessageModel AddMessageToDialog(string currentUserLogin, int dialogId, string messageText)
+        public int AddMessageToDialog(string currentUserLogin, int dialogId, string messageText)
         {
             UserModel currentUser = _userRep.GetUserByLogin(currentUserLogin);
-            DialogModel dialog = _ctx.Dialogs.Include(d => d.Users).Include(d => d.Messages).ThenInclude(m => m.User).FirstOrDefault(d => d.Id == dialogId);
+            DialogModel dialog = _ctx.Dialogs
+                .Include(d => d.Users)
+                .Include(d => d.Messages).ThenInclude(m => m.User)
+                .Include(d => d.Messages).ThenInclude(m => m.Files)
+                .FirstOrDefault(d => d.Id == dialogId);
             MessageModel message = new MessageModel
             {
                 Dialog = dialog,
@@ -101,9 +114,20 @@ namespace vasilek.Repository
             dialog.DateChanged = DateTime.Now;
             dialog.Messages.Add(message);
             _ctx.SaveChanges();
-            message.Dialog = null;
+            return message.Id;
+        }
+
+        public MessageModel AddFilesPinnedToMessage(int messsageId, FileModel[] files)
+        {
+            var message = _ctx.Messages.Include(m => m.Dialog).Include(m => m.User).Include(m => m.Files).FirstOrDefault(d => d.Id == messsageId);
+            foreach (var file in files)
+                message.Files.Add(file);
+            _ctx.SaveChanges();
+            if(message.Dialog != null)
+                message.Dialog.Messages = null;
+            foreach (var file in message.Files)
+                file.Message = null;
             message.User.Dialogs = null;
-            message.User.Password = null;
             return message;
         }
 

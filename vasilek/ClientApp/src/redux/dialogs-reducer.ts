@@ -2,6 +2,7 @@ import {BaseThunkType, InferActionsTypes} from "./redux-store";
 import {dialogsAPI, DialogType, MessageType} from "../api/dialogs-api";
 import {Dispatch} from "redux";
 import {ProfileType} from "../types/types";
+import {actions as appActions} from "./app-reducer";
 
 let initialState = {
     dialogs: [] as Array<DialogType>,
@@ -297,6 +298,16 @@ const setDateLastOnlineHandlerCreator = (dispatch: Dispatch) => {
     return _setDateLastOnlineHandler
 }
 
+let _receiveNotificationHandler: ((message: MessageType) => void) | null = null
+const receiveNotificationHandlerCreator = (dispatch: Dispatch) => {
+    if (_receiveNotificationHandler === null) {
+        _receiveNotificationHandler = (message) => {
+            dispatch(appActions.setMessageReceived(message));
+        }
+    }
+    return _receiveNotificationHandler
+}
+
 export const startDialogsListening = (): ThunkType => async (dispatch) => {
     dialogsAPI.start();
     dialogsAPI.subscribe('DIALOGS_RECEIVED', newDialogsHandlerCreator(dispatch));
@@ -311,6 +322,7 @@ export const startDialogsListening = (): ThunkType => async (dispatch) => {
     dialogsAPI.subscribe('CHANGE_GROUP_NAME', changeGroupNameHandlerCreator(dispatch));
     dialogsAPI.subscribe('TOGGLE_USER_ONLINE', toggleUserOnlineHandlerCreator(dispatch));
     dialogsAPI.subscribe('SET_DATE_LAST_ONLINE', setDateLastOnlineHandlerCreator(dispatch));
+    dialogsAPI.subscribe('RECEIVE_NOTIFICATION', receiveNotificationHandlerCreator(dispatch));
 };
 
 export const stopDialogsListening = (): ThunkType => async (dispatch) => {
@@ -326,10 +338,11 @@ export const stopDialogsListening = (): ThunkType => async (dispatch) => {
     dialogsAPI.unsubscribe('CHANGE_GROUP_NAME', changeGroupNameHandlerCreator(dispatch));
     dialogsAPI.unsubscribe('TOGGLE_USER_ONLINE', toggleUserOnlineHandlerCreator(dispatch));
     dialogsAPI.unsubscribe('SET_DATE_LAST_ONLINE', setDateLastOnlineHandlerCreator(dispatch));
+    dialogsAPI.unsubscribe('RECEIVE_NOTIFICATION', receiveNotificationHandlerCreator(dispatch));
 };
 
-export const sendMessage = (dialogId: number, messageText: string): ThunkType => async (dispatch) => {
-    dialogsAPI.sendMessage(dialogId, messageText);
+export const sendMessage = (dialogId: number, messageText: string, files: File[]): ThunkType => async (dispatch) => {
+    dialogsAPI.sendMessage(dialogId, messageText, files);
 };
 
 export const getDialogByUserId = (userId: number): ThunkType => async (dispatch) => {

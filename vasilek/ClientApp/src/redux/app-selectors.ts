@@ -16,4 +16,8 @@ export const s_getPageOpened = (state: AppStateType) => {
   return state.app.pageOpened;
 }
 
+export const s_getNewMessageReceived= (state: AppStateType) => {
+  return state.app.newMessageReceived;
+}
+
 

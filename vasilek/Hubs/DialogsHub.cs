@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -26,10 +28,12 @@ namespace vasilek.Hubs
             _userRep = new UserRepository(ctx);
         }
 
-        public async Task SendMessage(int dialogId, string messageText)
+        public async Task SendMessage(int dialogId, string messageText, FileModel[] files)
         {
-            MessageModel message = _dialogsRep.AddMessageToDialog(Context.User.Identity.Name, dialogId, messageText);
-            var usersLogins = _dialogsRep.GetUsersLoginsInDialog(dialogId);
+            int messageId = _dialogsRep.AddMessageToDialog(Context.User.Identity.Name, dialogId, messageText);
+            MessageModel message = _dialogsRep.AddFilesPinnedToMessage(messageId, files);
+            var usersLogins = message.Dialog.Users.Select(u => u.Login).ToList();
+            message.Dialog.Users = null;
             await Clients.Users(usersLogins).ReceiveMessage(dialogId, message);
             usersLogins.Remove(Context.User.Identity.Name);
             await Clients.Users(usersLogins).ReceiveNotification(message);

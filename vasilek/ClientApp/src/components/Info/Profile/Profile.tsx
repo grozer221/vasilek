@@ -50,7 +50,10 @@ export const Profile: React.FC = () => {
             <div className={s.wrapper_nick}>
                 <strong>{profile?.nickName}</strong>
                 <div className={s.online_status}>
-                    {profile?.isOnline ? <small>Online</small> : <small>Offline</small>}
+
+                    {profile?.isOnline ? <small>Online</small>
+                        : <small>Last seen {profile?.dateLastOnline.toString().substr(5, 5)} {profile?.dateLastOnline.toString().substr(11, 5)}</small>
+                    }
                 </div>
             </div>
             <div className={s.wrapper_info}>

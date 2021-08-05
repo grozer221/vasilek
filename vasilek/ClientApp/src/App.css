@@ -1,7 +1,8 @@
-*{
+* {
     scrollbar-color: #CFD3E4 #EDF0F6;
     scrollbar-width: thin;
 }
+
 input {
     outline: none;
 }
@@ -59,18 +60,51 @@ input {
     grid-auto-columns: 1fr 6fr 19fr 1fr;
 }
 
-.react-contextmenu-item{
-    cursor: pointer;
-    padding: 2px 5px;
+.displayNone {
+    display: none;
 }
 
-.react-contextmenu-item:hover{
+.classic {
+    border: none;
+    background-color: #EDF0F6;
+    display: block;
+}
+
+.classic {
+    border: none;
+    background-color: white;
+}
+
+.classic svg {
+    color: gray;
+}
+
+.classic span {
+    background-color: white;
+}
+
+.classic span:hover {
+    background-color: #E0F4F1;
+}
+
+.classic span:hover svg {
     background-color: #E0F4F1;
     color: #00A389;
 }
 
-.displayNone{
-    display: none;
+.classic span:hover {
+    background-color: #E0F4F1;
+}
+
+.files {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.message_photo {
+    margin-top: 2px;
+    width: 50px;
 }
 
 @media (max-width: 900px) {
@@ -78,20 +112,21 @@ input {
         display: block;
     }
 
-    .nav{
+    .nav {
         height: 7%;
     }
 
-    .dialogs, .messages, .info_page{
+    .dialogs, .messages, .info_page {
         height: 93%;
     }
 }
 
-@media (max-height: 500px){
-    .nav{
+@media (max-height: 500px) {
+    .nav {
         display: none;
     }
-    .dialogs, .messages, .info_page{
+
+    .dialogs, .messages, .info_page {
         height: 100%;
     }
 }

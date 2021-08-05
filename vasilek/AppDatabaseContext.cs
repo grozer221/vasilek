@@ -14,5 +14,6 @@ namespace vasilek
         public DbSet<PhotoModel>   Photos { get; set; }
         public DbSet<DialogModel>  Dialogs{ get; set; }
         public DbSet<MessageModel> Messages { get; set; }
+        public DbSet<FileModel>    Files { get; set; }
     }
 }

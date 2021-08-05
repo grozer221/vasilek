@@ -1,9 +1,8 @@
-import {ProfileType} from "../types/types";
+import {ProfileType, ResponseType} from "../types/types";
 import {HubConnection, HubConnectionBuilder} from "@microsoft/signalr";
-import {Avatar, message, notification} from "antd";
+import {message} from "antd";
 import React from "react";
-import {urls} from "./api";
-import userWithoutPhoto from "../assets/images/man.png";
+import {instance} from "./api";
 
 let connection: HubConnection | null = null;
 
@@ -20,6 +19,7 @@ const subscribers = {
     'CHANGE_GROUP_NAME': [] as ChangeGroupNameSubscriberType[],
     'TOGGLE_USER_ONLINE': [] as ToggleUserOnlineSubscriberType[],
     'SET_DATE_LAST_ONLINE': [] as SetDateLastOnlineSubscriberType[],
+    'RECEIVE_NOTIFICATION': [] as ReceiveNotificationSubscriberType[],
 }
 
 const createConnection = () => {
@@ -31,6 +31,14 @@ const createConnection = () => {
     connection.start()
         .then(() => {
             message.success('Connected!')
+
+            connection?.on('ReceiveNotification', (message: MessageType) => {
+                subscribers['RECEIVE_NOTIFICATION'].forEach(s => s(message))
+            });
+
+            connection?.on('ReceiveMessage', (dialogId: number, message: MessageType) => {
+                subscribers['MESSAGE_RECEIVED'].forEach(s => s(dialogId, message))
+            });
 
             connection?.on('ReceiveDialogs', (dialogs: DialogType[]) => {
                 subscribers['DIALOGS_RECEIVED'].forEach(s => s(dialogs))
@@ -75,33 +83,6 @@ const createConnection = () => {
             connection?.on('SetDateLastOnline', (userLogin: string, dateLastOnline: Date) => {
                 subscribers['SET_DATE_LAST_ONLINE'].forEach(s => s(userLogin, dateLastOnline))
             });
-
-            connection?.on('ReceiveNotification', (message: MessageType) => {
-                if (message) {
-                    notification.open({
-                        message: message.user.nickName,
-                        description: (
-                            <div>
-                                <div>{message.messageText}</div>
-                                <div>
-                                    <small>{message.dateCreate.toString().substr(11, 5)}</small>
-                                </div>
-                            </div>
-                        ),
-                        icon: <Avatar shape="square" size={32}
-                                      src={message.user.avaPhoto ? urls.pathToUsersPhotos + message.user.avaPhoto : userWithoutPhoto}
-                        />,
-                        duration: 10,
-                        placement: "topRight"
-                    });
-                }
-            });
-
-            connection?.on('ReceiveMessage', (dialogId: number, message: MessageType) => {
-                if (message) {
-                    subscribers['MESSAGE_RECEIVED'].forEach(s => s(dialogId, message))
-                }
-            });
         })
         .catch((e: any) => message.error('Connection failed: ', e));
 }
@@ -122,8 +103,20 @@ export const dialogsAPI = {
         // @ts-ignore
         subscribers[eventName] = subscribers[eventName].filter(s => s !== callback);
     },
-    sendMessage(dialogId: number, messageText: string) {
-        connection?.send('SendMessage', dialogId, messageText);
+    sendMessage(dialogId: number, messageText: string, filesPinnedToMessage: File[]) {
+        let files: FileType[] = [];
+        filesPinnedToMessage.forEach(file => {
+            files.push({id: 0, name: file.name, size: file.size, type: file.type, message: {} as MessageType});
+        });
+        connection?.send('SendMessage', dialogId, messageText, files);
+        filesPinnedToMessage.forEach((file) => {
+            let formData = new FormData;
+            formData.append("file", file);
+            instance.post<ResponseType>('dialogs/file', formData, {
+                headers: {'Content-Type': 'multipart-form-data'}
+            })
+                .then(res => res.data);
+        })
     },
     getDialogByUserId(userId: number) {
         connection?.send('GetDialogByUserId', userId);
@@ -154,6 +147,7 @@ type RemoveUserFromDialogSubscriberType = (dialogId: number, userId: number) => 
 type ChangeGroupNameSubscriberType = (dialogId: number, newGroupName: string) => void
 type ToggleUserOnlineSubscriberType = (userLogin: string, isOnline: boolean) => void
 type SetDateLastOnlineSubscriberType = (userLogin: string, dateLastOnline: Date) => void
+type ReceiveNotificationSubscriberType = (message: MessageType) => void
 
 type EventsNamesType =
     'DIALOGS_RECEIVED'
@@ -168,6 +162,7 @@ type EventsNamesType =
     | 'CHANGE_GROUP_NAME'
     | 'TOGGLE_USER_ONLINE'
     | 'SET_DATE_LAST_ONLINE'
+    | 'RECEIVE_NOTIFICATION'
 
 type CallbackType =
     DialogsReceivedSubscriberType
@@ -182,7 +177,7 @@ type CallbackType =
     | ChangeGroupNameSubscriberType
     | ToggleUserOnlineSubscriberType
     | SetDateLastOnlineSubscriberType
-
+    | ReceiveNotificationSubscriberType
 
 export type DialogType = {
     id: number
@@ -198,7 +193,16 @@ export type DialogType = {
 
 export type MessageType = {
     id: number
+    files: FileType[]
     messageText: string
     dateCreate: Date
     user: ProfileType
+}
+
+export type FileType = {
+    id: number,
+    name: string,
+    size: number,
+    type: string,
+    message: MessageType,
 }

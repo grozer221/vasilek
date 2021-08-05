@@ -3,23 +3,30 @@ import './App.css';
 import {Redirect, Route, Switch, useHistory} from 'react-router-dom';
 import {Login} from './components/Login/Login';
 import {useDispatch, useSelector} from 'react-redux';
-import {initialiseApp} from './redux/app-reducer';
+import {actions, initialiseApp} from './redux/app-reducer';
 import Loading from './components/common/Loading/Loading';
 import 'antd/dist/antd.css';
-import {s_getInitialised, s_getPageOpened} from "./redux/app-selectors";
+import {s_getInitialised, s_getNewMessageReceived, s_getPageOpened} from "./redux/app-selectors";
 import {s_getIsAuth} from "./redux/auth-selectors";
 import {startDialogsListening, stopDialogsListening} from "./redux/dialogs-reducer";
 import {Messages} from "./components/Messages/Messages";
 import {Dialogs} from "./components/Dialogs/Dialogs";
-import {Button, Result} from "antd";
+import {Avatar, Button, Image, notification, Result} from "antd";
 import {Nav} from "./components/Nav/Nav";
 import {Register} from "./components/Register/Register";
 import {Info} from "./components/Info/Info";
 import {useMediaQuery} from 'react-responsive'
+import reactStringReplace from "react-string-replace";
+import {Emoji} from "emoji-mart";
+import {urls} from "./api/api";
+import userWithoutPhoto from "./assets/images/man.png";
+import s from "./components/Messages/Messages.module.css";
+import {CloudDownloadOutlined} from "@ant-design/icons";
 
 export const App: React.FC = () => {
     const isAuth = useSelector(s_getIsAuth);
     const initialised = useSelector(s_getInitialised);
+    const newMessageReceived = useSelector(s_getNewMessageReceived);
     const history = useHistory();
     const dispatch = useDispatch();
 
@@ -32,6 +39,57 @@ export const App: React.FC = () => {
                 dispatch(stopDialogsListening());
         }
     }, [isAuth]);
+
+    useEffect(() => {
+        if (newMessageReceived !== null) {
+            notification.open({
+                message: newMessageReceived?.user.nickName,
+                description: (
+                    <div>
+                        <div>
+                            {newMessageReceived.files.length > 0 &&
+                            <div className='files'>
+                                {newMessageReceived.files.map(file => {
+                                    if (file.type.match(/image/) !== null)
+                                        return <div>
+                                            <img
+                                                className='message_photo'
+                                                src={urls.pathToFilesPinnedToMessage + file.name}
+                                                alt={file.name}
+                                            />
+                                        </div>
+                                    else
+                                        return <div className={s.message_file}>
+                                            <Avatar icon={<CloudDownloadOutlined/>}/>
+                                            <div>{file.name}</div>
+                                        </div>
+                                })
+                                }
+                            </div>
+                            }
+                            <div>
+                                {reactStringReplace(newMessageReceived?.messageText,
+                                    /:(.+?):/,
+                                    (match) => (
+                                        <Emoji size={26} emoji={match} set='apple'/>
+                                    ))
+                                }
+                            </div>
+                        </div>
+                        <div>
+                            <small>{newMessageReceived?.dateCreate.toString().substr(11, 5)}</small>
+                        </div>
+                    </div>
+                ),
+                icon: <Avatar shape="square" size={32}
+                              src={newMessageReceived?.user.avaPhoto ? urls.pathToUsersPhotos + newMessageReceived?.user.avaPhoto : userWithoutPhoto}
+                />,
+                duration: 10,
+                placement: "topRight"
+            });
+            dispatch(actions.setMessageReceived(null));
+        }
+    }, [newMessageReceived])
 
     if (!initialised)
         return <Loading/>;
@@ -70,7 +128,7 @@ const MainPage: React.FC = () => {
         <>
             <div className={['content', isOpenInfoPage ? '' : 'info_page_close'].join(' ')}>
                 <div className='nav'>
-                    <Nav/>
+                    <Nav isOpenInfoPage={isOpenInfoPage} setIsOpenInfoPage={setIsOpenInfoPage}/>
                 </div>
                 {(!isPhone || pageOpened === 'dialogs') &&
                 <div className='dialogs'>

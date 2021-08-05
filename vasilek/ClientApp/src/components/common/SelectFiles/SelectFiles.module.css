@@ -1,0 +1,56 @@
+.wrapper_select_files{
+    background-color: #91929f;
+    position: absolute;
+    z-index: 10;
+    padding: 5px 7px;
+    border-radius: 10px;
+    right: 16px;
+    bottom: 70px;
+}
+
+.display_none{
+    display: none;
+}
+
+.file{
+    padding: 3px 5px;
+    margin: 1px 0;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.file button{
+    background-color: #91929f;
+}
+
+.file button span{
+    background-color: #91929f;
+}
+
+.file:hover{
+    background-color: #adafbd;
+}
+
+.file:hover button{
+    background-color: #adafbd;
+}
+
+.file:hover button span{
+    background-color: #adafbd;
+}
+
+.file button:hover span{
+    background-color: #E0F4F1;
+}
+
+.file button svg{
+    color: white;
+}
+
+.file button:hover svg,
+.file button span:hover svg{
+    color: red;
+}
+
