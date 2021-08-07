@@ -13,7 +13,6 @@ import {ArrowLeftOutlined} from "@ant-design/icons";
 import {OnlineIndicator} from "../common/OnlineIndicator/OnlineIndicator";
 import {DialogType} from "../../api/dialogs-api";
 import {s_getCurrentUserId} from "../../redux/auth-selectors";
-import {ProfileType} from "../../types/types";
 
 export const Actions: React.FC = () => {
     const isPhone = useMediaQuery({query: '(max-width: 900px)'})
@@ -30,13 +29,14 @@ export const Actions: React.FC = () => {
 
     return (
         <div className={s.actions}>
+            {isPhone &&
+            <button onClick={() => dispatch(appActions.setPageOpened('dialogs'))}>
+                <Avatar icon={<ArrowLeftOutlined/>}/>
+            </button>}
             {currentDialogId &&
             <Link to={'/dialoginfo'} onClick={() => clickHandler(currentDialogId)}>
                 <div className={s.dialogsPhotoAndName}>
-                    {isPhone &&
-                    <button onClick={() => dispatch(appActions.setPageOpened('dialogs'))}>
-                        <Avatar icon={<ArrowLeftOutlined/>}/>
-                    </button>}
+
                     <div className={s.user_ava}>
                         <Avatar size={48}
                                 src={currentDialog?.dialogPhoto
@@ -50,9 +50,10 @@ export const Actions: React.FC = () => {
                     <div className={s.user_nick_and_online_count}>
                         <div className={s.dialog_name}>{currentDialog?.dialogName} </div>
                         {currentDialog.isDialogBetween2 && !currentDialog.users.filter(user => user.id !== currentUserId)[0]?.isOnline &&
-                            <small>
-                                last seen {currentDialog.users.filter(user => user.id !== currentUserId)[0]?.dateLastOnline.toString().substr(5, 5)} {currentDialog.users.filter(user => user.id !== currentUserId)[0]?.dateLastOnline.toString().substr(11, 5)}
-                            </small>
+                        <small>
+                            last
+                            seen {currentDialog.users.filter(user => user.id !== currentUserId)[0]?.dateLastOnline.toString().substr(5, 5)} {currentDialog.users.filter(user => user.id !== currentUserId)[0]?.dateLastOnline.toString().substr(11, 5)}
+                        </small>
                         }
                         {!currentDialog.isDialogBetween2 &&
                         <small>

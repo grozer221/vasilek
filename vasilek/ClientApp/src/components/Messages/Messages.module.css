@@ -114,35 +114,35 @@
 }
 
 .form_input_message button,
-.dialogsPhotoAndName button {
+.actions button {
     border: none;
     background-color: #EDF0F6;
 }
 
 .form_input_message svg,
-.dialogsPhotoAndName button svg {
+.actions button svg {
     color: gray;
 }
 
 .form_input_message span,
-.dialogsPhotoAndName span {
+.actions span {
     background-color: #EDF0F6;
 }
 
 .form_input_message button,
-.dialogsPhotoAndName button {
+.actions button {
     display: block;
     border: none;
     background-color: #EDF0F6;
 }
 
 .form_input_message button span:hover,
-.dialogsPhotoAndName button span:hover {
+.actions button span:hover {
     background-color: #E0F4F1;
 }
 
 .form_input_message button span:hover svg,
-.dialogsPhotoAndName button span:hover svg {
+.actions button span:hover svg {
     background-color: #E0F4F1;
     color: #00A389;
 }

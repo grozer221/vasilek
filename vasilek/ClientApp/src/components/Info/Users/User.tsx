@@ -9,6 +9,7 @@ import {EditOutlined} from "@ant-design/icons";
 import {useDispatch} from "react-redux";
 import {getDialogByUserId} from "../../../redux/dialogs-reducer";
 import {OnlineIndicator} from "../../common/OnlineIndicator/OnlineIndicator";
+import {actions as appActions} from "../../../redux/app-reducer";
 
 type PropsType = {
     user: ProfileType
@@ -24,13 +25,17 @@ export const User: React.FC<PropsType> = ({user}) => {
                     <div className={s.user_ava}>
                         <Avatar size={48}
                                 src={user.avaPhoto !== null ? urls.pathToUsersPhotos + user.avaPhoto : userWithoutPhoto}/>
-                        {user.isOnline && <OnlineIndicator backgroundColor='white' width='15px' height='15px' left='33px' bottom='0'/>}
+                        {user.isOnline &&
+                        <OnlineIndicator backgroundColor='white' width='15px' height='15px' left='33px' bottom='0'/>}
                     </div>
                     <div>{user.nickName}</div>
                 </div>
             </Link>
-            <button>
-                <Avatar icon={<EditOutlined onClick={() => dispatch(getDialogByUserId(user.id))}/>}/>
+            <button onClick={() => {
+                dispatch(appActions.setPageOpened('messages'));
+                dispatch(getDialogByUserId(user.id));
+            }}>
+                <Avatar icon={<EditOutlined/>}/>
             </button>
         </div>
     );

@@ -157,10 +157,16 @@ namespace vasilek.Repository
 
         public bool DeleteDialog(int dialogId)
         {
-            var dialog = _ctx.Dialogs.Include(d => d.Messages).ThenInclude(m => m.User).Include(d => d.Users).FirstOrDefault(d => d.Id == dialogId);
+            var dialog = _ctx.Dialogs
+                .Include(d => d.Messages).ThenInclude(m => m.User)
+                .Include(d => d.Messages).ThenInclude(m => m.Files)
+                .Include(d => d.Users)
+                .FirstOrDefault(d => d.Id == dialogId);
             if (dialog == null)
                 return false;
             var messages = dialog.Messages;
+            foreach (var message in messages)
+                _ctx.Files.RemoveRange(message.Files);
             _ctx.Messages.RemoveRange(messages);
             _ctx.Dialogs.Remove(dialog);
             _ctx.SaveChanges();

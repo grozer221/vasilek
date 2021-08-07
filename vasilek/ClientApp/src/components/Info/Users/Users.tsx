@@ -5,8 +5,6 @@ import {UsersSearchForm} from "./UsersSearchForm";
 import {actions, requestAndAddUsers, requestAndSetUsers} from "../../../redux/users-reducer";
 import {useDispatch, useSelector} from "react-redux";
 import {s_getCurrentPage, s_getPageSize, s_getTerm, s_getUsers, s_getUsersCount} from "../../../redux/users-selectors";
-import {message} from "antd";
-
 
 export const Users: React.FC = () => {
     const usersCount = useSelector(s_getUsersCount);

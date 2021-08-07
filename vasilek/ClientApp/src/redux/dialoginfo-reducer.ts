@@ -1,12 +1,9 @@
 import {BaseThunkType, InferActionsTypes} from "./redux-store";
-import {profileAPI} from "../api/profile-api";
-import {ResponseCodes} from "../api/api";
 import {dialogsAPI} from "../api/dialogs-api";
 
 let initialState = {
     currentDialogInfoId: null as number | null,
 };
-
 
 export const dialogInfoReducer = (state = initialState, action: ActionsTypes): InitialStateType => {
     switch (action.type) {
@@ -21,7 +18,7 @@ export const dialogInfoReducer = (state = initialState, action: ActionsTypes): I
 };
 
 export const actions = {
-    setCurrentDialogInfoId: (id: number) => ({
+    setCurrentDialogInfoId: (id: number | null) => ({
         type: 'SET_CURRENT_DIALOG_INFO_ID',
         id: id,
     } as const),

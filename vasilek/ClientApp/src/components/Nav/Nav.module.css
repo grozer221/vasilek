@@ -43,7 +43,6 @@
     .nav {
         flex-direction: row;
         border-right: none;
-        border-bottom: 3px solid #d5d5d5;
     }
     .nav_items {
         flex-direction: row;

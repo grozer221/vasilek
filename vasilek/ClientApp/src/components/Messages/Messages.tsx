@@ -34,30 +34,36 @@ export const Messages: React.FC = () => {
 
     useEffect(() => {
         scroll();
+
     }, [])
 
     useEffect(() => {
         scroll();
+
     }, [currentDialogId])
 
     const scrollHandler = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
         const element = e.currentTarget;
         let scrollPosition = Math.abs(element.scrollHeight - element.scrollTop) - element.clientHeight;
+        //console.log(scrollPosition)
         if (scrollPosition < 100)
             !isAutoScroll && setIsAutoScroll(true);
         else
             isAutoScroll && setIsAutoScroll(false);
 
-        if(scrollPosition < 15){
-            currentDialog.messages?.forEach(message => {
-                message.usersUnReadMessage?.forEach(user => {
-                    if(user.id === currentUserId){
-                        dispatch(makeMessageRead(currentDialogId, message.id))
-                        console.log(message.user.nickName + ': ' + message.messageText)
-                    }
-                })
-            })
-        }
+        if (scrollPosition < 15)
+            checkIfReadMessages()
+    };
+
+    const checkIfReadMessages = () => {
+        currentDialog?.messages?.forEach(message => {
+            message.usersUnReadMessage?.forEach(user => {
+                if (user.id === currentUserId) {
+                    dispatch(makeMessageRead(currentDialogId, message.id))
+                    //console.log(message.user.nickName + ': ' + message.messageText)
+                }
+            });
+        });
     };
 
     return (
