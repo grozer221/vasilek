@@ -10,8 +10,8 @@ using vasilek;
 namespace vasilek.Migrations
 {
     [DbContext(typeof(AppDatabaseContext))]
-    [Migration("20210801165133_added_is_dialog_between_2")]
-    partial class added_is_dialog_between_2
+    [Migration("20210806132747_added_userunreadmessage")]
+    partial class added_userunreadmessage
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -58,12 +58,38 @@ namespace vasilek.Migrations
                     b.Property<string>("DialogPhoto")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("IsDialogBetween2")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("IsDialogBetween2")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
                     b.ToTable("Dialogs");
+                });
+
+            modelBuilder.Entity("vasilek.Models.FileModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("MessageId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Size")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MessageId");
+
+                    b.ToTable("Files");
                 });
 
             modelBuilder.Entity("vasilek.Models.MessageModel", b =>
@@ -127,8 +153,20 @@ namespace vasilek.Migrations
                     b.Property<string>("Country")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("DateLastOnline")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateRegister")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsOnline")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Login")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("MessageModelId")
+                        .HasColumnType("int");
 
                     b.Property<string>("NickName")
                         .HasColumnType("nvarchar(max)");
@@ -140,6 +178,8 @@ namespace vasilek.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MessageModelId");
 
                     b.ToTable("Users");
                 });
@@ -157,6 +197,15 @@ namespace vasilek.Migrations
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("vasilek.Models.FileModel", b =>
+                {
+                    b.HasOne("vasilek.Models.MessageModel", "Message")
+                        .WithMany("Files")
+                        .HasForeignKey("MessageId");
+
+                    b.Navigation("Message");
                 });
 
             modelBuilder.Entity("vasilek.Models.MessageModel", b =>
@@ -183,9 +232,23 @@ namespace vasilek.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("vasilek.Models.UserModel", b =>
+                {
+                    b.HasOne("vasilek.Models.MessageModel", null)
+                        .WithMany("UsersUnReadMessage")
+                        .HasForeignKey("MessageModelId");
+                });
+
             modelBuilder.Entity("vasilek.Models.DialogModel", b =>
                 {
                     b.Navigation("Messages");
+                });
+
+            modelBuilder.Entity("vasilek.Models.MessageModel", b =>
+                {
+                    b.Navigation("Files");
+
+                    b.Navigation("UsersUnReadMessage");
                 });
 
             modelBuilder.Entity("vasilek.Models.UserModel", b =>

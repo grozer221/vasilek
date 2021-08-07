@@ -10,8 +10,8 @@ using vasilek;
 namespace vasilek.Migrations
 {
     [DbContext(typeof(AppDatabaseContext))]
-    [Migration("20210723102239_added_datechanged_to_dialogs")]
-    partial class added_datechanged_to_dialogs
+    [Migration("20210806101318_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -58,29 +58,38 @@ namespace vasilek.Migrations
                     b.Property<string>("DialogPhoto")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsDialogBetween2")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
                     b.ToTable("Dialogs");
                 });
 
-            modelBuilder.Entity("vasilek.Models.FollowModel", b =>
+            modelBuilder.Entity("vasilek.Models.FileModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("SubscriberId")
+                    b.Property<int?>("MessageId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UserId")
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Size")
                         .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("MessageId");
 
-                    b.ToTable("Follows");
+                    b.ToTable("Files");
                 });
 
             modelBuilder.Entity("vasilek.Models.MessageModel", b =>
@@ -141,11 +150,17 @@ namespace vasilek.Migrations
                     b.Property<string>("AvaPhoto")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("City")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Country")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateLastOnline")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateRegister")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsOnline")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Login")
                         .HasColumnType("nvarchar(max)");
@@ -179,13 +194,13 @@ namespace vasilek.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("vasilek.Models.FollowModel", b =>
+            modelBuilder.Entity("vasilek.Models.FileModel", b =>
                 {
-                    b.HasOne("vasilek.Models.UserModel", "User")
-                        .WithMany("Follows")
-                        .HasForeignKey("UserId");
+                    b.HasOne("vasilek.Models.MessageModel", "Message")
+                        .WithMany("Files")
+                        .HasForeignKey("MessageId");
 
-                    b.Navigation("User");
+                    b.Navigation("Message");
                 });
 
             modelBuilder.Entity("vasilek.Models.MessageModel", b =>
@@ -217,10 +232,13 @@ namespace vasilek.Migrations
                     b.Navigation("Messages");
                 });
 
+            modelBuilder.Entity("vasilek.Models.MessageModel", b =>
+                {
+                    b.Navigation("Files");
+                });
+
             modelBuilder.Entity("vasilek.Models.UserModel", b =>
                 {
-                    b.Navigation("Follows");
-
                     b.Navigation("Photos");
                 });
 #pragma warning restore 612, 618

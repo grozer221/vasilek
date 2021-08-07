@@ -120,6 +120,25 @@ const dialogsReducer = (state = initialState, action: ActionsTypes): InitialStat
                         : dialog
                 )
             };
+        case 'MAKE_MESSAGE_READ':
+            return {
+                ...state,
+                dialogs: state.dialogs.map(dialog =>
+                    dialog.id === action.dialogId
+                        ? {
+                            ...dialog,
+                            messages: dialog.messages.map(message =>
+                                message.id === action.messageId
+                                    ? {
+                                        ...message,
+                                        usersUnReadMessage: message.usersUnReadMessage.filter(user => user.login !== action.userLogin),
+                                    }
+                                    : message
+                            )
+                        }
+                        : dialog
+                )
+            };
         default:
             return state;
     }
@@ -175,6 +194,12 @@ export const actions = {
         type: 'SET_DATE_LAST_ONLINE',
         userLogin: userLogin,
         dateLastOnline: dateLastOnline,
+    } as const),
+    makeMessageRead: (dialogId: number, messageId: number, userLogin: string) => ({
+        type: 'MAKE_MESSAGE_READ',
+        dialogId: dialogId,
+        messageId: messageId,
+        userLogin: userLogin,
     } as const),
 }
 
@@ -308,6 +333,16 @@ const receiveNotificationHandlerCreator = (dispatch: Dispatch) => {
     return _receiveNotificationHandler
 }
 
+let _makeMessageReadHandler: ((dialogId: number, messageId: number, userLogin: string) => void) | null = null
+const makeMessageReadHandlerCreator = (dispatch: Dispatch) => {
+    if (_makeMessageReadHandler === null) {
+        _makeMessageReadHandler = (dialogId, messageId, userLogin) => {
+            dispatch(actions.makeMessageRead(dialogId, messageId, userLogin));
+        }
+    }
+    return _makeMessageReadHandler
+}
+
 export const startDialogsListening = (): ThunkType => async (dispatch) => {
     dialogsAPI.start();
     dialogsAPI.subscribe('DIALOGS_RECEIVED', newDialogsHandlerCreator(dispatch));
@@ -323,6 +358,7 @@ export const startDialogsListening = (): ThunkType => async (dispatch) => {
     dialogsAPI.subscribe('TOGGLE_USER_ONLINE', toggleUserOnlineHandlerCreator(dispatch));
     dialogsAPI.subscribe('SET_DATE_LAST_ONLINE', setDateLastOnlineHandlerCreator(dispatch));
     dialogsAPI.subscribe('RECEIVE_NOTIFICATION', receiveNotificationHandlerCreator(dispatch));
+    dialogsAPI.subscribe('MAKE_MESSAGE_READ', makeMessageReadHandlerCreator(dispatch));
 };
 
 export const stopDialogsListening = (): ThunkType => async (dispatch) => {
@@ -339,6 +375,7 @@ export const stopDialogsListening = (): ThunkType => async (dispatch) => {
     dialogsAPI.unsubscribe('TOGGLE_USER_ONLINE', toggleUserOnlineHandlerCreator(dispatch));
     dialogsAPI.unsubscribe('SET_DATE_LAST_ONLINE', setDateLastOnlineHandlerCreator(dispatch));
     dialogsAPI.unsubscribe('RECEIVE_NOTIFICATION', receiveNotificationHandlerCreator(dispatch));
+    dialogsAPI.unsubscribe('MAKE_MESSAGE_READ', makeMessageReadHandlerCreator(dispatch));
 };
 
 export const sendMessage = (dialogId: number, messageText: string, files: File[]): ThunkType => async (dispatch) => {
@@ -364,6 +401,10 @@ export const deleteUsersFromDialog = (dialogId: number, userId: number): ThunkTy
 
 export const changeGroupName = (dialogId: number, newGroupName: string): ThunkType => async (dispatch) => {
     dialogsAPI.changeGroupName(dialogId, newGroupName);
+};
+
+export const makeMessageRead = (dialogId: number, messageId: number): ThunkType => async (dispatch) => {
+    dialogsAPI.makeMessageRead(dialogId, messageId);
 };
 
 export default dialogsReducer;

@@ -21,5 +21,6 @@ namespace vasilek.Interfaces
         Task ChangeGroupName(int dialogId, string newGroupName);
         Task ToggleUserOnline(string userLogin, bool isOnline);
         Task SetDateLastOnline(string name, DateTime dateLastOnline);
+        Task MakeMessageRead(int dialogId, int messageId, string userLogin);
     }
 }

@@ -26,7 +26,6 @@ export const Dialogs: React.FC = () => {
             title: <div>Do you want to delete dialog <strong>{dialogName}</strong>?</div>,
             icon: <ExclamationCircleOutlined/>,
             onOk() {
-                debugger
                 dispatch(deleteDialog(dialogId));
             },
         });

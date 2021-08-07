@@ -24,7 +24,11 @@ namespace vasilek.Repository
         
         public MessageModel GetMessageById(int id)
         {
-            return _ctx.Messages.Include(m => m.Dialog).Include(m => m.User).Include(m => m.Files).SingleOrDefault(d => d.Id == id);
+            return _ctx.Messages.Include(m => m.Dialog)
+                .Include(m => m.User)
+                .Include(m => m.Files)
+                .Include(m => m.UsersUnReadMessage)
+                .SingleOrDefault(d => d.Id == id);
         }
 
         public List<DialogModel> GetDialogsByUserLogin(string userLogin)
@@ -102,16 +106,22 @@ namespace vasilek.Repository
             DialogModel dialog = _ctx.Dialogs
                 .Include(d => d.Users)
                 .Include(d => d.Messages).ThenInclude(m => m.User)
+                .Include(d => d.Messages).ThenInclude(m => m.UsersUnReadMessage)
                 .Include(d => d.Messages).ThenInclude(m => m.Files)
                 .FirstOrDefault(d => d.Id == dialogId);
+            var usersInDialog = dialog.Users;
+            var currentUserList = new List<UserModel>();
+            currentUserList.Add(currentUser);
+            DateTime dateTime = DateTime.Now;
             MessageModel message = new MessageModel
             {
                 Dialog = dialog,
                 User = currentUser,
-                DateCreate = DateTime.Now,
+                UsersUnReadMessage = usersInDialog.Except(currentUserList).ToList(),
+                DateCreate = dateTime,
                 MessageText = messageText
             };
-            dialog.DateChanged = DateTime.Now;
+            dialog.DateChanged = dateTime;
             dialog.Messages.Add(message);
             _ctx.SaveChanges();
             return message.Id;
@@ -128,6 +138,8 @@ namespace vasilek.Repository
             foreach (var file in message.Files)
                 file.Message = null;
             message.User.Dialogs = null;
+            foreach (var user in message.UsersUnReadMessage)
+                user.Dialogs = null;
             return message;
         }
 
@@ -208,6 +220,14 @@ namespace vasilek.Repository
                     if (user.Login != userLogin && !usersLoginsWhichHaveAnyRelationshipWithUser.Any(u => u == user.Login))
                         usersLoginsWhichHaveAnyRelationshipWithUser.Add(user.Login);
             return usersLoginsWhichHaveAnyRelationshipWithUser;
+        }
+        
+        public void MakeMessageRead(int messageId, string userLogin)
+        {
+            var message = GetMessageById(messageId);
+            var user = message.UsersUnReadMessage.FirstOrDefault(u => u.Login == userLogin);
+            message.UsersUnReadMessage.Remove(user);
+            _ctx.SaveChanges();
         }
     }
 }

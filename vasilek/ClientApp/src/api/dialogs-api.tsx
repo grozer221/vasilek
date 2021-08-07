@@ -20,6 +20,7 @@ const subscribers = {
     'TOGGLE_USER_ONLINE': [] as ToggleUserOnlineSubscriberType[],
     'SET_DATE_LAST_ONLINE': [] as SetDateLastOnlineSubscriberType[],
     'RECEIVE_NOTIFICATION': [] as ReceiveNotificationSubscriberType[],
+    'MAKE_MESSAGE_READ': [] as MakeMessageReadSubscriberType[],
 }
 
 const createConnection = () => {
@@ -83,6 +84,10 @@ const createConnection = () => {
             connection?.on('SetDateLastOnline', (userLogin: string, dateLastOnline: Date) => {
                 subscribers['SET_DATE_LAST_ONLINE'].forEach(s => s(userLogin, dateLastOnline))
             });
+
+            connection?.on('MakeMessageRead', (dialogId: number, messageId: number, userLogin: string) => {
+                subscribers['MAKE_MESSAGE_READ'].forEach(s => s(dialogId, messageId, userLogin))
+            });
         })
         .catch((e: any) => message.error('Connection failed: ', e));
 }
@@ -133,6 +138,9 @@ export const dialogsAPI = {
     changeGroupName(dialogId: number, newGroupName: string) {
         connection?.send('ChangeGroupName', dialogId, newGroupName);
     },
+    makeMessageRead(dialogId: number, messageId: number) {
+        connection?.send('MakeMessageRead', dialogId, messageId);
+    },
 }
 
 type DialogsReceivedSubscriberType = (dialogs: DialogType[]) => void
@@ -148,6 +156,7 @@ type ChangeGroupNameSubscriberType = (dialogId: number, newGroupName: string) =>
 type ToggleUserOnlineSubscriberType = (userLogin: string, isOnline: boolean) => void
 type SetDateLastOnlineSubscriberType = (userLogin: string, dateLastOnline: Date) => void
 type ReceiveNotificationSubscriberType = (message: MessageType) => void
+type MakeMessageReadSubscriberType = (dialogId: number, messageId: number, userLogin: string) => void
 
 type EventsNamesType =
     'DIALOGS_RECEIVED'
@@ -163,6 +172,7 @@ type EventsNamesType =
     | 'TOGGLE_USER_ONLINE'
     | 'SET_DATE_LAST_ONLINE'
     | 'RECEIVE_NOTIFICATION'
+    | 'MAKE_MESSAGE_READ'
 
 type CallbackType =
     DialogsReceivedSubscriberType
@@ -178,6 +188,7 @@ type CallbackType =
     | ToggleUserOnlineSubscriberType
     | SetDateLastOnlineSubscriberType
     | ReceiveNotificationSubscriberType
+    | MakeMessageReadSubscriberType
 
 export type DialogType = {
     id: number
@@ -197,6 +208,7 @@ export type MessageType = {
     messageText: string
     dateCreate: Date
     user: ProfileType
+    usersUnReadMessage: ProfileType[]
 }
 
 export type FileType = {

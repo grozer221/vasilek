@@ -1,6 +1,6 @@
 import React from 'react';
 import s from './Messages.module.css'
-import {MessageType} from "../../api/dialogs-api";
+import {DialogType, MessageType} from "../../api/dialogs-api";
 import {useSelector} from "react-redux";
 import {s_getCurrentUserId} from "../../redux/auth-selectors";
 import reactStringReplace from 'react-string-replace';
@@ -8,7 +8,8 @@ import {Emoji} from "emoji-mart";
 import {Avatar, Image} from "antd";
 import {urls} from "../../api/api";
 import userWithoutPhoto from '../../assets/images/man.png';
-import {CloudDownloadOutlined} from "@ant-design/icons";
+import {CheckOutlined, CloudDownloadOutlined} from "@ant-design/icons";
+import {s_getCurrentDialogId, s_getDialogs} from "../../redux/dialogs-selectors";
 
 type PropsType = {
     message: MessageType,
@@ -17,6 +18,9 @@ type PropsType = {
 
 export const Message: React.FC<PropsType> = ({message, isDialogBetween2}) => {
     const currentUserId = useSelector(s_getCurrentUserId);
+    const currentDialogId = useSelector(s_getCurrentDialogId);
+    const dialogs = useSelector(s_getDialogs);
+    const currentDialog = dialogs.find(dialog => dialog.id === currentDialogId) as DialogType;
     const isMyMessage = (userId: number) => {
         return currentUserId === userId
     }
@@ -39,13 +43,14 @@ export const Message: React.FC<PropsType> = ({message, isDialogBetween2}) => {
                                 if (file.type.match(/image/) !== null)
                                     return <div>
                                         <Image
+                                            key={file.id}
                                             className={s.message_photo}
                                             src={urls.pathToFilesPinnedToMessage + file.name}
                                             alt={file.name}
                                         />
                                     </div>
                                 else
-                                    return <a className={s.message_file}
+                                    return <a className={s.message_file} key={file.id}
                                               href={urls.pathToFilesPinnedToMessage + file.name} target='_blank'>
                                         <Avatar icon={<CloudDownloadOutlined/>}/>
                                         <div>{file.name}</div>
@@ -64,6 +69,17 @@ export const Message: React.FC<PropsType> = ({message, isDialogBetween2}) => {
                     <div>
                         <small>{message.dateCreate.toString().substr(11, 5)}</small>
                     </div>
+                    {isMyMessage(message.user.id) && message.usersUnReadMessage && message.usersUnReadMessage.length + 1 === currentDialog.users.length &&
+                    <div className={s.checks}>
+                        <Avatar className={s.check_left} size={22} icon={<CheckOutlined style={{color:'#d35400'}}/>} style={{backgroundColor:'transparent'}}/>
+                    </div>
+                    }
+                    {isMyMessage(message.user.id) && (!message.usersUnReadMessage || message.usersUnReadMessage.length + 1 !== currentDialog.users.length) &&
+                    <div className={s.checks}>
+                        <Avatar className={s.check_left}  size={22} icon={<CheckOutlined style={{color:'#d35400'}}/>} style={{backgroundColor:'transparent'}}/>
+                        <Avatar className={s.check_right} size={22} icon={<CheckOutlined style={{color:'#d35400'}}/>} style={{backgroundColor:'transparent'}}/>
+                    </div>
+                    }
                 </div>
             </div>
         </div>

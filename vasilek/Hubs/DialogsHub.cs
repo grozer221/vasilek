@@ -137,6 +137,14 @@ namespace vasilek.Hubs
             var usersLoginsInDialog = dialog.Users.Select(u => u.Login).ToList();
             await Clients.Users(usersLoginsInDialog).ChangeGroupName(dialogId, newGroupName);
         }
+        
+        public async Task MakeMessageRead(int dialogId, int messageId)
+        {
+            string userLogin = Context.User.Identity.Name;
+            _dialogsRep.MakeMessageRead(messageId, userLogin);
+            var userLoginInDialog = _dialogsRep.GetUsersLoginsInDialog(dialogId);
+            await Clients.Users(userLoginInDialog).MakeMessageRead(dialogId, messageId, userLogin);
+        }
 
         public override async Task OnConnectedAsync()
         {

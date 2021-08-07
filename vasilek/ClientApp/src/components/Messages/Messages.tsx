@@ -1,9 +1,9 @@
 import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
 import s from './Messages.module.css'
 import {useDispatch, useSelector} from "react-redux";
-import {s_getIsAuth} from "../../redux/auth-selectors";
+import {s_getCurrentUserId, s_getIsAuth} from "../../redux/auth-selectors";
 import {s_getCurrentDialogId, s_getDialogs} from "../../redux/dialogs-selectors";
-import {sendMessage} from "../../redux/dialogs-reducer";
+import {makeMessageRead, sendMessage} from "../../redux/dialogs-reducer";
 import TextArea from "antd/es/input/TextArea";
 import {Message} from "./Message";
 import {Actions} from "./Actions";
@@ -16,9 +16,10 @@ import {SelectFiles} from "../common/SelectFiles/SelectFiles";
 
 export const Messages: React.FC = () => {
     const dialogs = useSelector(s_getDialogs);
-    const currentDialogId = useSelector(s_getCurrentDialogId);
+    const currentDialogId = useSelector(s_getCurrentDialogId) as number;
+    const currentUserId = useSelector(s_getCurrentUserId);
     const currentDialog = dialogs.find(dialog => dialog.id === currentDialogId) as DialogType;
-
+    const dispatch = useDispatch();
     const [isAutoScroll, setIsAutoScroll] = useState(false);
     const messagesAnchorRef = useRef<HTMLDivElement>(null);
 
@@ -41,10 +42,22 @@ export const Messages: React.FC = () => {
 
     const scrollHandler = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
         const element = e.currentTarget;
-        if (Math.abs(element.scrollHeight - element.scrollTop) - element.clientHeight < 100)
+        let scrollPosition = Math.abs(element.scrollHeight - element.scrollTop) - element.clientHeight;
+        if (scrollPosition < 100)
             !isAutoScroll && setIsAutoScroll(true);
         else
             isAutoScroll && setIsAutoScroll(false);
+
+        if(scrollPosition < 15){
+            currentDialog.messages?.forEach(message => {
+                message.usersUnReadMessage?.forEach(user => {
+                    if(user.id === currentUserId){
+                        dispatch(makeMessageRead(currentDialogId, message.id))
+                        console.log(message.user.nickName + ': ' + message.messageText)
+                    }
+                })
+            })
+        }
     };
 
     return (
@@ -80,9 +93,7 @@ const AddMessageForm: React.FC = () => {
     const dispatch = useDispatch();
 
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        debugger
         e.preventDefault();
-        debugger
         let result = _message.match(/^\s*$/);
         const isMessageProvided = !result || files.length > 0
         if (isMessageProvided && isAuth && currentDialogId) {

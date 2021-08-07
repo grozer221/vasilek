@@ -203,6 +203,22 @@
     background-color: #a9aab7;
 }
 
+.checks{
+    position: relative;
+    width: 20px;
+    height: 20px;
+}
+
+.check_left{
+    position: absolute;
+    left: 1px;
+}
+
+.check_right{
+    position: absolute;
+    right: 1px;
+}
+
 @media (max-width: 900px) {
     .wrapper_messages_page {
         height: 100%;
