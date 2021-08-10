@@ -13,6 +13,7 @@ import 'emoji-mart/css/emoji-mart.css';
 import {EmojiData, Picker} from 'emoji-mart';
 import {DialogType} from "../../api/dialogs-api";
 import {SelectFiles} from "../common/SelectFiles/SelectFiles";
+import Peer from "simple-peer";
 
 export const Messages: React.FC = () => {
     const dialogs = useSelector(s_getDialogs);
@@ -68,6 +69,9 @@ export const Messages: React.FC = () => {
 
     return (
         <div className={s.wrapper_messages_page}>
+            {/*<div className={s.audio_recorder}>*/}
+            {/*    /!*<NativeStream/>*!/*/}
+            {/*</div>*/}
             <Actions/>
             <div className={s.messagesAndForm}>
                 {dialogs && currentDialogId
@@ -89,6 +93,54 @@ export const Messages: React.FC = () => {
     );
 }
 
+////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+
+
+// const NativeStream: React.FC = () => {
+//     const dispatch = useDispatch();
+//     const [playing, setPlaying] = useState(false);
+//     const videoRef = useRef<HTMLVideoElement>(null);
+//     let [mediaStream, setMediaStream] = useState(new MediaStream());
+//     const startVideo = () => {
+//         setPlaying(true);
+//         navigator.getUserMedia(
+//             {
+//                 audio: true,
+//                 video: true
+//             },
+//             (stream) => {
+//                 dispatch(sendVideoAndAudio(stream));
+//                 setMediaStream(stream)
+//                 if (videoRef.current) {
+//                     console.log(stream)
+//                     videoRef.current.srcObject = stream;
+//                 }
+//             },
+//             (err) => console.error(err)
+//         );
+//     };
+//
+//     const stopVideo = () => {
+//         mediaStream.getTracks().forEach(track => track.stop());
+//         setPlaying(false);
+//         if (videoRef.current)
+//             videoRef.current.srcObject = null;
+//     };
+//
+//     return (
+//         <div className="app">
+//             <video
+//                 ref={videoRef}
+//                 autoPlay
+//             />
+//             {playing
+//                 ? <button onClick={stopVideo}>Stop</button>
+//                 : <button onClick={startVideo}>Start</button>
+//             }
+//         </div>
+//     );
+// }
 
 const AddMessageForm: React.FC = () => {
     const isAuth = useSelector(s_getIsAuth);

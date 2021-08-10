@@ -113,7 +113,9 @@ export const dialogsAPI = {
         filesPinnedToMessage.forEach(file => {
             files.push({id: 0, name: file.name, size: file.size, type: file.type, message: {} as MessageType});
         });
+
         connection?.send('SendMessage', dialogId, messageText, files);
+
         filesPinnedToMessage.forEach((file) => {
             let formData = new FormData;
             formData.append("file", file);

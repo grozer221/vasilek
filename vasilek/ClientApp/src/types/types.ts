@@ -15,6 +15,7 @@ export type ProfileType = {
     country: string
     avaPhoto: string | null
     isOnline: boolean
+    nickColor: string
     dateLastOnline: Date
     dateRegister: Date
     isFollowed: boolean

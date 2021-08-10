@@ -68,10 +68,13 @@ export const Dialogs: React.FC = () => {
                                                      left='33px'/>
                                     }
                                     <div className={s.name_and_last_message}>
-                                        <div>{dialog.dialogName}</div>
-                                        {dialog.messages.length > 0 &&
+                                        <div className={s.dialog_name}>{dialog.dialogName}</div>
+                                        {dialog.messages && dialog.messages.length > 0 &&
                                         <div>
-                                            {dialog.messages[dialog.messages.length - 1]?.user.id === currentUser.id ? "You" : dialog.messages[dialog.messages.length - 1]?.user.nickName}: {dialog.messages[dialog.messages.length - 1]?.messageText}
+                                            {dialog.messages[dialog.messages.length - 1]?.user.id === currentUser.id
+                                                ? "You"
+                                                : dialog.isDialogBetween2 || dialog.messages[dialog.messages.length - 1]?.user.nickName
+                                            }: {dialog.messages[dialog.messages.length - 1]?.messageText}
                                         </div>
                                         }
                                     </div>

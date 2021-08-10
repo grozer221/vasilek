@@ -9,7 +9,7 @@ import {Link} from 'react-router-dom';
 import {actions as dialogInfoActions} from "../../redux/dialoginfo-reducer";
 import {actions as appActions} from "../../redux/app-reducer";
 import {useMediaQuery} from "react-responsive";
-import {ArrowLeftOutlined} from "@ant-design/icons";
+import {ArrowLeftOutlined, PhoneOutlined} from "@ant-design/icons";
 import {OnlineIndicator} from "../common/OnlineIndicator/OnlineIndicator";
 import {DialogType} from "../../api/dialogs-api";
 import {s_getCurrentUserId} from "../../redux/auth-selectors";
@@ -29,41 +29,47 @@ export const Actions: React.FC = () => {
 
     return (
         <div className={s.actions}>
-            {isPhone &&
-            <button onClick={() => dispatch(appActions.setPageOpened('dialogs'))}>
-                <Avatar icon={<ArrowLeftOutlined/>}/>
+            <div className={s.dialog_info}>
+                {isPhone &&
+                <button onClick={() => dispatch(appActions.setPageOpened('dialogs'))}>
+                    <Avatar icon={<ArrowLeftOutlined/>}/>
+                </button>}
+                {currentDialogId &&
+                <Link to={'/dialoginfo'} onClick={() => clickHandler(currentDialogId)}>
+                    <div className={s.dialogsPhotoAndName}>
+                        <div className={s.user_ava}>
+                            <Avatar size={48}
+                                    src={currentDialog?.dialogPhoto
+                                        ? urls.pathToUsersPhotos + currentDialog?.dialogPhoto
+                                        : userWithoutPhoto}/>
+                            {currentDialog?.isDialogBetween2 && currentDialog.users.filter(user => user.id !== currentUserId)[0]?.isOnline &&
+                            <OnlineIndicator backgroundColor={'#EDF0F6'} width='15px' height='15px' bottom='0' left='33px'/>
+                            }
+
+                        </div>
+                        <div className={s.user_nick_and_online_count}>
+                            <div className={s.dialog_name}>{currentDialog.dialogName}</div>
+                            {currentDialog?.isDialogBetween2 && !currentDialog.users.filter(user => user.id !== currentUserId)[0]?.isOnline &&
+                            <small>
+                                last
+                                seen {currentDialog.users.filter(user => user.id !== currentUserId)[0]?.dateLastOnline.toString().substr(5, 5)} {currentDialog.users.filter(user => user.id !== currentUserId)[0]?.dateLastOnline.toString().substr(11, 5)}
+                            </small>
+                            }
+                            {!currentDialog?.isDialogBetween2 &&
+                            <small>
+                                <div>{currentDialog.users.length} member, {countOnlineInDialog(currentDialog)} online</div>
+                            </small>
+                            }
+                        </div>
+
+                    </div>
+                </Link>
+                }
+            </div>
+            {currentDialog?.isDialogBetween2 &&
+            <button>
+                <Avatar icon={<PhoneOutlined />}/>
             </button>}
-            {currentDialogId &&
-            <Link to={'/dialoginfo'} onClick={() => clickHandler(currentDialogId)}>
-                <div className={s.dialogsPhotoAndName}>
-
-                    <div className={s.user_ava}>
-                        <Avatar size={48}
-                                src={currentDialog?.dialogPhoto
-                                    ? urls.pathToUsersPhotos + currentDialog?.dialogPhoto
-                                    : userWithoutPhoto}/>
-                        {currentDialog.isDialogBetween2 && currentDialog.users.filter(user => user.id !== currentUserId)[0]?.isOnline &&
-                        <OnlineIndicator backgroundColor={'#EDF0F6'} width='15px' height='15px' bottom='0' left='33px'/>
-                        }
-
-                    </div>
-                    <div className={s.user_nick_and_online_count}>
-                        <div className={s.dialog_name}>{currentDialog?.dialogName} </div>
-                        {currentDialog.isDialogBetween2 && !currentDialog.users.filter(user => user.id !== currentUserId)[0]?.isOnline &&
-                        <small>
-                            last
-                            seen {currentDialog.users.filter(user => user.id !== currentUserId)[0]?.dateLastOnline.toString().substr(5, 5)} {currentDialog.users.filter(user => user.id !== currentUserId)[0]?.dateLastOnline.toString().substr(11, 5)}
-                        </small>
-                        }
-                        {!currentDialog.isDialogBetween2 &&
-                        <small>
-                            <div>{currentDialog.users.length} member, {countOnlineInDialog(currentDialog)} online</div>
-                        </small>
-                        }
-                    </div>
-
-                </div>
-            </Link>}
         </div>
     );
 }

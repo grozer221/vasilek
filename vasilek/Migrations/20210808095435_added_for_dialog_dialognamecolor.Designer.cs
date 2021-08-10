@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using vasilek;
 
 namespace vasilek.Migrations
 {
     [DbContext(typeof(AppDatabaseContext))]
-    partial class AppDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20210808095435_added_for_dialog_dialognamecolor")]
+    partial class added_for_dialog_dialognamecolor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,6 +53,9 @@ namespace vasilek.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DialogName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DialogNameColor")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DialogPhoto")

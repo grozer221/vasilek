@@ -3,16 +3,10 @@ import s from './DialogInfo.module.css';
 import {s_getCurrentDialogInfoId} from "../../../redux/dialoginfo-selectors";
 import {useDispatch, useSelector} from "react-redux";
 import {s_getDialogs} from "../../../redux/dialogs-selectors";
-import {Avatar, Button, Form, Input, message, Modal} from "antd";
+import {Avatar, Form, Input, Modal} from "antd";
 import {urls} from "../../../api/api";
 import userWithoutPhoto from '../../../assets/images/man.png';
-import {
-    DeleteOutlined,
-    ExclamationCircleOutlined,
-    HighlightOutlined,
-    StarFilled,
-    UserAddOutlined
-} from "@ant-design/icons";
+import {DeleteOutlined, EditOutlined, ExclamationCircleOutlined, StarFilled, UserAddOutlined} from "@ant-design/icons";
 import {Link, Redirect} from 'react-router-dom';
 import {SelectUsers} from "../../common/SelectUsers/SelectUsers";
 import {s_getCurrentUser} from "../../../redux/auth-selectors";
@@ -75,14 +69,14 @@ export const DialogInfo: React.FC = () => {
                                 </Form.Item>
                                 <Form.Item>
                                     <button type="submit">
-                                        <Avatar icon={<HighlightOutlined/>}/>
+                                        <Avatar icon={<EditOutlined/>}/>
                                     </button>
                                 </Form.Item>
                             </Form>
                             : <>
                                 {currentDialogInfo.dialogName}
                                 <button onClick={() => setIsOnEditGroupNameMode(true)}>
-                                    <Avatar icon={<HighlightOutlined/>}/>
+                                    <Avatar icon={<EditOutlined/>}/>
                                 </button>
                             </>
                     }
@@ -102,8 +96,11 @@ export const DialogInfo: React.FC = () => {
                             <Link to={'/profile?id=' + user.id} key={user.id}>
                                 <div className={s.user_info}>
                                     <div className={s.user_ava}>
-                                        <Avatar src={user.avaPhoto ? urls.pathToUsersPhotos + user.avaPhoto : userWithoutPhoto}/>
-                                        {user.isOnline && <OnlineIndicator backgroundColor={'white'} width='15px' height='15px' bottom='-2px' left='23px'/>}
+                                        <Avatar
+                                            src={user.avaPhoto ? urls.pathToUsersPhotos + user.avaPhoto : userWithoutPhoto}/>
+                                        {user.isOnline &&
+                                        <OnlineIndicator backgroundColor={'white'} width='15px' height='15px'
+                                                         bottom='-2px' left='23px'/>}
                                     </div>
                                     <div className={s.name_and_who_is_author}>
                                         <div>{user.nickName}</div>

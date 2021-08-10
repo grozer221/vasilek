@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using vasilek.Models;
@@ -10,6 +9,7 @@ using vasilek.Repository;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
+using vasilek.Utils;
 
 namespace vasilek.Controllers
 {
@@ -95,6 +95,7 @@ namespace vasilek.Controllers
                         Login = model.Login,
                         Password = model.Password,
                         NickName = model.NickName,
+                        NickColor = UserUtils.GenerateNickColor(),
                         DateRegister = DateTime.Now,
                     };
                     _userRep.AddUser(user);

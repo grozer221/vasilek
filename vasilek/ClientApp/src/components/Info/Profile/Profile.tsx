@@ -33,6 +33,8 @@ export const Profile: React.FC = () => {
         updateProfile();
     }, [history.location.search])
 
+    debugger
+
     return (
         <div className={s.wrapper_profile}>
             <div className={s.wrapper_photos}>
@@ -48,7 +50,7 @@ export const Profile: React.FC = () => {
                             </div>)}
                     </Carousel>
                     : <div className={s.wrapper_photo}>
-                        <Avatar size={200} src={urls.pathToUsersPhotos + profile?.photos[0].photoName}/>
+                        <Avatar size={200} src={profile?.photos[0] ? urls.pathToUsersPhotos + profile?.photos[0].photoName : man}/>
                     </div>
                 }
             </div>

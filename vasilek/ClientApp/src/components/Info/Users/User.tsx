@@ -5,11 +5,11 @@ import {Link} from 'react-router-dom';
 import {ProfileType} from "../../../types/types";
 import {urls} from "../../../api/api";
 import {Avatar} from "antd";
-import {EditOutlined} from "@ant-design/icons";
 import {useDispatch} from "react-redux";
 import {getDialogByUserId} from "../../../redux/dialogs-reducer";
 import {OnlineIndicator} from "../../common/OnlineIndicator/OnlineIndicator";
 import {actions as appActions} from "../../../redux/app-reducer";
+import {MessageOutlined} from "@ant-design/icons";
 
 type PropsType = {
     user: ProfileType
@@ -35,7 +35,7 @@ export const User: React.FC<PropsType> = ({user}) => {
                 dispatch(appActions.setPageOpened('messages'));
                 dispatch(getDialogByUserId(user.id));
             }}>
-                <Avatar icon={<EditOutlined/>}/>
+                <Avatar icon={<MessageOutlined />}/>
             </button>
         </div>
     );

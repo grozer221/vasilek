@@ -15,6 +15,7 @@ namespace vasilek.Models
         public string Country { get; set; }
         public string AvaPhoto { get; set; }
         public bool IsOnline { get; set; }
+        public string NickColor { get; set; }
         public DateTime DateLastOnline { get; set; }
         public DateTime DateRegister { get; set; }
         public virtual List<PhotoModel> Photos { get; set; }

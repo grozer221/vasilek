@@ -11,7 +11,7 @@ import {s_getIsAuth} from "./redux/auth-selectors";
 import {startDialogsListening, stopDialogsListening} from "./redux/dialogs-reducer";
 import {Messages} from "./components/Messages/Messages";
 import {Dialogs} from "./components/Dialogs/Dialogs";
-import {Avatar, Button, Image, notification, Result} from "antd";
+import {Avatar, Button, notification, Result} from "antd";
 import {Nav} from "./components/Nav/Nav";
 import {Register} from "./components/Register/Register";
 import {Info} from "./components/Info/Info";

@@ -36,12 +36,15 @@ export const Message: React.FC<PropsType> = ({message, isDialogBetween2}) => {
                 <div className={s.message_content}>
                     <div className={s.message_text}>
                         {!isMyMessage(message.user.id) && !isDialogBetween2 &&
-                        <div className={s.nick}>{message.user.nickName}</div>
+                        <div className={s.nick}>
+                            <strong
+                                style={{color: message.user.nickColor, fontWeight: 500}}>{message.user.nickName}</strong>
+                        </div>
                         }
                         <div>
                             {message.files && message.files.map(file => {
                                 if (file.type.match(/image/) !== null)
-                                    return <div>
+                                    return <div key={file.id}>
                                         <Image
                                             key={file.id}
                                             className={s.message_photo}
@@ -71,13 +74,16 @@ export const Message: React.FC<PropsType> = ({message, isDialogBetween2}) => {
                     </div>
                     {isMyMessage(message.user.id) && message.usersUnReadMessage && message.usersUnReadMessage.length + 1 === currentDialog.users.length &&
                     <div className={s.checks}>
-                        <Avatar className={s.check_left} size={22} icon={<CheckOutlined style={{color:'#d35400'}}/>} style={{backgroundColor:'transparent'}}/>
+                        <Avatar className={s.check_left} size={22} icon={<CheckOutlined style={{color: '#d35400'}}/>}
+                                style={{backgroundColor: 'transparent'}}/>
                     </div>
                     }
                     {isMyMessage(message.user.id) && (!message.usersUnReadMessage || message.usersUnReadMessage.length + 1 !== currentDialog.users.length) &&
                     <div className={s.checks}>
-                        <Avatar className={s.check_left}  size={22} icon={<CheckOutlined style={{color:'#d35400'}}/>} style={{backgroundColor:'transparent'}}/>
-                        <Avatar className={s.check_right} size={22} icon={<CheckOutlined style={{color:'#d35400'}}/>} style={{backgroundColor:'transparent'}}/>
+                        <Avatar className={s.check_left} size={22} icon={<CheckOutlined style={{color: '#d35400'}}/>}
+                                style={{backgroundColor: 'transparent'}}/>
+                        <Avatar className={s.check_right} size={22} icon={<CheckOutlined style={{color: '#d35400'}}/>}
+                                style={{backgroundColor: 'transparent'}}/>
                     </div>
                     }
                 </div>

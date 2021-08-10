@@ -121,6 +121,10 @@
     overflow: hidden;
 }
 
+.dialog_name{
+    font-weight: 500;
+}
+
 @media (max-width: 900px) {
     .wrapper_dialogs_page{
         height: 100%;
