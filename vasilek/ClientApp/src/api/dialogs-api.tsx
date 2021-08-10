@@ -111,19 +111,19 @@ export const dialogsAPI = {
     sendMessage(dialogId: number, messageText: string, filesPinnedToMessage: File[]) {
         let files: FileType[] = [];
         filesPinnedToMessage.forEach(file => {
-            files.push({id: 0, name: file.name, size: file.size, type: file.type, message: {} as MessageType});
-        });
+            let extension = file.name.split('.').pop();
+            let date = new Date().toString();
+            date = date.replace(/ /g, '_').substring(0,31);
+            let newFileName = date + '__' + (Math.random() * (9999999999 - 1000000000) + 1000000000).toFixed(0) + '.' + extension;
+            files.push({id: 0, name: newFileName, size: file.size, type: file.type, message: {} as MessageType});
 
-        connection?.send('SendMessage', dialogId, messageText, files);
-
-        filesPinnedToMessage.forEach((file) => {
             let formData = new FormData;
-            formData.append("file", file);
+            formData.append("file", file, newFileName);
             instance.post<ResponseType>('dialogs/file', formData, {
                 headers: {'Content-Type': 'multipart-form-data'}
-            })
-                .then(res => res.data);
-        })
+            }).then(res => res);
+        });
+        connection?.send('SendMessage', dialogId, messageText, files);
     },
     getDialogByUserId(userId: number) {
         connection?.send('GetDialogByUserId', userId);

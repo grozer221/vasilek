@@ -10,7 +10,6 @@ import {urls} from "../../../api/api";
 import man from "../../../assets/images/man.png";
 import {s_getProfile} from "../../../redux/profile-selectors";
 import {ProfileType} from "../../../types/types";
-import {OnlineIndicator} from "../../common/OnlineIndicator/OnlineIndicator";
 
 export const Profile: React.FC = () => {
     const currentUser = useSelector(s_getCurrentUser);
@@ -19,7 +18,7 @@ export const Profile: React.FC = () => {
     const dispatch = useDispatch();
 
     const updateProfile = () => {
-        const parsed = queryString.parse(history.location.search.substr(1)) as QueryParamsType;
+        const parsed = queryString.parse(history.location.search.substr(1)) as {id: number | undefined};
         if (parsed.id !== undefined)
             dispatch(getUserProfile(parsed.id));
         else
@@ -32,8 +31,6 @@ export const Profile: React.FC = () => {
     useEffect(() => {
         updateProfile();
     }, [history.location.search])
-
-    debugger
 
     return (
         <div className={s.wrapper_profile}>
@@ -50,7 +47,8 @@ export const Profile: React.FC = () => {
                             </div>)}
                     </Carousel>
                     : <div className={s.wrapper_photo}>
-                        <Avatar size={200} src={profile?.photos[0] ? urls.pathToUsersPhotos + profile?.photos[0].photoName : man}/>
+                        <Avatar size={200}
+                                src={profile?.photos[0] ? urls.pathToUsersPhotos + profile?.photos[0].photoName : man}/>
                     </div>
                 }
             </div>
@@ -77,8 +75,3 @@ export const Profile: React.FC = () => {
         </div>
     );
 }
-
-type QueryParamsType = {
-    id: number | undefined
-}
-

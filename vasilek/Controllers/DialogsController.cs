@@ -37,7 +37,7 @@ namespace vasilek.Controllers
         }
 
         [HttpPost]
-        public async Task<string> File(IFormFile file)
+        public async Task<string> File([FromForm]IFormFile file)
         {
             await UploadFilesPinnedToMessage(file);
             return JsonConvert.SerializeObject(new ResponseModel() { ResultCode = 0, Data = null }, JsonSettings);
