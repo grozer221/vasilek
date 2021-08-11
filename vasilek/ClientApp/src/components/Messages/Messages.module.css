@@ -58,6 +58,7 @@
 
 .others_message_border {
     border-radius: 10px 10px 10px 0;
+    padding: 3px 10px;
 }
 
 .my_message {
@@ -70,12 +71,12 @@
 
 .my_message_border {
     border-radius: 10px 10px 0 10px;
+    padding: 3px 3px 3px 10px;
 }
 
 .message {
     max-width: 90%;
     display: inline-block;
-    padding: 3px 10px;
     margin: 3px 3px 3px 7px;
 }
 
@@ -207,31 +208,21 @@
 
 .checks{
     position: relative;
-    width: 20px;
     height: 20px;
+    margin-right: 20px;
 }
 
 .check_left{
     position: absolute;
-    left: 1px;
+    left: -4px;
 }
 
 .check_right{
     position: absolute;
-    right: 1px;
 }
 
 .dialog_name{
     font-weight: 500;
-}
-
-.audio_recorder{
-    position: absolute;
-    background-color: rebeccapurple;
-    z-index: 1000;
-    min-height: 100px;
-    min-width: 100px;
-    padding: 10px;
 }
 
 @media (max-width: 900px) {

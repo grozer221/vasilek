@@ -12,10 +12,12 @@ import {Link} from 'react-router-dom';
 import {s_getCurrentUser, s_getCurrentUserId} from "../../redux/auth-selectors";
 import {OnlineIndicator} from "../common/OnlineIndicator/OnlineIndicator";
 import {MessageType} from "../../api/dialogs-api";
+import {useMediaQuery} from "react-responsive";
 
 const {confirm} = Modal;
 
 export const Dialogs: React.FC = () => {
+    const isPhone = useMediaQuery({query: '(max-width: 900px)'});
     const dialogs = useSelector(s_getDialogs);
     const currentDialogId = useSelector(s_getCurrentDialogId);
     const currentUserId = useSelector(s_getCurrentUserId);
@@ -70,11 +72,22 @@ export const Dialogs: React.FC = () => {
                                     <div className={s.name_and_last_message}>
                                         <div className={s.dialog_name}>{dialog.dialogName}</div>
                                         {dialog.messages && dialog.messages.length > 0 &&
-                                        <div>
-                                            {dialog.messages[dialog.messages.length - 1]?.user.id === currentUser.id
-                                                ? "You"
-                                                : dialog.isDialogBetween2 || dialog.messages[dialog.messages.length - 1]?.user.nickName
-                                            }: {dialog.messages[dialog.messages.length - 1]?.messageText}
+                                        <div className={s.last_message}>
+                                            <div>
+                                                {dialog.messages[dialog.messages.length - 1]?.user.id === currentUser.id
+                                                    ? 'You:'
+                                                    : dialog.messages[dialog.messages.length - 1]?.user.nickName.length > 15
+                                                        ? dialog.isDialogBetween2 || dialog.messages[dialog.messages.length - 1]?.user.nickName.substr(0, 15) + '... : '
+                                                        : dialog.isDialogBetween2 || dialog.messages[dialog.messages.length - 1]?.user.nickName.substr(0, 15) + ': '
+                                                }
+                                            </div>
+                                            <div>
+                                                {isPhone
+                                                    ? dialog.messages[dialog.messages.length - 1]?.messageText.substr(0, 30)
+                                                    : dialog.messages[dialog.messages.length - 1]?.messageText.substr(0, 20)
+                                                }
+                                                {dialog.messages[dialog.messages.length - 1]?.messageText.length > 20 && '...'}
+                                            </div>
                                         </div>
                                         }
                                     </div>

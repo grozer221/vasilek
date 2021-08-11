@@ -76,7 +76,7 @@
     color: gray;
 }
 
-.dialog button span{
+.dialog button span {
     background-color: white;
 }
 
@@ -88,7 +88,7 @@
 .active button,
 .active button span,
 .dialog:hover button span,
-.dialog:hover .wrapper_circle_online{
+.dialog:hover .wrapper_circle_online {
     background-color: #f3f3f3;
 }
 
@@ -106,7 +106,7 @@
     flex-direction: column;
 }
 
-.message_when_no_dialogs{
+.message_when_no_dialogs {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -114,23 +114,31 @@
     text-align: center;
 }
 
-.name_and_last_message{
+.name_and_last_message {
     display: flex;
     flex-direction: column;
     align-items: start;
-    overflow: hidden;
 }
 
-.dialog_name{
+.dialog_name {
     font-weight: 500;
 }
 
+.last_message {
+    display: flex;
+    gap: 5px
+}
+
+.last_message span:last-child {
+    overflow: no-display;
+}
+
 @media (max-width: 900px) {
-    .wrapper_dialogs_page{
+    .wrapper_dialogs_page {
         height: 100%;
     }
 
-    .dialogs{
+    .dialogs {
         height: 90%;
     }
 }

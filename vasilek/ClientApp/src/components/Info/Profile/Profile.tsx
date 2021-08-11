@@ -10,6 +10,9 @@ import {urls} from "../../../api/api";
 import man from "../../../assets/images/man.png";
 import {s_getProfile} from "../../../redux/profile-selectors";
 import {ProfileType} from "../../../types/types";
+import {actions as appActions} from "../../../redux/app-reducer";
+import {getDialogByUserId} from "../../../redux/dialogs-reducer";
+import {MessageOutlined} from "@ant-design/icons";
 
 export const Profile: React.FC = () => {
     const currentUser = useSelector(s_getCurrentUser);
@@ -18,7 +21,7 @@ export const Profile: React.FC = () => {
     const dispatch = useDispatch();
 
     const updateProfile = () => {
-        const parsed = queryString.parse(history.location.search.substr(1)) as {id: number | undefined};
+        const parsed = queryString.parse(history.location.search.substr(1)) as { id: number | undefined };
         if (parsed.id !== undefined)
             dispatch(getUserProfile(parsed.id));
         else
@@ -53,14 +56,21 @@ export const Profile: React.FC = () => {
                 }
             </div>
             <div className={s.wrapper_nick}>
-                <strong>{profile?.nickName}</strong>
+                <div className={s.nick}>{profile?.nickName}</div>
                 <div className={s.online_status}>
-
-                    {profile?.isOnline ? <small>Online</small>
+                    {profile?.isOnline
+                        ? <small>Online</small>
                         : <small>Last
                             seen {profile?.dateLastOnline.toString().substr(5, 5)} {profile?.dateLastOnline.toString().substr(11, 5)}</small>
                     }
                 </div>
+                <button className={'classic '} onClick={() => {
+                    dispatch(appActions.setPageOpened('messages'));
+                    dispatch(getDialogByUserId(profile.id));
+                }}>
+                    <Avatar icon={<MessageOutlined/>}/>
+                </button>
+
             </div>
             <div className={s.wrapper_info}>
                 <div>

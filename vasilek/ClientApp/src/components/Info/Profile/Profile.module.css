@@ -19,7 +19,14 @@
 
 .wrapper_nick {
     grid-area: nick;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.nick{
+    font-weight: 500;
 }
 
 .wrapper_info {
