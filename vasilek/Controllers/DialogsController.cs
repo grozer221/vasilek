@@ -28,7 +28,7 @@ namespace vasilek.Controllers
         private readonly AppDatabaseContext _ctx;
         private readonly UserRepository _userRep;
         private readonly DialogsRepository _dialogRep;
-        private CloudStorageAccount cloudStorageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=vasilek;AccountKey=ga855L/qIGAioZbnCI0IkbXJoQsdodXPB1YLHNw6rcUrtVxRe4h0cstxdlttqSBFOB5VKMHamqkHYaoB/0WZZw==;EndpointSuffix=core.windows.net");
+        private CloudStorageAccount cloudStorageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=vasilekstorage;AccountKey=V0EHTbGVrPHjFw4Rn+Tdk2gaNvDZ29F6gBi9IuidKeAEi8iynSmKPLRaMhPclOqsED+Uf/XK/H4ZTO14wK8ang==;EndpointSuffix=core.windows.net");
         public DialogsController(AppDatabaseContext ctx)
         {
             _ctx = ctx;
@@ -47,7 +47,7 @@ namespace vasilek.Controllers
         public async Task UploadFilesPinnedToMessage(IFormFile file)
         {
             var cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
-            var cloudBlobContainer = cloudBlobClient.GetContainerReference("files-pinned-to-message");
+            var cloudBlobContainer = cloudBlobClient.GetContainerReference("files-pinned-to-messages");
             if (await cloudBlobContainer.CreateIfNotExistsAsync())
                 await cloudBlobContainer.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Off });
             var cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(file.FileName);

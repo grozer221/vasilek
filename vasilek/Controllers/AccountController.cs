@@ -37,7 +37,6 @@ namespace vasilek.Controllers
             if (HttpContext.User.Identity.IsAuthenticated)
             {
                 var user = _profileRep.GetProfileWithPhotosByLogin(HttpContext.User.Identity.Name);
-                user.Password = null;
                 return JsonConvert.SerializeObject(new ResponseModel()
                 {
                     ResultCode = 0,

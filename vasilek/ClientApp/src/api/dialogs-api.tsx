@@ -3,6 +3,8 @@ import {HubConnection, HubConnectionBuilder} from "@microsoft/signalr";
 import {message} from "antd";
 import React from "react";
 import {instance} from "./api";
+import {ProfileForCallType} from "../redux/dialogs-reducer";
+import {SignalData} from "simple-peer";
 
 let connection: HubConnection | null = null;
 
@@ -21,6 +23,12 @@ const subscribers = {
     'SET_DATE_LAST_ONLINE': [] as SetDateLastOnlineSubscriberType[],
     'RECEIVE_NOTIFICATION': [] as ReceiveNotificationSubscriberType[],
     'MAKE_MESSAGE_READ': [] as MakeMessageReadSubscriberType[],
+
+    'RECEIVE_CALL': [] as ReceiveCallSubscriberType[],
+    'RECEIVE_SIGNAL': [] as ReceiveSignalSubscriberType[],
+    'SET_USERS_IN_CALL': [] as SetUsersInCallSubscriberType[],
+    'CHANGE_CALL_STATUS_ON': [] as ChangeCallStatusOnSubscriberType[],
+    'END_CALL': [] as EndCallSubscriberType[],
 }
 
 const createConnection = () => {
@@ -88,6 +96,24 @@ const createConnection = () => {
             connection?.on('MakeMessageRead', (dialogId: number, messageId: number, userLogin: string) => {
                 subscribers['MAKE_MESSAGE_READ'].forEach(s => s(dialogId, messageId, userLogin))
             });
+
+            ///
+            connection?.on('ReceiveCall', (dialogId: number) => {
+                subscribers['RECEIVE_CALL'].forEach(s => s(dialogId))
+            });
+            connection?.on('ReceiveSignal', (signal: SignalData) => {
+                subscribers['RECEIVE_SIGNAL'].forEach(s => s(signal))
+            });
+            connection?.on('SetUsersInCall', (users: ProfileForCallType[]) => {
+                subscribers['SET_USERS_IN_CALL'].forEach(s => s(users))
+            });
+            connection?.on('ChangeCallStatusOn', (login: string, callStatus: string) => {
+                subscribers['CHANGE_CALL_STATUS_ON'].forEach(s => s(login, callStatus))
+            });
+            connection?.on('EndCall', () => {
+                subscribers['END_CALL'].forEach(s => s())
+            });
+            ///
         })
         .catch((e: any) => message.error('Connection failed: ', e));
 }
@@ -113,7 +139,7 @@ export const dialogsAPI = {
         filesPinnedToMessage.forEach(file => {
             let extension = file.name.split('.').pop();
             let date = new Date().toString();
-            date = date.replace(/ /g, '_').substring(0,31);
+            date = date.replace(/ /g, '_').substring(0, 31);
             let newFileName = date + '__' + (Math.random() * (9999999999 - 1000000000) + 1000000000).toFixed(0) + '.' + extension;
             files.push({id: 0, name: newFileName, size: file.size, type: file.type, message: {} as MessageType});
 
@@ -143,6 +169,23 @@ export const dialogsAPI = {
     makeMessageRead(dialogId: number, messageId: number) {
         connection?.send('MakeMessageRead', dialogId, messageId);
     },
+    ///
+    callToDialog(dialogId: number, users: ProfileType[]) {
+        connection?.send('CallToDialog', dialogId, users);
+    },
+    sendMySignal(dialogId: number, signal: SignalData) {
+        connection?.send('SendMySignal', dialogId, signal);
+    },
+    acceptCall(dialogId: number) {
+        connection?.send('AcceptCall', dialogId);
+    },
+    leaveCall(dialogId: number) {
+        connection?.send('LeaveCall', dialogId);
+    },
+    endCall(dialogId: number) {
+        connection?.send('EndCall', dialogId);
+    },
+    ////
 }
 
 type DialogsReceivedSubscriberType = (dialogs: DialogType[]) => void
@@ -160,6 +203,12 @@ type SetDateLastOnlineSubscriberType = (userLogin: string, dateLastOnline: Date)
 type ReceiveNotificationSubscriberType = (message: MessageType) => void
 type MakeMessageReadSubscriberType = (dialogId: number, messageId: number, userLogin: string) => void
 
+type ReceiveCallSubscriberType = (dialogId: number) => void
+type ReceiveSignalSubscriberType = (signal: SignalData) => void
+type SetUsersInCallSubscriberType = (user: ProfileForCallType[]) => void
+type ChangeCallStatusOnSubscriberType = (login: string, callStatus: string) => void
+type EndCallSubscriberType = () => void
+
 type EventsNamesType =
     'DIALOGS_RECEIVED'
     | 'MESSAGE_RECEIVED'
@@ -176,6 +225,12 @@ type EventsNamesType =
     | 'RECEIVE_NOTIFICATION'
     | 'MAKE_MESSAGE_READ'
 
+    | 'RECEIVE_CALL'
+    | 'RECEIVE_SIGNAL'
+    | 'SET_USERS_IN_CALL'
+    | 'CHANGE_CALL_STATUS_ON'
+    | 'END_CALL'
+
 type CallbackType =
     DialogsReceivedSubscriberType
     | MessageReceivedSubscriberType
@@ -191,6 +246,13 @@ type CallbackType =
     | SetDateLastOnlineSubscriberType
     | ReceiveNotificationSubscriberType
     | MakeMessageReadSubscriberType
+
+    | ReceiveCallSubscriberType
+    | ReceiveSignalSubscriberType
+    | SetUsersInCallSubscriberType
+    | ChangeCallStatusOnSubscriberType
+    | EndCallSubscriberType
+
 
 export type DialogType = {
     id: number

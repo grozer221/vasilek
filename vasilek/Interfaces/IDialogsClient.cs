@@ -22,5 +22,10 @@ namespace vasilek.Interfaces
         Task ToggleUserOnline(string userLogin, bool isOnline);
         Task SetDateLastOnline(string name, DateTime dateLastOnline);
         Task MakeMessageRead(int dialogId, int messageId, string userLogin);
+        Task ReceiveCall(int dialogId);
+        Task ReceiveSignal(object stream);
+        Task SetUsersInCall(List<UserForCallModel> users);
+        Task ChangeCallStatusOn(string login, string callStatus);
+        Task EndCall();
     }
 }

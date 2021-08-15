@@ -142,6 +142,58 @@ namespace vasilek.Hubs
             var userLoginInDialog = _dialogsRep.GetUsersLoginsInDialog(dialogId);
             await Clients.Users(userLoginInDialog).MakeMessageRead(dialogId, messageId, userLogin);
         }
+        
+        ////
+        public async Task CallToDialog(int dialogId, List<UserForCallModel> users)
+        {
+            var currentUserLogin = Context.User.Identity.Name;
+            foreach (var user in users)
+            {
+                if(user.Login == currentUserLogin)
+                {
+                    user.CallStatus = "accepted";
+                    user.IsOnAudio = true;
+                    user.IsOnVideo = false;
+                }
+                else
+                {
+                    user.CallStatus = "pending";
+                    user.IsOnAudio = true;
+                    user.IsOnVideo = false;
+                }
+            }
+            var usersLoginsInDialog = users.Select(u => u.Login).ToList();
+            await Clients.Users(usersLoginsInDialog).SetUsersInCall(users);
+            usersLoginsInDialog.Remove(currentUserLogin);
+            await Clients.Users(usersLoginsInDialog).ReceiveCall(dialogId);
+        }
+
+        public async Task SendMySignal(int dialogId, object signal)
+        {
+            var usersInDialogExeptMe = _dialogsRep.GetUsersInDialogExeptUser(dialogId, Context.User.Identity.Name).Select(u => u.Login);
+            await Clients.Users(usersInDialogExeptMe).ReceiveSignal(signal);
+        }
+        
+        public async Task AcceptCall(int dialogId)
+        {
+            var usersInDialog = _dialogsRep.GetUsersInDialog(dialogId).Select(u => u.Login);
+            var user = _userRep.GetUserByLogin(Context.User.Identity.Name);
+            await Clients.Users(usersInDialog).ChangeCallStatusOn(Context.User.Identity.Name, "accepted");
+        }
+        
+        public async Task LeaveCall(int dialogId)
+        {
+            var usersInDialog = _dialogsRep.GetUsersInDialog(dialogId).Select(u => u.Login);
+            await Clients.Users(usersInDialog).ChangeCallStatusOn(Context.User.Identity.Name, "declined");
+        }
+
+        public async Task EndCall(int dialogId)
+        {
+            var usersInDialog = _dialogsRep.GetUsersInDialog(dialogId).Select(u => u.Login);
+            await Clients.Users(usersInDialog).EndCall();
+        }
+
+        ////
 
         public override async Task OnConnectedAsync()
         {

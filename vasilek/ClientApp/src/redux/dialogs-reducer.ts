@@ -3,10 +3,27 @@ import {dialogsAPI, DialogType, MessageType} from "../api/dialogs-api";
 import {Dispatch} from "redux";
 import {ProfileType} from "../types/types";
 import {actions as appActions} from "./app-reducer";
+import {Instance, SignalData} from "simple-peer";
 
 let initialState = {
     dialogs: [] as Array<DialogType>,
     currentDialogId: null as number | null,
+    ///
+    isInCall: false,
+    isInitiator: false,
+    isCallAccepted: false,
+    inCallWithDialogId: null as null | number,
+    receivingCallFromDialogId: null as null | number,
+    usersInCall: [] as ProfileForCallType[],
+
+    myPeer: null as null | Instance,
+    otherPeer: null as null | Instance,
+
+    mySignal: null as null | SignalData,
+    otherSignal: null as null | SignalData,
+
+    myStream: null as null | MediaStream,
+    otherStream: null as null | MediaStream,
 };
 
 const dialogsReducer = (state = initialState, action: ActionsTypes): InitialStateType => {
@@ -139,6 +156,79 @@ const dialogsReducer = (state = initialState, action: ActionsTypes): InitialStat
                         : dialog
                 )
             };
+        case 'SET_RECEIVING_CALL_FROM_DIALOG_ID':
+            return {
+                ...state,
+                receivingCallFromDialogId: action.dialogId,
+            };
+        case 'SET_IS_IN_CALL':
+            return {
+                ...state,
+                isInCall: action.flag,
+            };
+        case 'SET_IN_CALL_WITH_DIALOG_ID':
+            return {
+                ...state,
+                inCallWithDialogId: action.dialogId,
+            };
+        case 'SET_USERS_FOR_CALL':
+            return {
+                ...state,
+                usersInCall: action.users,
+            };
+
+        case 'SET_MY_PEER':
+            return {
+                ...state,
+                myPeer: action.peer,
+            };
+        case 'SET_OTHER_PEER':
+            return {
+                ...state,
+                otherPeer: action.peer,
+            };
+
+        case 'SET_MY_SIGNAL':
+            return {
+                ...state,
+                mySignal: action.signal,
+            };
+        case 'SET_OTHER_SIGNAL':
+            return {
+                ...state,
+                otherSignal: action.signal,
+            };
+
+        case 'SET_MY_STREAM':
+            return {
+                ...state,
+                myStream: action.stream,
+            };
+        case 'SET_OTHER_STREAM':
+            return {
+                ...state,
+                otherStream: action.stream,
+            };
+        case 'SET_IS_INITIATOR':
+            return {
+                ...state,
+                isInitiator: action.flag,
+            };
+        case 'SET_IS_CALL_ACCEPTED':
+            return {
+                ...state,
+                isCallAccepted: action.flag,
+            };
+        case 'CHANGE_CALL_STATUS_ON':
+            return {
+                ...state,
+                usersInCall: state.usersInCall.map(user =>
+                    user.login === action.login
+                        ? {...user, callStatus: action.callStatus} as ProfileForCallType
+                        : user
+                ),
+            };
+
         default:
             return state;
     }
@@ -200,6 +290,62 @@ export const actions = {
         dialogId: dialogId,
         messageId: messageId,
         userLogin: userLogin,
+    } as const),
+    ///
+    setReceivingCallFromDialogId: (dialogId: number | null) => ({
+        type: 'SET_RECEIVING_CALL_FROM_DIALOG_ID',
+        dialogId: dialogId,
+    } as const),
+    setIsInCall: (flag: boolean) => ({
+        type: 'SET_IS_IN_CALL',
+        flag: flag,
+    } as const),
+    setInCallWithDialogId: (dialogId: number | null) => ({
+        type: 'SET_IN_CALL_WITH_DIALOG_ID',
+        dialogId: dialogId,
+    } as const),
+    setUsersInCall: (users: ProfileForCallType[]) => ({
+        type: 'SET_USERS_FOR_CALL',
+        users: users,
+    } as const),
+    setMyPeer: (peer: Instance | null) => ({
+        type: 'SET_MY_PEER',
+        peer: peer,
+    } as const),
+    setOtherPeer: (peer: Instance | null) => ({
+        type: 'SET_OTHER_PEER',
+        peer: peer,
+    } as const),
+
+    setMySignal: (signal: SignalData | null) => ({
+        type: 'SET_MY_SIGNAL',
+        signal: signal,
+    } as const),
+    setOtherSignal: (signal: SignalData | null) => ({
+        type: 'SET_OTHER_SIGNAL',
+        signal: signal,
+    } as const),
+
+    setMyStream: (stream: MediaStream | null) => ({
+        type: 'SET_MY_STREAM',
+        stream: stream,
+    } as const),
+    setOtherStream: (stream: MediaStream | null) => ({
+        type: 'SET_OTHER_STREAM',
+        stream: stream,
+    } as const),
+    setIsInitiator: (flag: boolean) => ({
+        type: 'SET_IS_INITIATOR',
+        flag: flag,
+    } as const),
+    setIsCallAccepted: (flag: boolean) => ({
+        type: 'SET_IS_CALL_ACCEPTED',
+        flag: flag,
+    } as const),
+    changeCallStatusOn: (login: string, callStatus: string) => ({
+        type: 'CHANGE_CALL_STATUS_ON',
+        login: login,
+        callStatus: callStatus,
     } as const),
 }
 
@@ -343,6 +489,69 @@ const makeMessageReadHandlerCreator = (dispatch: Dispatch) => {
     return _makeMessageReadHandler
 }
 
+////
+let _receiveCallHandler: ((dialogId: number) => void) | null = null
+const receiveCallHandlerCreator = (dispatch: Dispatch) => {
+    if (_receiveCallHandler === null) {
+        _receiveCallHandler = (dialogId) => {
+            dispatch(actions.setReceivingCallFromDialogId(dialogId))
+        }
+    }
+    return _receiveCallHandler
+}
+
+let _receiveSignalHandler: ((signal: SignalData) => void) | null = null
+const receiveSignalHandlerCreator = (dispatch: Dispatch) => {
+    if (_receiveSignalHandler === null) {
+        _receiveSignalHandler = (signal) => {
+            dispatch(actions.setOtherSignal(signal))
+        }
+    }
+    return _receiveSignalHandler
+}
+
+let _setUsersInCallHandler: ((users: ProfileForCallType[]) => void) | null = null
+const setUsersInCallHandlerCreator = (dispatch: Dispatch) => {
+    if (_setUsersInCallHandler === null) {
+        _setUsersInCallHandler = (users) => {
+            dispatch(actions.setUsersInCall(users));
+        }
+    }
+    return _setUsersInCallHandler
+}
+
+let _changeCallStatusOnHandler: ((login: string, callStatus: string) => void) | null = null
+const changeCallStatusOnHandlerCreator = (dispatch: Dispatch) => {
+    if (_changeCallStatusOnHandler === null) {
+        _changeCallStatusOnHandler = (login, callStatus) => {
+            dispatch(actions.changeCallStatusOn(login, callStatus));
+        }
+    }
+    return _changeCallStatusOnHandler
+}
+
+let _endCallHandler: (() => void) | null = null
+const endCallHandlerCreator = (dispatch: Dispatch) => {
+    if (_endCallHandler === null) {
+        _endCallHandler = () => {
+            dispatch(actions.setIsInCall(false));
+            dispatch(actions.setIsInitiator(false));
+            dispatch(actions.setIsCallAccepted(false));
+            dispatch(actions.setInCallWithDialogId(null));
+            dispatch(actions.setReceivingCallFromDialogId(null));
+            dispatch(actions.setUsersInCall([]));
+            dispatch(actions.setMyPeer(null));
+            dispatch(actions.setOtherPeer(null));
+            dispatch(actions.setMySignal(null));
+            dispatch(actions.setOtherSignal(null));
+            dispatch(actions.setMyStream(null));
+            dispatch(actions.setOtherStream(null));
+        }
+    }
+    return _endCallHandler
+}
+///
+
 export const startDialogsListening = (): ThunkType => async (dispatch) => {
     dialogsAPI.start();
     dialogsAPI.subscribe('DIALOGS_RECEIVED', newDialogsHandlerCreator(dispatch));
@@ -359,6 +568,12 @@ export const startDialogsListening = (): ThunkType => async (dispatch) => {
     dialogsAPI.subscribe('SET_DATE_LAST_ONLINE', setDateLastOnlineHandlerCreator(dispatch));
     dialogsAPI.subscribe('RECEIVE_NOTIFICATION', receiveNotificationHandlerCreator(dispatch));
     dialogsAPI.subscribe('MAKE_MESSAGE_READ', makeMessageReadHandlerCreator(dispatch));
+    ///
+    dialogsAPI.subscribe('RECEIVE_CALL', receiveCallHandlerCreator(dispatch));
+    dialogsAPI.subscribe('RECEIVE_SIGNAL', receiveSignalHandlerCreator(dispatch));
+    dialogsAPI.subscribe('SET_USERS_IN_CALL', setUsersInCallHandlerCreator(dispatch));
+    dialogsAPI.subscribe('CHANGE_CALL_STATUS_ON', changeCallStatusOnHandlerCreator(dispatch));
+    dialogsAPI.subscribe('END_CALL', endCallHandlerCreator(dispatch));
 };
 
 export const stopDialogsListening = (): ThunkType => async (dispatch) => {
@@ -376,6 +591,12 @@ export const stopDialogsListening = (): ThunkType => async (dispatch) => {
     dialogsAPI.unsubscribe('SET_DATE_LAST_ONLINE', setDateLastOnlineHandlerCreator(dispatch));
     dialogsAPI.unsubscribe('RECEIVE_NOTIFICATION', receiveNotificationHandlerCreator(dispatch));
     dialogsAPI.unsubscribe('MAKE_MESSAGE_READ', makeMessageReadHandlerCreator(dispatch));
+    ///
+    dialogsAPI.unsubscribe('RECEIVE_CALL', receiveCallHandlerCreator(dispatch));
+    dialogsAPI.unsubscribe('RECEIVE_SIGNAL', receiveSignalHandlerCreator(dispatch));
+    dialogsAPI.unsubscribe('SET_USERS_IN_CALL', setUsersInCallHandlerCreator(dispatch));
+    dialogsAPI.unsubscribe('CHANGE_CALL_STATUS_ON', changeCallStatusOnHandlerCreator(dispatch));
+    dialogsAPI.unsubscribe('END_CALL', endCallHandlerCreator(dispatch));
 };
 
 export const sendMessage = (dialogId: number, messageText: string, files: File[]): ThunkType => async (dispatch) => {
@@ -407,8 +628,36 @@ export const makeMessageRead = (dialogId: number, messageId: number): ThunkType 
     dialogsAPI.makeMessageRead(dialogId, messageId);
 };
 
+///
+export const callToDialog = (dialogId: number, users: ProfileType[]): ThunkType => async (dispatch) => {
+    dialogsAPI.callToDialog(dialogId, users);
+};
+
+export const sendMySignal = (dialogId: number, signal: SignalData): ThunkType => async (dispatch) => {
+    dialogsAPI.sendMySignal(dialogId, signal);
+};
+
+export const acceptCall = (dialogId: number): ThunkType => async (dispatch) => {
+    dialogsAPI.acceptCall(dialogId);
+};
+
+export const leaveCall = (dialogId: number): ThunkType => async (dispatch) => {
+    dialogsAPI.leaveCall(dialogId);
+};
+
+export const endCall = (dialogId: number): ThunkType => async (dispatch) => {
+    dialogsAPI.endCall(dialogId);
+};
+////
+
 export default dialogsReducer;
 
 type InitialStateType = typeof initialState;
 type ActionsTypes = InferActionsTypes<typeof actions>;
 type ThunkType = BaseThunkType<ActionsTypes>;
+
+export interface ProfileForCallType extends ProfileType {
+    callStatus: 'pending' | 'accepted' | 'declined',
+    isOnVideo: boolean,
+    isOnAudio: boolean,
+}

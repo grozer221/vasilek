@@ -22,7 +22,9 @@ namespace vasilek.Repository
 
         public UserModel GetUserByLogin(string login)
         {
-            return _ctx.Users.FirstOrDefault(u => u.Login == login);
+            var user = _ctx.Users.FirstOrDefault(u => u.Login == login);
+            user.Dialogs = null;
+            return user;
         }
 
         public UserModel GetUserById(int id)

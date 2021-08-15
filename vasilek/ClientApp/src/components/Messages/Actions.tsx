@@ -12,7 +12,8 @@ import {useMediaQuery} from "react-responsive";
 import {ArrowLeftOutlined, PhoneOutlined} from "@ant-design/icons";
 import {OnlineIndicator} from "../common/OnlineIndicator/OnlineIndicator";
 import {DialogType} from "../../api/dialogs-api";
-import {s_getCurrentUserId} from "../../redux/auth-selectors";
+import {s_getCurrentUser, s_getCurrentUserId} from "../../redux/auth-selectors";
+import {actions, callToDialog} from "../../redux/dialogs-reducer";
 
 export const Actions: React.FC = () => {
     const isPhone = useMediaQuery({query: '(max-width: 900px)'})
@@ -20,11 +21,19 @@ export const Actions: React.FC = () => {
     const currentDialogId = useSelector(s_getCurrentDialogId);
     const currentDialog = dialogs?.find((dialog => dialog?.id === currentDialogId)) as DialogType;
     const currentUserId = useSelector(s_getCurrentUserId);
+    const currentUser = useSelector(s_getCurrentUser);
     const dispatch = useDispatch();
 
     const clickHandler = (currentDialogId: number) => {
         dispatch(dialogInfoActions.setCurrentDialogInfoId(currentDialogId))
         dispatch(appActions.setPageOpened('info'));
+    }
+
+    const callClickHandler = () => {
+        dispatch(callToDialog(currentDialogId as number, currentDialog.users));
+        dispatch(actions.setIsInCall(true));
+        dispatch(actions.setInCallWithDialogId(currentDialogId));
+        dispatch(actions.setIsInitiator(true));
     }
 
     return (
@@ -43,7 +52,8 @@ export const Actions: React.FC = () => {
                                         ? urls.pathToUsersPhotos + currentDialog?.dialogPhoto
                                         : userWithoutPhoto}/>
                             {currentDialog?.isDialogBetween2 && currentDialog.users.filter(user => user.id !== currentUserId)[0]?.isOnline &&
-                            <OnlineIndicator backgroundColor={'#EDF0F6'} width='15px' height='15px' bottom='0' left='33px'/>
+                            <OnlineIndicator backgroundColor={'#EDF0F6'} width='15px' height='15px' bottom='0'
+                                             left='33px'/>
                             }
 
                         </div>
@@ -67,12 +77,14 @@ export const Actions: React.FC = () => {
                 }
             </div>
             {currentDialog?.isDialogBetween2 &&
-            <button>
-                <Avatar icon={<PhoneOutlined />}/>
+            <button onClick={callClickHandler}>
+                <Avatar icon={<PhoneOutlined/>}/>
             </button>}
         </div>
     );
 }
+
+
 
 export const countOnlineInDialog = (dialog: DialogType): number => {
     let onlineUserCount = 0;

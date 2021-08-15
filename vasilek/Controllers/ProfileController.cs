@@ -104,7 +104,7 @@ namespace vasilek.Controllers
         {
             string photoName = HttpContext.User.Identity.Name + "_" + DateTime.Now.ToString("yy-MM-dd_HH_mm_ss") + Path.GetExtension(photo.FileName);
             var cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
-            var cloudBlobContainer = cloudBlobClient.GetContainerReference("userphotoscontainer");
+            var cloudBlobContainer = cloudBlobClient.GetContainerReference("users-photos");
             if(await cloudBlobContainer.CreateIfNotExistsAsync())
                 await cloudBlobContainer.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Off });
             var cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(photoName);

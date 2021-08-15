@@ -22,6 +22,7 @@ import {urls} from "./api/api";
 import userWithoutPhoto from "./assets/images/man.png";
 import s from "./components/Messages/Messages.module.css";
 import {CloudDownloadOutlined} from "@ant-design/icons";
+import {CallWrapper} from "./components/Call/CallWrapper";
 
 export const App: React.FC = () => {
     const isAuth = useSelector(s_getIsAuth);
@@ -145,6 +146,7 @@ const MainPage: React.FC = () => {
                     <Info isOpenInfoPage={isOpenInfoPage} setIsOpenInfoPage={setIsOpenInfoPage}/>
                 </div>
                 }
+                <CallWrapper/>
             </div>
         </>
     )

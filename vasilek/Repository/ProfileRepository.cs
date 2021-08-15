@@ -40,8 +40,11 @@ namespace vasilek.Repository
         public UserModel GetProfileWithPhotosByLogin(string login)
         {
             var user = _ctx.Users.Include(u => u.Photos).FirstOrDefault(u => u.Login == login);
-            foreach (var photo in user.Photos)
-                photo.User = null;
+            if (user != null && user.Photos != null)
+                foreach (var photo in user.Photos)
+                    photo.User = null;
+            if(user != null)
+                user.Password = null;
             return user;
         }
         

@@ -216,7 +216,15 @@ namespace vasilek.Repository
             _ctx.SaveChanges();
             return user.DateLastOnline;
         }
-        
+
+        public List<UserModel> GetUsersInDialogExeptUser(int dialogId, string userLogin)
+        {
+            var users = GetUsersInDialog(dialogId);
+            var currentUser = users.FirstOrDefault(u => u.Login == userLogin);
+            users.Remove(currentUser);
+            return users;
+        }
+
         public List<string> GetUsersLoginsInDialogsExeptUser(List<DialogModel> dialogs, string userLogin)
         {
             List<List<UserModel>> usersInDialog = dialogs.Select(d => d.Users).ToList();

@@ -34,6 +34,7 @@ input {
     grid-template-areas:"nav dialogs messages info_page";
     grid-auto-columns: 1fr 6fr 14fr 6fr;
     grid-gap: 10px;
+    position: relative;
 }
 
 .content > div {

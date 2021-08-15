@@ -10,7 +10,7 @@ using vasilek;
 namespace vasilek.Migrations
 {
     [DbContext(typeof(AppDatabaseContext))]
-    [Migration("20210806101318_init")]
+    [Migration("20210811194344_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -165,6 +165,12 @@ namespace vasilek.Migrations
                     b.Property<string>("Login")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("MessageModelId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NickColor")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("NickName")
                         .HasColumnType("nvarchar(max)");
 
@@ -175,6 +181,8 @@ namespace vasilek.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MessageModelId");
 
                     b.ToTable("Users");
                 });
@@ -227,6 +235,13 @@ namespace vasilek.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("vasilek.Models.UserModel", b =>
+                {
+                    b.HasOne("vasilek.Models.MessageModel", null)
+                        .WithMany("UsersUnReadMessage")
+                        .HasForeignKey("MessageModelId");
+                });
+
             modelBuilder.Entity("vasilek.Models.DialogModel", b =>
                 {
                     b.Navigation("Messages");
@@ -235,6 +250,8 @@ namespace vasilek.Migrations
             modelBuilder.Entity("vasilek.Models.MessageModel", b =>
                 {
                     b.Navigation("Files");
+
+                    b.Navigation("UsersUnReadMessage");
                 });
 
             modelBuilder.Entity("vasilek.Models.UserModel", b =>

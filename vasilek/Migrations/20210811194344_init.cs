@@ -26,27 +26,6 @@ namespace vasilek.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Users",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Login = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NickName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Country = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AvaPhoto = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsOnline = table.Column<bool>(type: "bit", nullable: false),
-                    DateLastOnline = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateRegister = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "DialogModelUserModel",
                 columns: table => new
                 {
@@ -60,12 +39,6 @@ namespace vasilek.Migrations
                         name: "FK_DialogModelUserModel_Dialogs_DialogsId",
                         column: x => x.DialogsId,
                         principalTable: "Dialogs",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_DialogModelUserModel_Users_UsersId",
-                        column: x => x.UsersId,
-                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -90,32 +63,6 @@ namespace vasilek.Migrations
                         principalTable: "Dialogs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Messages_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Photos",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    PhotoName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Photos", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Photos_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -136,6 +83,55 @@ namespace vasilek.Migrations
                         name: "FK_Files_Messages_MessageId",
                         column: x => x.MessageId,
                         principalTable: "Messages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Login = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NickName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Country = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AvaPhoto = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsOnline = table.Column<bool>(type: "bit", nullable: false),
+                    NickColor = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateLastOnline = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateRegister = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    MessageModelId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_Messages_MessageModelId",
+                        column: x => x.MessageModelId,
+                        principalTable: "Messages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Photos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PhotoName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Photos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Photos_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -164,10 +160,39 @@ namespace vasilek.Migrations
                 name: "IX_Photos_UserId",
                 table: "Photos",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_MessageModelId",
+                table: "Users",
+                column: "MessageModelId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_DialogModelUserModel_Users_UsersId",
+                table: "DialogModelUserModel",
+                column: "UsersId",
+                principalTable: "Users",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Messages_Users_UserId",
+                table: "Messages",
+                column: "UserId",
+                principalTable: "Users",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Messages_Dialogs_DialogId",
+                table: "Messages");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Messages_Users_UserId",
+                table: "Messages");
+
             migrationBuilder.DropTable(
                 name: "DialogModelUserModel");
 
@@ -178,13 +203,13 @@ namespace vasilek.Migrations
                 name: "Photos");
 
             migrationBuilder.DropTable(
-                name: "Messages");
-
-            migrationBuilder.DropTable(
                 name: "Dialogs");
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Messages");
         }
     }
 }
