@@ -26,11 +26,11 @@ export const s_getUsersInCall = (state: AppStateType) => {
     return state.dialogsPage.usersInCall;
 }
 
-export const s_getIsInitiator= (state: AppStateType) => {
+export const s_getIsInitiator = (state: AppStateType) => {
     return state.dialogsPage.isInitiator;
 }
 
-export const s_getIsCallAccepted= (state: AppStateType) => {
+export const s_getIsCallAccepted = (state: AppStateType) => {
     return state.dialogsPage.isCallAccepted;
 }
 
@@ -53,4 +53,11 @@ export const s_getMyStream = (state: AppStateType) => {
 }
 export const s_getOtherStream = (state: AppStateType) => {
     return state.dialogsPage.otherStream;
+}
+
+export const s_getIsOnAudio = (state: AppStateType) => {
+    return state.dialogsPage.isOnAudio;
+}
+export const s_getIsOnVideo = (state: AppStateType) => {
+    return state.dialogsPage.isOnVideo;
 }

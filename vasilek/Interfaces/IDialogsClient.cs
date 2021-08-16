@@ -27,5 +27,6 @@ namespace vasilek.Interfaces
         Task SetUsersInCall(List<UserForCallModel> users);
         Task ChangeCallStatusOn(string login, string callStatus);
         Task EndCall();
+        Task ToggleVideoInCall(int userId, bool isOnVideo);
     }
 }

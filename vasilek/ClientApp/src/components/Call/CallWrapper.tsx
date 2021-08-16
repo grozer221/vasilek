@@ -19,6 +19,12 @@ export const CallWrapper: React.FC = () => {
     const receivingCallFromDialogId = useSelector(s_getReceivingCallFromDialogId);
     const isInCall = useSelector(s_getIsInCall);
     const inCallWithDialogId = useSelector(s_getInCallWithDialogId);
+    const myStream = useSelector(s_getMyStream);
+
+    useEffect(() => {
+        if(!isInCall && myStream)
+            stopTracks(myStream);
+    }, [isInCall])
 
     useEffect(() => {
         let countAcceptedUsers: number = 0;
@@ -36,6 +42,8 @@ export const CallWrapper: React.FC = () => {
 
         if((countAcceptedUsers === 1 && countPendingUsers === 0) || countAcceptedUsers < 1 && inCallWithDialogId)
             dispatch(endCall(inCallWithDialogId as number));
+
+
     }, [usersInCall]);
 
     if (receivingCallFromDialogId)
@@ -45,4 +53,8 @@ export const CallWrapper: React.FC = () => {
         return <Call/>
 
     return null;
+}
+
+export const stopTracks = (stream: MediaStream) => {
+    stream.getTracks().forEach(track => track.stop());
 }

@@ -24,6 +24,9 @@ let initialState = {
 
     myStream: null as null | MediaStream,
     otherStream: null as null | MediaStream,
+
+    isOnAudio: true,
+    isOnVideo: false
 };
 
 const dialogsReducer = (state = initialState, action: ActionsTypes): InitialStateType => {
@@ -228,6 +231,25 @@ const dialogsReducer = (state = initialState, action: ActionsTypes): InitialStat
                         : user
                 ),
             };
+        case 'SET_IS_ON_AUDIO':
+            return {
+                ...state,
+                isOnAudio: action.flag,
+            };
+        case 'SET_IS_ON_VIDEO':
+            return {
+                ...state,
+                isOnVideo: action.flag,
+            };
+        case 'TOGGLE_VIDEO_IN_CALL':
+            return {
+                ...state,
+                usersInCall: state.usersInCall.map(user =>
+                    user.id === action.userId
+                        ? {...user, isOnVideo: action.isOnVideo}
+                        : user
+                )
+            };
 
         default:
             return state;
@@ -346,6 +368,19 @@ export const actions = {
         type: 'CHANGE_CALL_STATUS_ON',
         login: login,
         callStatus: callStatus,
+    } as const),
+    setIsOnAudio: (flag: boolean) => ({
+        type: 'SET_IS_ON_AUDIO',
+        flag: flag,
+    } as const),
+    setIsOnVideo: (flag: boolean) => ({
+        type: 'SET_IS_ON_VIDEO',
+        flag: flag,
+    } as const),
+    toggleVideoInCall: (userId: number, isOnVideo: boolean) => ({
+        type: 'TOGGLE_VIDEO_IN_CALL',
+        userId: userId,
+        isOnVideo: isOnVideo,
     } as const),
 }
 
@@ -550,6 +585,16 @@ const endCallHandlerCreator = (dispatch: Dispatch) => {
     }
     return _endCallHandler
 }
+
+let _toggleVideoInCallHandler: ((userId: number, isOnVideo: boolean) => void) | null = null
+const toggleVideoInCallHandlerCreator = (dispatch: Dispatch) => {
+    if (_toggleVideoInCallHandler === null) {
+        _toggleVideoInCallHandler = (userId, isOnVideo) => {
+            dispatch(actions.toggleVideoInCall(userId, isOnVideo))
+        }
+    }
+    return _toggleVideoInCallHandler
+}
 ///
 
 export const startDialogsListening = (): ThunkType => async (dispatch) => {
@@ -574,6 +619,7 @@ export const startDialogsListening = (): ThunkType => async (dispatch) => {
     dialogsAPI.subscribe('SET_USERS_IN_CALL', setUsersInCallHandlerCreator(dispatch));
     dialogsAPI.subscribe('CHANGE_CALL_STATUS_ON', changeCallStatusOnHandlerCreator(dispatch));
     dialogsAPI.subscribe('END_CALL', endCallHandlerCreator(dispatch));
+    dialogsAPI.subscribe('TOGGLE_VIDEO_IN_CALL', toggleVideoInCallHandlerCreator(dispatch));
 };
 
 export const stopDialogsListening = (): ThunkType => async (dispatch) => {
@@ -597,6 +643,7 @@ export const stopDialogsListening = (): ThunkType => async (dispatch) => {
     dialogsAPI.unsubscribe('SET_USERS_IN_CALL', setUsersInCallHandlerCreator(dispatch));
     dialogsAPI.unsubscribe('CHANGE_CALL_STATUS_ON', changeCallStatusOnHandlerCreator(dispatch));
     dialogsAPI.unsubscribe('END_CALL', endCallHandlerCreator(dispatch));
+    dialogsAPI.unsubscribe('TOGGLE_VIDEO_IN_CALL', toggleVideoInCallHandlerCreator(dispatch));
 };
 
 export const sendMessage = (dialogId: number, messageText: string, files: File[]): ThunkType => async (dispatch) => {
@@ -647,6 +694,10 @@ export const leaveCall = (dialogId: number): ThunkType => async (dispatch) => {
 
 export const endCall = (dialogId: number): ThunkType => async (dispatch) => {
     dialogsAPI.endCall(dialogId);
+};
+
+export const toggleVideoInCall = (dialogId: number, userId: number, isOnVideo: boolean): ThunkType => async (dispatch) => {
+    dialogsAPI.toggleVideoInCall(dialogId, userId, isOnVideo);
 };
 ////
 

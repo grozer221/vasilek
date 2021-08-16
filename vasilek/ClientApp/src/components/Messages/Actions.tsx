@@ -34,6 +34,8 @@ export const Actions: React.FC = () => {
         dispatch(actions.setIsInCall(true));
         dispatch(actions.setInCallWithDialogId(currentDialogId));
         dispatch(actions.setIsInitiator(true));
+        dispatch(actions.setIsOnAudio(true));
+        dispatch(actions.setIsOnVideo(false));
     }
 
     return (
@@ -83,7 +85,6 @@ export const Actions: React.FC = () => {
         </div>
     );
 }
-
 
 
 export const countOnlineInDialog = (dialog: DialogType): number => {

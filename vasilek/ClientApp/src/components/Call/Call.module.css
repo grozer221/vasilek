@@ -3,21 +3,120 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #7f8c8d;
-    padding: 20px;
+    background-color: #bdc3c7;
+    padding: 10px;
+    text-align: center;
+    border-radius: 10px;
+    width: 100%;
+    height: calc(100vh - 20px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .button_accept,
-.button_accept span{
+.button_accept span {
     background-color: greenyellow;
+    border-radius: 50%;
+    cursor: pointer;
 }
 
-
-.button_decline,
-.button_decline span{
+.button_decline span {
     background-color: red;
+    border-radius: 50%;
+    cursor: pointer;
 }
 
-.video{
-    width: 400px;
+.wrapper_video {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid black;
+    border-radius: 10px;
+    position: relative;
+}
+
+.opacity_0{
+    opacity: 0;
+}
+
+.video {
+    width: 640px;
+    height: 480px;
+    object-fit: cover;
+}
+
+.wrapper_users {
+    display: flex;
+    gap: 10px;
+}
+
+.wrapper_user {
+    text-align: center;
+    width: 50%;
+    height: 50vh;
+}
+
+.nav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.button {
+    position: relative;
+    cursor: pointer;
+    background-color: #bdc3c7;
+    border: none;
+    border-radius: 50%;
+}
+
+.degree_45_line {
+    background-color: transparent;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.degree_45_line span {
+    background-color: transparent;
+}
+
+.degree_45_line span svg {
+    color: red;
+}
+
+.wrapper_ava {
+    position: absolute;
+}
+
+.spin{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.ava {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.nick {
+    font-weight: 500;
+}
+
+.receive_buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+@media (max-width: 900px) {
+    .wrapper_users {
+        flex-direction: column;
+    }
 }

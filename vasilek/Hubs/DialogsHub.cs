@@ -148,20 +148,8 @@ namespace vasilek.Hubs
         {
             var currentUserLogin = Context.User.Identity.Name;
             foreach (var user in users)
-            {
                 if(user.Login == currentUserLogin)
-                {
                     user.CallStatus = "accepted";
-                    user.IsOnAudio = true;
-                    user.IsOnVideo = false;
-                }
-                else
-                {
-                    user.CallStatus = "pending";
-                    user.IsOnAudio = true;
-                    user.IsOnVideo = false;
-                }
-            }
             var usersLoginsInDialog = users.Select(u => u.Login).ToList();
             await Clients.Users(usersLoginsInDialog).SetUsersInCall(users);
             usersLoginsInDialog.Remove(currentUserLogin);
@@ -191,6 +179,12 @@ namespace vasilek.Hubs
         {
             var usersInDialog = _dialogsRep.GetUsersInDialog(dialogId).Select(u => u.Login);
             await Clients.Users(usersInDialog).EndCall();
+        }
+        
+        public async Task ToggleVideoInCall(int dialogId, int userId, bool isOnVideo)
+        {
+            var usersInDialog = _dialogsRep.GetUsersInDialogExeptUser(dialogId, Context.User.Identity.Name).Select(u => u.Login);
+            await Clients.Users(usersInDialog).ToggleVideoInCall(userId, isOnVideo);
         }
 
         ////

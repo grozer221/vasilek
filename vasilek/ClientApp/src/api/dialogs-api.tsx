@@ -29,6 +29,7 @@ const subscribers = {
     'SET_USERS_IN_CALL': [] as SetUsersInCallSubscriberType[],
     'CHANGE_CALL_STATUS_ON': [] as ChangeCallStatusOnSubscriberType[],
     'END_CALL': [] as EndCallSubscriberType[],
+    'TOGGLE_VIDEO_IN_CALL': [] as ToggleVideoInCallSubscriberType[],
 }
 
 const createConnection = () => {
@@ -113,6 +114,9 @@ const createConnection = () => {
             connection?.on('EndCall', () => {
                 subscribers['END_CALL'].forEach(s => s())
             });
+            connection?.on('ToggleVideoInCall', (userId: number, isOnVideo: boolean) => {
+                subscribers['TOGGLE_VIDEO_IN_CALL'].forEach(s => s(userId, isOnVideo))
+            });
             ///
         })
         .catch((e: any) => message.error('Connection failed: ', e));
@@ -185,6 +189,9 @@ export const dialogsAPI = {
     endCall(dialogId: number) {
         connection?.send('EndCall', dialogId);
     },
+    toggleVideoInCall(dialogId: number, userId: number, isOnVideo: boolean) {
+        connection?.send('ToggleVideoInCall', dialogId, userId, isOnVideo);
+    },
     ////
 }
 
@@ -208,6 +215,7 @@ type ReceiveSignalSubscriberType = (signal: SignalData) => void
 type SetUsersInCallSubscriberType = (user: ProfileForCallType[]) => void
 type ChangeCallStatusOnSubscriberType = (login: string, callStatus: string) => void
 type EndCallSubscriberType = () => void
+type ToggleVideoInCallSubscriberType = (userId: number, isOnVideo: boolean) => void
 
 type EventsNamesType =
     'DIALOGS_RECEIVED'
@@ -230,6 +238,7 @@ type EventsNamesType =
     | 'SET_USERS_IN_CALL'
     | 'CHANGE_CALL_STATUS_ON'
     | 'END_CALL'
+    | 'TOGGLE_VIDEO_IN_CALL'
 
 type CallbackType =
     DialogsReceivedSubscriberType
@@ -252,6 +261,7 @@ type CallbackType =
     | SetUsersInCallSubscriberType
     | ChangeCallStatusOnSubscriberType
     | EndCallSubscriberType
+    | ToggleVideoInCallSubscriberType
 
 
 export type DialogType = {

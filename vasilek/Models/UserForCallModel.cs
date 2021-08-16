@@ -2,8 +2,8 @@
 {
     public class UserForCallModel: UserModel
     {
-        public string CallStatus { get; set; }
-        public bool IsOnVideo { get; set; }
-        public bool IsOnAudio { get; set; }
+        public string CallStatus { get; set; } = "pending";
+        public bool IsOnVideo { get; set; } = false;
+        public bool IsOnAudio { get; set; } = true;
     }
 }
