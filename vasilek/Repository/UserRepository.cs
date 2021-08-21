@@ -23,7 +23,8 @@ namespace vasilek.Repository
         public UserModel GetUserByLogin(string login)
         {
             var user = _ctx.Users.FirstOrDefault(u => u.Login == login);
-            user.Dialogs = null;
+            if(user != null)
+                user.Dialogs = null;
             return user;
         }
 

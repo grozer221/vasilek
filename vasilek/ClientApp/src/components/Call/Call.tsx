@@ -57,6 +57,7 @@ export const Call: React.FC = () => {
     useEffect(() => {
         if (myStream)
             stopTracks(myStream);
+
         navigator.mediaDevices.getUserMedia(
             {
                 audio: true,

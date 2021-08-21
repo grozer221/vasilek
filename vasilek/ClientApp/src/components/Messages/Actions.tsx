@@ -60,16 +60,16 @@ export const Actions: React.FC = () => {
 
                         </div>
                         <div className={s.user_nick_and_online_count}>
-                            <div className={s.dialog_name}>{currentDialog.dialogName}</div>
+                            <div className={s.dialog_name}>{currentDialog?.dialogName}</div>
                             {currentDialog?.isDialogBetween2 && !currentDialog.users.filter(user => user.id !== currentUserId)[0]?.isOnline &&
                             <small>
                                 last
-                                seen {currentDialog.users.filter(user => user.id !== currentUserId)[0]?.dateLastOnline.toString().substr(5, 5)} {currentDialog.users.filter(user => user.id !== currentUserId)[0]?.dateLastOnline.toString().substr(11, 5)}
+                                seen {currentDialog?.users.filter(user => user.id !== currentUserId)[0]?.dateLastOnline.toString().substr(5, 5)} {currentDialog.users.filter(user => user.id !== currentUserId)[0]?.dateLastOnline.toString().substr(11, 5)}
                             </small>
                             }
                             {!currentDialog?.isDialogBetween2 &&
                             <small>
-                                <div>{currentDialog.users.length} member, {countOnlineInDialog(currentDialog)} online</div>
+                                <div>{currentDialog?.users.length} member, {countOnlineInDialog(currentDialog)} online</div>
                             </small>
                             }
                         </div>
@@ -89,7 +89,7 @@ export const Actions: React.FC = () => {
 
 export const countOnlineInDialog = (dialog: DialogType): number => {
     let onlineUserCount = 0;
-    dialog.users.forEach(user => user.isOnline ? onlineUserCount++ : onlineUserCount)
+    dialog?.users.forEach(user => user.isOnline ? onlineUserCount++ : onlineUserCount)
     return onlineUserCount;
 }
 

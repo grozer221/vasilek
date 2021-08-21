@@ -40,10 +40,10 @@ export const ReceivingCall: React.FC = () => {
             <div className={s.nick}>{receivingCallFromDialog.dialogName}</div>
             <div className={s.receive_buttons}>
                 <button className={s.button_accept + ' ' + s.button} onClick={acceptHandler}>
-                    <Avatar icon={<PhoneOutlined/>}/>
+                    <Avatar size={64} icon={<PhoneOutlined/>}/>
                 </button>
                 <button className={s.button_decline + ' ' + s.button} onClick={leaveHandler}>
-                    <Avatar icon={<PhoneOutlined/>}/>
+                    <Avatar size={64} icon={<PhoneOutlined/>}/>
                 </button>
             </div>
         </div>
