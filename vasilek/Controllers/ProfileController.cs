@@ -23,7 +23,7 @@ namespace vasilek.Controllers
         private AppDatabaseContext _ctx;
         private ProfileRepository _profileRep;
         private UserRepository _userRep;
-        private CloudStorageAccount cloudStorageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=vasilek;AccountKey=ga855L/qIGAioZbnCI0IkbXJoQsdodXPB1YLHNw6rcUrtVxRe4h0cstxdlttqSBFOB5VKMHamqkHYaoB/0WZZw==;EndpointSuffix=core.windows.net");
+        private CloudStorageAccount cloudStorageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=vasilekstorage;AccountKey=9mUyFxIwhWybyOSj5FIRhIyT9ooUofTbqew9LinUrZ3Hx092NWuZPINwAo8JEXhlf1SASN+H0NVPNiQhLOKY3g==;EndpointSuffix=core.windows.net");
 
         public ProfileController(AppDatabaseContext ctx )
         {

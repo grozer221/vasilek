@@ -28,7 +28,7 @@ namespace vasilek.Controllers
         private readonly AppDatabaseContext _ctx;
         private readonly UserRepository _userRep;
         private readonly DialogsRepository _dialogRep;
-        private CloudStorageAccount cloudStorageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=vasilekstorage;AccountKey=V0EHTbGVrPHjFw4Rn+Tdk2gaNvDZ29F6gBi9IuidKeAEi8iynSmKPLRaMhPclOqsED+Uf/XK/H4ZTO14wK8ang==;EndpointSuffix=core.windows.net");
+        private CloudStorageAccount cloudStorageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=vasilekstorage;AccountKey=9mUyFxIwhWybyOSj5FIRhIyT9ooUofTbqew9LinUrZ3Hx092NWuZPINwAo8JEXhlf1SASN+H0NVPNiQhLOKY3g==;EndpointSuffix=core.windows.net");
         public DialogsController(AppDatabaseContext ctx)
         {
             _ctx = ctx;

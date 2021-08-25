@@ -6,8 +6,8 @@ export const instance = axios.create({
 });
 
 export const urls = {
-    pathToUsersPhotos: 'https://vasilek.blob.core.windows.net/userphotoscontainer/',
-    pathToFilesPinnedToMessage: 'https://vasilek.blob.core.windows.net/files-pinned-to-message/',
+    pathToUsersPhotos: 'https://vasilekstorage.blob.core.windows.net/users-photos/',
+    pathToFilesPinnedToMessage: 'https://vasilekstorage.blob.core.windows.net/files-pinned-to-messages/1.txt',
 };
 
 export enum ResponseCodes {

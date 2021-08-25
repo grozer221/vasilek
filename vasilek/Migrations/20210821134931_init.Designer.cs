@@ -10,7 +10,7 @@ using vasilek;
 namespace vasilek.Migrations
 {
     [DbContext(typeof(AppDatabaseContext))]
-    [Migration("20210811194344_init")]
+    [Migration("20210821134931_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
