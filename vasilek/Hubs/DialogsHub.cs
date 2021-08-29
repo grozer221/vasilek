@@ -29,7 +29,7 @@ namespace vasilek.Hubs
         {
             int messageId = _dialogsRep.AddMessageToDialog(Context.User.Identity.Name, dialogId, messageText);
             MessageModel message = _dialogsRep.AddFilesPinnedToMessage(messageId, files);
-            var usersLogins = message.Dialog.Users.Select(u => u.Login).ToList();
+            var usersLogins = message.Dialog.Users.Select(u => u.Login).Distinct().ToList();
             message.Dialog.Users = null;
             await Clients.Users(usersLogins).ReceiveMessage(dialogId, message);
             usersLogins.Remove(Context.User.Identity.Name);
@@ -90,7 +90,7 @@ namespace vasilek.Hubs
             var dialog = _dialogsRep.GetDialogById(dialogId);
             if(dialog.Users.Any(u => u == currentUser))
             {
-                var usersLogins = dialog.Users.Select(u => u.Login).ToList();
+                var usersLogins = dialog.Users.Select(u => u.Login).Distinct().ToList();
                 _dialogsRep.DeleteDialog(dialogId);
                 await Clients.Users(usersLogins).DeleteDialog(dialogId);
             }
@@ -105,7 +105,7 @@ namespace vasilek.Hubs
                 _dialogsRep.AddUsersToDialog(dialog, usersIds);
                 var usersInDialog = dialog.Users;
                 await Clients.Caller.AddUsersToDialog(dialogId, usersInDialog);
-                var usersLoginsInDialog = usersInDialog.Select(u => u.Login).ToList();
+                var usersLoginsInDialog = usersInDialog.Select(u => u.Login).Distinct().ToList();
                 usersLoginsInDialog.Remove(Context.User.Identity.Name);
                 await Clients.Users(usersLoginsInDialog).ReceiveDialog(dialog);
             }
@@ -119,7 +119,7 @@ namespace vasilek.Hubs
                 return;
             _dialogsRep.RemoveUserFromDialog(dialog, user);
             var usersInDialog = dialog.Users;
-            var usersLoginsInDialog = usersInDialog.Select(u => u.Login).ToList();
+            var usersLoginsInDialog = usersInDialog.Select(u => u.Login).Distinct().ToList();
             await Clients.User(user.Login).RemoveDialog(dialogId);
             await Clients.Users(usersLoginsInDialog).RemoveUserFromDialog(dialogId, userId);
         }
@@ -131,7 +131,7 @@ namespace vasilek.Hubs
             if (dialog.IsDialogBetween2 || !dialog.Users.Any(u => u == currentUser))
                 return;
             _dialogsRep.ChangeGroupName(dialog, newGroupName);
-            var usersLoginsInDialog = dialog.Users.Select(u => u.Login).ToList();
+            var usersLoginsInDialog = dialog.Users.Select(u => u.Login).Distinct().ToList();
             await Clients.Users(usersLoginsInDialog).ChangeGroupName(dialogId, newGroupName);
         }
         
@@ -150,7 +150,7 @@ namespace vasilek.Hubs
             foreach (var user in users)
                 if(user.Login == currentUserLogin)
                     user.CallStatus = "accepted";
-            var usersLoginsInDialog = users.Select(u => u.Login).ToList();
+            var usersLoginsInDialog = users.Select(u => u.Login).Distinct().ToList();
             await Clients.Users(usersLoginsInDialog).SetUsersInCall(users);
             usersLoginsInDialog.Remove(currentUserLogin);
             await Clients.Users(usersLoginsInDialog).ReceiveCall(dialogId);

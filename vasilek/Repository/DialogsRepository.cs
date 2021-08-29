@@ -146,13 +146,13 @@ namespace vasilek.Repository
         public List<string> GetUsersLoginsInDialog(int dialogId)
         {
             var dialog = _ctx.Dialogs.Include(d => d.Users).FirstOrDefault(d => d.Id == dialogId);
-            var usersLogins = dialog.Users.Select(u => u.Login).ToList();
+            var usersLogins = dialog.Users.Select(u => u.Login).Distinct().ToList();
             return usersLogins;
         }
         
         public List<UserModel> GetUsersInDialog(int dialogId)
         {
-            return _ctx.Dialogs.Include(d => d.Users).FirstOrDefault(d => d.Id == dialogId).Users.ToList();
+            return _ctx.Dialogs.Include(d => d.Users).FirstOrDefault(d => d.Id == dialogId).Users.Distinct().ToList();
         }
 
         public bool DeleteDialog(int dialogId)
@@ -230,9 +230,10 @@ namespace vasilek.Repository
             List<List<UserModel>> usersInDialog = dialogs.Select(d => d.Users).ToList();
             List<string> usersLoginsWhichHaveAnyRelationshipWithUser = new List<string>();
             foreach (List<UserModel> users in usersInDialog)
-                foreach(UserModel user in users)
+                foreach (UserModel user in users)
                     if (user.Login != userLogin && !usersLoginsWhichHaveAnyRelationshipWithUser.Any(u => u == user.Login))
                         usersLoginsWhichHaveAnyRelationshipWithUser.Add(user.Login);
+            usersLoginsWhichHaveAnyRelationshipWithUser = usersLoginsWhichHaveAnyRelationshipWithUser.Distinct().ToList();
             return usersLoginsWhichHaveAnyRelationshipWithUser;
         }
         
