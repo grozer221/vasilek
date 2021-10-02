@@ -3,16 +3,12 @@ using vasilek.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.IO;
 using vasilek.Utils;
-using Microsoft.Azure.Storage;
-using Microsoft.Azure.Storage.Blob;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 
 namespace vasilek.Controllers
 {
@@ -25,34 +21,30 @@ namespace vasilek.Controllers
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
+
         private readonly AppDatabaseContext _ctx;
-        private readonly UserRepository _userRep;
-        private readonly DialogsRepository _dialogRep;
-        private CloudStorageAccount cloudStorageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=vasilekstorage;AccountKey=9mUyFxIwhWybyOSj5FIRhIyT9ooUofTbqew9LinUrZ3Hx092NWuZPINwAo8JEXhlf1SASN+H0NVPNiQhLOKY3g==;EndpointSuffix=core.windows.net");
-        public DialogsController(AppDatabaseContext ctx)
+        private IConfigurationRoot _confString;
+        private Blob _blob;
+
+        public DialogsController(AppDatabaseContext ctx, IHostEnvironment hostEnvironment)
         {
             _ctx = ctx;
-            _userRep = new UserRepository(_ctx);
-            _dialogRep = new DialogsRepository(_ctx);
+            _confString = new ConfigurationBuilder().SetBasePath(hostEnvironment.ContentRootPath).AddJsonFile("appsettings.json").Build();
+            _blob = new Blob(_confString);
         }
 
         [HttpPost]
         public async Task<string> File([FromForm]IFormFile file)
         {
-            await UploadFilesPinnedToMessage(file);
-            return JsonConvert.SerializeObject(new ResponseModel() { ResultCode = 0, Data = null }, JsonSettings);
-        }
-
-        [NonAction]
-        public async Task UploadFilesPinnedToMessage(IFormFile file)
-        {
-            var cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
-            var cloudBlobContainer = cloudBlobClient.GetContainerReference("files-pinned-to-messages");
-            if (await cloudBlobContainer.CreateIfNotExistsAsync())
-                await cloudBlobContainer.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Off });
-            var cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(file.FileName);
-            cloudBlockBlob.Properties.ContentType = file.ContentType;
-            await cloudBlockBlob.UploadFromStreamAsync(file.OpenReadStream());
+            try
+            {
+                await _blob.SaveFilePinnedToMessage(file, file.FileName);
+                return JsonConvert.SerializeObject(new ResponseModel() { ResultCode = 0 }, JsonSettings);
+            }
+            catch
+            {
+                return JsonConvert.SerializeObject(new ResponseModel() { ResultCode = 1, Messages = new string[] { "File can not be saved" } }, JsonSettings);
+            }
         }
     }
 }

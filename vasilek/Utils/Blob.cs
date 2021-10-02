@@ -1,39 +1,40 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
+using Microsoft.Extensions.Configuration;
+using System.Threading.Tasks;
 
 namespace vasilek.Utils
 {
     public class Blob
     {
-        private CloudStorageAccount cloudStorageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=vasilek;AccountKey=ga855L/qIGAioZbnCI0IkbXJoQsdodXPB1YLHNw6rcUrtVxRe4h0cstxdlttqSBFOB5VKMHamqkHYaoB/0WZZw==;EndpointSuffix=core.windows.net");
-        private CloudBlobClient cloudBlobClient;
-        private CloudBlobContainer cloudBlobContainer;
-        private CloudBlockBlob cloudBlockBlob;
+        IConfigurationRoot _confString;
 
-        public Blob()
+        public Blob(IConfigurationRoot confString)
         {
-            cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
+            _confString = confString;
         }
 
-        public async void UploadPhoto(IFormFile photo, string photoName)
+        private async Task UploadFileToBlob(string containerName, IFormFile file, string fileName)
         {
-            cloudBlobContainer = cloudBlobClient.GetContainerReference("userphotoscontainer");
+            var cloudStorageAccount = CloudStorageAccount.Parse(_confString.GetConnectionString("BlobConnection"));
+            var cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
+            var cloudBlobContainer = cloudBlobClient.GetContainerReference(containerName);
             if (await cloudBlobContainer.CreateIfNotExistsAsync())
                 await cloudBlobContainer.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Off });
-            cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(photoName);
-            cloudBlockBlob.Properties.ContentType = photo.ContentType;
-            await cloudBlockBlob.UploadFromStreamAsync(photo.OpenReadStream());
-        }
-
-        public async void UploadFilesPinnedToMessage(IFormFile file, string fileName)
-        {
-            cloudBlobContainer = cloudBlobClient.GetContainerReference("files-pinned-to-message");
-            if (await cloudBlobContainer.CreateIfNotExistsAsync())
-                await cloudBlobContainer.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Off });
-            cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(fileName);
+            var cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(fileName);
             cloudBlockBlob.Properties.ContentType = file.ContentType;
             await cloudBlockBlob.UploadFromStreamAsync(file.OpenReadStream());
+        }
+
+        public async Task SaveUserPhoto(IFormFile photo, string photoName)
+        {
+            await UploadFileToBlob("users-photos", photo, photoName);
+        }
+
+        public async Task SaveFilePinnedToMessage(IFormFile file, string fileName)
+        {
+            await UploadFileToBlob("files-pinned-to-messages", file, fileName);
         }
 
     }
