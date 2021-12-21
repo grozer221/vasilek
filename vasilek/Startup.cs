@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using System.Web.Http;
 using vasilek.Hubs;
 using vasilek.Utils;
@@ -33,6 +34,7 @@ namespace vasilek
             #else
             connectionString = Environment.GetEnvironmentVariable("JAWSDB_URL");
             #endif
+
             services.AddDbContext<AppDatabaseContext>(o => o.UseSqlServer(connectionString));
             services.AddSingleton<Blob>();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
