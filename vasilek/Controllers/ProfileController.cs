@@ -7,8 +7,6 @@ using System.IO;
 using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using vasilek.Utils;
 
 namespace vasilek.Controllers
@@ -23,17 +21,13 @@ namespace vasilek.Controllers
         };
         private AppDatabaseContext _ctx;
         private ProfileRepository _profileRep;
-        private UserRepository _userRep;
-        private IConfigurationRoot _confString;
         private Blob _blob;
 
-        public ProfileController(AppDatabaseContext ctx, IHostEnvironment hostEnvironment)
+        public ProfileController(AppDatabaseContext ctx, Blob blob)
         {
             _ctx = ctx;
             _profileRep = new ProfileRepository(_ctx);
-            _userRep = new UserRepository(_ctx);
-            _confString = new ConfigurationBuilder().SetBasePath(hostEnvironment.ContentRootPath).AddJsonFile("appsettings.json").Build();
-            _blob = new Blob(_confString);
+            _blob = blob;
         }
 
         [HttpGet("{id}")]

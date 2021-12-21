@@ -8,9 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
 using System.Web.Http;
 using vasilek.Hubs;
+using vasilek.Utils;
 
 namespace vasilek
 {
@@ -19,23 +19,22 @@ namespace vasilek
         public Startup(IConfiguration configuration, IHostEnvironment hostEnvironment)
         {
             Configuration = configuration;
-            _confString = new ConfigurationBuilder().SetBasePath(hostEnvironment.ContentRootPath).AddJsonFile("appsettings.json").Build();
         }
 
         public IConfiguration Configuration { get; }
-        private IConfigurationRoot _confString;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
             string connectionString;
-#if DEBUG
-            connectionString = _confString.GetConnectionString("DefaultConnection");
-#else
-            connectionString = Environment.GetEnvironmentVariable("");
-#endif
+            #if DEBUG
+            connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=vasilek;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            #else
+            connectionString = Environment.GetEnvironmentVariable("JAWSDB_URL");
+            #endif
             services.AddDbContext<AppDatabaseContext>(o => o.UseSqlServer(connectionString));
+            services.AddSingleton<Blob>();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options => //CookieAuthenticationOptions
                 {

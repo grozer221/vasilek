@@ -1,5 +1,4 @@
 ﻿using vasilek.Models;
-using vasilek.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -7,8 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using vasilek.Utils;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 
 namespace vasilek.Controllers
 {
@@ -22,15 +19,11 @@ namespace vasilek.Controllers
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
 
-        private readonly AppDatabaseContext _ctx;
-        private IConfigurationRoot _confString;
         private Blob _blob;
 
-        public DialogsController(AppDatabaseContext ctx, IHostEnvironment hostEnvironment)
+        public DialogsController(Blob blob)
         {
-            _ctx = ctx;
-            _confString = new ConfigurationBuilder().SetBasePath(hostEnvironment.ContentRootPath).AddJsonFile("appsettings.json").Build();
-            _blob = new Blob(_confString);
+            _blob = blob;
         }
 
         [HttpPost]

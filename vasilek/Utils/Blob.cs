@@ -1,23 +1,17 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
-using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 
 namespace vasilek.Utils
 {
     public class Blob
     {
-        IConfigurationRoot _confString;
-
-        public Blob(IConfigurationRoot confString)
-        {
-            _confString = confString;
-        }
+        private string _blobConnection = "";
 
         private async Task UploadFileToBlob(string containerName, IFormFile file, string fileName)
         {
-            var cloudStorageAccount = CloudStorageAccount.Parse(_confString.GetConnectionString("BlobConnection"));
+            var cloudStorageAccount = CloudStorageAccount.Parse(_blobConnection);
             var cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
             var cloudBlobContainer = cloudBlobClient.GetContainerReference(containerName);
             if (await cloudBlobContainer.CreateIfNotExistsAsync())
