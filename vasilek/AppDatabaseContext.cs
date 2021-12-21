@@ -7,7 +7,7 @@ namespace vasilek
     {
         public AppDatabaseContext(DbContextOptions<AppDatabaseContext> options) : base(options)
         {
-
+            this.Database.EnsureCreated();
         }
 
         public DbSet<UserModel>    Users { get; set; }

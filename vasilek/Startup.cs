@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using System.Web.Http;
 using vasilek.Hubs;
 
@@ -28,7 +29,13 @@ namespace vasilek
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
-            services.AddDbContext<AppDatabaseContext>(o => o.UseSqlServer(_confString.GetConnectionString("DefaultConnection")));
+            string connectionString;
+#if DEBUG
+            connectionString = _confString.GetConnectionString("DefaultConnection");
+#else
+            connectionString = Environment.GetEnvironmentVariable("");
+#endif
+            services.AddDbContext<AppDatabaseContext>(o => o.UseSqlServer(connectionString));
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options => //CookieAuthenticationOptions
                 {
@@ -49,7 +56,7 @@ namespace vasilek
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AppDatabaseContext ctx)
         {
             if (env.IsDevelopment())
             {
