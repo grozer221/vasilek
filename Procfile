@@ -1,1 +1,1 @@
-web: sudo apt-get install npm && cd $HOME/heroku_output && ./vasilek
+web: cd $HOME/heroku_output && ./vasilek
