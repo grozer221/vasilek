@@ -29,13 +29,25 @@ namespace vasilek
         {
             services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
             string connectionString;
-            #if DEBUG
-            connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=vasilek;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-            #else
+#if DEBUG
+            connectionString = $"server=localhost;database=vasilek;user=root;password=;port=3306";
+            //connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=vasilek;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+#else
             connectionString = Environment.GetEnvironmentVariable("JAWSDB_URL");
-            #endif
+            connectionString = connectionString.Split("//")[1];
+            string user = connectionString.Split(':')[0];
+            connectionString = connectionString.Replace(user, "").Substring(1);
+            string password = connectionString.Split('@')[0];
+            connectionString = connectionString.Replace(password, "").Substring(1);
+            string server = connectionString.Split(':')[0];
+            connectionString = connectionString.Replace(server, "").Substring(1);
+            string port = connectionString.Split('/')[0];
+            string database = connectionString.Split('/')[1];
+            connectionString = $"server={server};database={database};user={user};password={password};port={port}";
+#endif
 
-            services.AddDbContext<AppDatabaseContext>(o => o.UseSqlServer(connectionString));
+            //services.AddDbContext<AppDatabaseContext>(o => o.UseSqlServer(connectionString));
+            services.AddDbContext<AppDatabaseContext>(o => o.UseMySQL(connectionString));
             services.AddSingleton<Blob>();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options => //CookieAuthenticationOptions

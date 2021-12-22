@@ -1,5 +1,6 @@
 ﻿using vasilek.Models;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace vasilek
 {
@@ -7,7 +8,7 @@ namespace vasilek
     {
         public AppDatabaseContext(DbContextOptions<AppDatabaseContext> options) : base(options)
         {
-            Database.Migrate();
+            Database.EnsureCreated();
         }
 
         public DbSet<UserModel>    Users { get; set; }
