@@ -10,10 +10,11 @@ import {Actions} from "./Actions";
 import Avatar from "antd/es/avatar/avatar";
 import {LinkOutlined, SmileOutlined} from "@ant-design/icons";
 import 'emoji-mart/css/emoji-mart.css';
-import {EmojiData, Picker} from 'emoji-mart';
+import {Emoji, EmojiData, Picker} from 'emoji-mart';
 import {DialogType} from "../../api/dialogs-api";
 import {SelectFiles} from "../common/SelectFiles/SelectFiles";
 import Peer from "simple-peer";
+import reactStringReplace from 'react-string-replace';
 
 export const Messages: React.FC = () => {
     const dialogs = useSelector(s_getDialogs);
@@ -59,7 +60,8 @@ export const Messages: React.FC = () => {
     const checkIfReadMessages = () => {
         currentDialog?.messages?.forEach(message => {
             message.usersUnReadMessage?.forEach(user => {
-                if (user.id === currentUserId) {
+                console.log(message.user.id, currentUserId);
+                if (user.id === currentUserId && message.user.id !== currentUserId) {
                     dispatch(makeMessageRead(currentDialogId, message.id))
                     //console.log(message.user.nickName + ': ' + message.messageText)
                 }

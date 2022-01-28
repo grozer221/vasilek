@@ -7,7 +7,7 @@ namespace vasilek.Utils
 {
     public class Blob
     {
-        private string _blobConnection = "";
+        private string _blobConnection = "DefaultEndpointsProtocol=https;AccountName=vasilekblobstorage;AccountKey=BYlY6T1Pl2GhOSaaIo4AANzSId53g/2QeX6hrluWaO26CjJAXZoMeEaWzgiPdP9hr0ReuPFqFk5LdpziyX0ISA==;EndpointSuffix=core.windows.net";
 
         private async Task UploadFileToBlob(string containerName, IFormFile file, string fileName)
         {
@@ -30,6 +30,5 @@ namespace vasilek.Utils
         {
             await UploadFileToBlob("files-pinned-to-messages", file, fileName);
         }
-
     }
 }

@@ -24,7 +24,8 @@ namespace vasilek.Repository
         
         public MessageModel GetMessageById(int id)
         {
-            return _ctx.Messages.Include(m => m.Dialog)
+            return _ctx.Messages
+                .Include(m => m.Dialog).ThenInclude(d => d.Users)
                 .Include(m => m.User)
                 .Include(m => m.Files)
                 .Include(m => m.UsersUnReadMessage)
@@ -173,6 +174,17 @@ namespace vasilek.Repository
             return true;
         }
 
+        public bool DeleteMessage(int messageId)
+        {
+            MessageModel message = _ctx.Messages.Include(m => m.User).Include(m => m.Files).FirstOrDefault(m => m.Id == messageId);
+            if (message == null)
+                return false;
+            _ctx.Files.RemoveRange(message.Files);
+            _ctx.Messages.Remove(message);
+            _ctx.SaveChanges();
+            return true;
+        }
+
         public DialogModel AddUsersToDialog(DialogModel dialog, int[] usersIds)
         {
             dialog.DateChanged = DateTime.Now;
@@ -196,7 +208,8 @@ namespace vasilek.Repository
         
         public void ChangeGroupName(DialogModel dialog, string newGroupName)
         {
-            dialog.DialogName = newGroupName;
+            var newDialog = _ctx.Dialogs.SingleOrDefault(d => d.Id == dialog.Id);
+            newDialog.DialogName = newGroupName;
             _ctx.SaveChanges();
         }
         

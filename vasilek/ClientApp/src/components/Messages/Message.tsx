@@ -1,15 +1,19 @@
 import React from 'react';
-import s from './Messages.module.css'
-import {DialogType, MessageType} from "../../api/dialogs-api";
-import {useSelector} from "react-redux";
-import {s_getCurrentUserId} from "../../redux/auth-selectors";
+import s from './Messages.module.css';
+import {DialogType, MessageType} from '../../api/dialogs-api';
+import {useDispatch, useSelector} from 'react-redux';
+import {s_getCurrentUserId} from '../../redux/auth-selectors';
 import reactStringReplace from 'react-string-replace';
-import {Emoji} from "emoji-mart";
-import {Avatar, Image} from "antd";
-import {urls} from "../../api/api";
+import {Emoji} from 'emoji-mart';
+import {Avatar, Image, Modal} from 'antd';
+import {urls} from '../../api/api';
 import userWithoutPhoto from '../../assets/images/man.png';
-import {CheckOutlined, CloudDownloadOutlined} from "@ant-design/icons";
-import {s_getCurrentDialogId, s_getDialogs} from "../../redux/dialogs-selectors";
+import {CheckOutlined, CloudDownloadOutlined, DeleteOutlined, ExclamationCircleOutlined} from '@ant-design/icons';
+import {s_getCurrentDialogId, s_getDialogs} from '../../redux/dialogs-selectors';
+import {deleteDialog, deleteMessage} from '../../redux/dialogs-reducer';
+
+const {confirm} = Modal;
+
 
 type PropsType = {
     message: MessageType,
@@ -20,9 +24,21 @@ export const Message: React.FC<PropsType> = ({message, isDialogBetween2}) => {
     const currentUserId = useSelector(s_getCurrentUserId);
     const currentDialogId = useSelector(s_getCurrentDialogId);
     const dialogs = useSelector(s_getDialogs);
+    const dispatch = useDispatch();
+
     const currentDialog = dialogs.find(dialog => dialog.id === currentDialogId) as DialogType;
     const isMyMessage = (userId: number) => {
-        return currentUserId === userId
+        return currentUserId === userId;
+    };
+
+    const showConfirm = () => {
+        confirm({
+            title: <div>Do you want to delete message <strong>{message.messageText}</strong>?</div>,
+            icon: <ExclamationCircleOutlined/>,
+            onOk() {
+                dispatch(deleteMessage(message.id));
+            },
+        });
     }
 
     return (
@@ -38,7 +54,10 @@ export const Message: React.FC<PropsType> = ({message, isDialogBetween2}) => {
                         {!isMyMessage(message.user.id) && !isDialogBetween2 &&
                         <div className={s.nick}>
                             <strong
-                                style={{color: message.user.nickColor, fontWeight: 500}}>{message.user.nickName}</strong>
+                                style={{
+                                    color: message.user.nickColor,
+                                    fontWeight: 500,
+                                }}>{message.user.nickName}</strong>
                         </div>
                         }
                         <div>
@@ -51,20 +70,20 @@ export const Message: React.FC<PropsType> = ({message, isDialogBetween2}) => {
                                             src={urls.pathToFilesPinnedToMessage + file.name}
                                             alt={file.name}
                                         />
-                                    </div>
+                                    </div>;
                                 else
                                     return <a className={s.message_file} key={file.id}
-                                              href={urls.pathToFilesPinnedToMessage + file.name} target='_blank'>
+                                              href={urls.pathToFilesPinnedToMessage + file.name} target="_blank">
                                         <Avatar icon={<CloudDownloadOutlined/>}/>
                                         <div>{file.name}</div>
-                                    </a>
+                                    </a>;
 
                             })}
                             <div>
                                 {reactStringReplace(message.messageText,
                                     /:(.+?):/,
                                     (match) => (
-                                        <Emoji size={26} emoji={match} set='apple'/>
+                                        <Emoji size={26} emoji={match} set="apple"/>
                                     ))}
                             </div>
                         </div>
@@ -86,8 +105,13 @@ export const Message: React.FC<PropsType> = ({message, isDialogBetween2}) => {
                                 style={{backgroundColor: 'transparent'}}/>
                     </div>
                     }
+                    {isMyMessage(message.user.id) &&
+                        <div className={s.deleteMessage} onClick={showConfirm}>
+                            <Avatar icon={<DeleteOutlined/>} size={18}/>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
     );
-}
+};

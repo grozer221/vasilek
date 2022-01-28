@@ -96,6 +96,17 @@ namespace vasilek.Hubs
             }
         }
         
+        public async Task DeleteMessage(int messageId)
+        {
+            MessageModel message = _dialogsRep.GetMessageById(messageId);
+            if(message.User.Login == Context.User.Identity.Name)
+            {
+                List<string> usersLogins = message.Dialog.Users.Select(u => u.Login).Distinct().ToList();
+                _dialogsRep.DeleteMessage(messageId);
+                await Clients.Users(usersLogins).DeleteMessage(messageId);
+            }
+        }
+        
         public async Task AddUsersToDialog(int dialogId, int[] usersIds)
         {
             var currentUser = _userRep.GetUserByLogin(Context.User.Identity.Name);
@@ -127,8 +138,7 @@ namespace vasilek.Hubs
         public async Task ChangeGroupName(int dialogId, string newGroupName)
         {
             var dialog = _dialogsRep.GetDialogById(dialogId);
-            var currentUser = _userRep.GetUserByLogin(Context.User.Identity.Name);
-            if (dialog.IsDialogBetween2 || !dialog.Users.Any(u => u == currentUser))
+            if (dialog.IsDialogBetween2 || !dialog.Users.Any(u => u.Login == Context.User.Identity.Name))
                 return;
             _dialogsRep.ChangeGroupName(dialog, newGroupName);
             var usersLoginsInDialog = dialog.Users.Select(u => u.Login).Distinct().ToList();

@@ -19,11 +19,13 @@ namespace vasilek.Controllers
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
 
-        private Blob _blob;
+        private readonly Blob _blob;
+        private readonly FilesUtils _filesUtils;
 
-        public DialogsController(Blob blob)
+        public DialogsController(Blob blob, FilesUtils filesUtils)
         {
             _blob = blob;
+            _filesUtils = filesUtils;
         }
 
         [HttpPost]
@@ -32,6 +34,7 @@ namespace vasilek.Controllers
             try
             {
                 await _blob.SaveFilePinnedToMessage(file, file.FileName);
+                //await _filesUtils.SaveFilePinnedToMessage(file, file.FileName);
                 return JsonConvert.SerializeObject(new ResponseModel() { ResultCode = 0 }, JsonSettings);
             }
             catch

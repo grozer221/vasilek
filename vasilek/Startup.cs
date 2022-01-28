@@ -17,14 +17,15 @@ namespace vasilek
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
         {
-            Configuration = configuration;
+            _configuration = configuration;
+            _webHostEnvironment = webHostEnvironment;
         }
 
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
@@ -49,14 +50,14 @@ namespace vasilek
             //services.AddDbContext<AppDatabaseContext>(o => o.UseSqlServer(connectionString));
             services.AddDbContext<AppDatabaseContext>(o => o.UseMySQL(connectionString));
             services.AddSingleton<Blob>();
+            services.AddSingleton<FilesUtils>();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options => //CookieAuthenticationOptions
+                .AddCookie(options => 
                 {
                     options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/api/account/login");
                 });
             services.AddControllersWithViews();
 
-            // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/build";
@@ -68,7 +69,6 @@ namespace vasilek
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -87,7 +87,6 @@ namespace vasilek
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
-            //app.UseCors("ClientPermission");
             app.UseRouting();
 
             app.UseAuthentication();
@@ -98,7 +97,6 @@ namespace vasilek
                 endpoints.MapControllerRoute("DefaultApiWithId", "api/{controller}/{id}", new { id = RouteParameter.Optional }, new { id = @"\d+" });
                 endpoints.MapControllerRoute("DefaultApiWithId", "api/{controller}/{count}/{page}", new { id = RouteParameter.Optional }, new { id = @"\d+" });
                 endpoints.MapControllerRoute("DefaultApiWithAction", "api/{controller}/{action}");
-                //endpoints.MapHub<ChatHub>("api/chat");
                 endpoints.MapHub<DialogsHub>("socket/dialogs");
             });
 

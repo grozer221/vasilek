@@ -225,6 +225,18 @@
     font-weight: 500;
 }
 
+.deleteMessage{
+    cursor: pointer;
+}
+
+.deleteMessage > *{
+    border: 1px solid red;
+}
+
+.deleteMessage svg {
+    color: red;
+}
+
 @media (max-width: 900px) {
     .wrapper_messages_page {
         height: 100%;
