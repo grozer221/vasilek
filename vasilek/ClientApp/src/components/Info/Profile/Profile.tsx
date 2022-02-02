@@ -41,7 +41,7 @@ export const Profile: React.FC = () => {
                 <Carousel className={s.carousel}>
                     <Avatar size={200} className={s.photo}
                             src={profile?.avaPhoto ? urls.pathToUsersPhotos + profile.avaPhoto : man}/>
-                    {profile.photos.filter(p => p.photoName !== profile.avaPhoto).map(p =>
+                    {profile?.photos?.filter(p => p.photoName !== profile.avaPhoto).map(p =>
                         <div className={s.wrapper_photo}>
                             <Avatar size={200} src={urls.pathToUsersPhotos + p.photoName}/>
                         </div>)}
@@ -65,14 +65,18 @@ export const Profile: React.FC = () => {
 
             </div>
             <div className={s.wrapper_info}>
+                {profile?.status &&
                 <div>
                     <div>Status:</div>
                     <div>{profile?.status}</div>
                 </div>
+                }
+                {profile?.country &&
                 <div>
                     <div>Country:</div>
                     <div>{profile?.country}</div>
                 </div>
+                }
             </div>
         </div>
     );
