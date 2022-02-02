@@ -53,7 +53,7 @@ const ChangePass: React.FC = () => {
     }, [formSuccess])
 
     return (
-        <div className={s.wrapper_form_change_pass}>
+        <div className={s.wrapperFormChangePass}>
             <Form
                 name="edit_profile_form"
                 labelCol={{span: 8}}

@@ -1,16 +1,16 @@
 import React from 'react';
 import {Link, useHistory} from 'react-router-dom';
 import s from './Nav.module.css';
-import {logout} from "../../redux/auth-reducer";
-import {Avatar} from "antd";
-import {useDispatch, useSelector} from "react-redux";
-import {actions} from "../../redux/dialogs-reducer";
-import {actions as appActions} from "../../redux/app-reducer";
-import {s_getCurrentUser} from "../../redux/auth-selectors";
+import {logout} from '../../redux/auth-reducer';
+import {Avatar} from 'antd';
+import {useDispatch, useSelector} from 'react-redux';
+import {actions} from '../../redux/dialogs-reducer';
+import {actions as appActions} from '../../redux/app-reducer';
+import {s_getCurrentUser} from '../../redux/auth-selectors';
 import logo from '../../../src/assets/images/logo.png';
-import {urls} from "../../api/api";
+import {urls} from '../../api/api';
 import userWithoutPhoto from '../../assets/images/man.png';
-import {LogoutOutlined, SettingOutlined, UsergroupAddOutlined} from "@ant-design/icons";
+import {AndroidOutlined, LogoutOutlined, SettingOutlined, UsergroupAddOutlined} from '@ant-design/icons';
 
 type Props = {
     isOpenInfoPage: boolean
@@ -57,6 +57,11 @@ export const Nav: React.FC<Props> = ({isOpenInfoPage, setIsOpenInfoPage}) => {
                     <Link to={'/settings'}>
                         <Avatar size={40} icon={<SettingOutlined/>}/>
                     </Link>
+                </button>
+                <button>
+                    <a href={'https://vasilekblobstorage.blob.core.windows.net/system/vasilek.apk'}>
+                        <Avatar size={40} icon={<AndroidOutlined/>}/>
+                    </a>
                 </button>
                 <button>
                     <Link to={''} onClick={logoutCallback}>

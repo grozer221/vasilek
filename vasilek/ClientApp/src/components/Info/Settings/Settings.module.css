@@ -5,6 +5,10 @@
     grid-gap: 15px;
 }
 
+.wrapperFormChangePass{
+    margin-top: 15px;
+}
+
 .buttons {
     display: flex;
     justify-content: center;
