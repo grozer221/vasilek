@@ -15,6 +15,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 200px;
+    height: 200px;
+}
+
+.carousel {
+    width: 200px;
+    height: 200px;
 }
 
 .wrapper_nick {
@@ -25,7 +32,7 @@
     align-items: center;
 }
 
-.nick{
+.nick {
     font-weight: 500;
 }
 

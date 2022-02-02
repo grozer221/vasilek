@@ -188,7 +188,7 @@ export const Call: React.FC = () => {
                     </div>
                 )}
             </div>
-            <div className={s.nav}>
+            <div className={s.buttons}>
                 <button className={s.button} onClick={clickAudioButtonHandler}>
                     <Avatar size={64} icon={<AudioOutlined/>}/>
                     {isOnAudio || <Avatar size={128} className={s.degree_45_line} icon={<LineOutlined/>}/>}
