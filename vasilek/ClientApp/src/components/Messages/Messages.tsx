@@ -1,22 +1,22 @@
-import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
+import React, {ChangeEvent, useCallback, useEffect, useRef, useState} from 'react';
 import s from './Messages.module.css'
 import {useDispatch, useSelector} from "react-redux";
 import {s_getCurrentUserId, s_getIsAuth} from "../../redux/auth-selectors";
-import {s_getCurrentDialogId, s_getDialogs} from "../../redux/dialogs-selectors";
-import {makeMessageRead, sendMessage} from "../../redux/dialogs-reducer";
+import {s_getCurrentDialogId, s_getDialogs, s_getUsersTyping} from "../../redux/dialogs-selectors";
+import {makeMessageRead, sendMessage, typing} from "../../redux/dialogs-reducer";
 import TextArea from "antd/es/input/TextArea";
 import {Message} from "./Message";
 import {Actions} from "./Actions";
 import Avatar from "antd/es/avatar/avatar";
 import {LinkOutlined, SmileOutlined} from "@ant-design/icons";
 import 'emoji-mart/css/emoji-mart.css';
-import {Emoji, EmojiData, Picker} from 'emoji-mart';
+import {EmojiData, Picker} from 'emoji-mart';
 import {DialogType} from "../../api/dialogs-api";
 import {SelectFiles} from "../common/SelectFiles/SelectFiles";
-import Peer from "simple-peer";
-import reactStringReplace from 'react-string-replace';
+import debounce from 'lodash.debounce';
 
 export const Messages: React.FC = () => {
+    const usersTyping = useSelector(s_getUsersTyping);
     const dialogs = useSelector(s_getDialogs);
     const currentDialogId = useSelector(s_getCurrentDialogId) as number;
     const currentUserId = useSelector(s_getCurrentUserId);
@@ -83,6 +83,11 @@ export const Messages: React.FC = () => {
                                 <Message key={message.id} message={message}
                                          isDialogBetween2={currentDialog.isDialogBetween2}/>)}
                             <div ref={messagesAnchorRef}/>
+                            <div className={s.typings}>
+                                {usersTyping.filter(t => t.dialogId === currentDialogId).map(typing => (
+                                    <div>{typing.nickname} is typing...</div>
+                                ))}
+                            </div>
                         </div>
                         <AddMessageForm/>
                     </>
@@ -151,6 +156,12 @@ const AddMessageForm: React.FC = () => {
     const [isOpenEmoji, setIsOpenEmoji] = useState(false);
     const [files, setFiles] = useState([] as File[]);
     const dispatch = useDispatch();
+    const [isTyping, setIsTyping] = useState(false);
+
+    const debouncedTyping = useCallback(debounce(() => {
+        setIsTyping(false);
+        dispatch(typing(currentDialogId as number, false));
+    }, 1000), []);
 
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -164,6 +175,11 @@ const AddMessageForm: React.FC = () => {
     }
 
     const onMessageUpdate = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        if (!isTyping) {
+            setIsTyping(true);
+            dispatch(typing(currentDialogId as number, true));
+        }
+        debouncedTyping();
         setMessage(e.target.value);
     }
 
@@ -188,6 +204,8 @@ const AddMessageForm: React.FC = () => {
                 : setFiles(Array.from(e.target.files))
         }
     };
+
+    console.log(isTyping)
 
     return (
         <div className={s.form_input_message}>

@@ -1,4 +1,4 @@
-import {ProfileType, ResponseType} from '../types/types';
+import {ProfileType, ResponseType, Typing} from '../types/types';
 import {HubConnection, HubConnectionBuilder} from '@microsoft/signalr';
 import {message} from 'antd';
 import React from 'react';
@@ -9,6 +9,7 @@ import {SignalData} from 'simple-peer';
 let connection: HubConnection | null = null;
 
 const subscribers = {
+    'TYPING': [] as TypingSubscriberType[],
     'DIALOGS_RECEIVED': [] as DialogsReceivedSubscriberType[],
     'DIALOG_RECEIVED': [] as DialogReceivedSubscriberType[],
     'MESSAGE_RECEIVED': [] as MessageReceivedSubscriberType[],
@@ -42,6 +43,10 @@ const createConnection = () => {
     connection.start()
         .then(() => {
             message.success('Connected!');
+
+            connection?.on('Typing', (dialogId: number, isTyping: boolean, nickname: string) => {
+                subscribers['TYPING'].forEach(s => s({dialogId, isTyping, nickname}));
+            });
 
             connection?.on('ReceiveNotification', (message: MessageType) => {
                 subscribers['RECEIVE_NOTIFICATION'].forEach(s => s(message));
@@ -144,6 +149,9 @@ export const dialogsAPI = {
         // @ts-ignore
         subscribers[eventName] = subscribers[eventName].filter(s => s !== callback);
     },
+    typing(dialogId: number, isTyping: boolean) {
+        connection?.send('Typing', dialogId, isTyping);
+    },
     async sendMessage(dialogId: number, messageText: string, filesPinnedToMessage: File[]) {
         let files: FileType[] = [];
         for (const file of filesPinnedToMessage) {
@@ -204,6 +212,7 @@ export const dialogsAPI = {
     ////
 };
 
+type TypingSubscriberType = (typing: Typing) => void
 type DialogsReceivedSubscriberType = (dialogs: DialogType[]) => void
 type DialogReceivedSubscriberType = (dialog: DialogType) => void
 type DialogIdReceivedSubscriberType = (dialogId: number) => void
@@ -228,7 +237,8 @@ type EndCallSubscriberType = () => void
 type ToggleVideoInCallSubscriberType = (userId: number, isOnVideo: boolean) => void
 
 type EventsNamesType =
-    'DIALOGS_RECEIVED'
+    'TYPING'
+    | 'DIALOGS_RECEIVED'
     | 'MESSAGE_RECEIVED'
     | 'DIALOG_RECEIVED'
     | 'DIALOG_ID_RECEIVED'
@@ -253,7 +263,8 @@ type EventsNamesType =
     | 'TOGGLE_VIDEO_IN_CALL'
 
 type CallbackType =
-    DialogsReceivedSubscriberType
+    TypingSubscriberType
+    | DialogsReceivedSubscriberType
     | MessageReceivedSubscriberType
     | DialogReceivedSubscriberType
     | DialogIdReceivedSubscriberType

@@ -6,12 +6,9 @@ import {useDispatch, useSelector} from 'react-redux';
 import {urls} from '../../api/api';
 // @ts-ignore
 import userWithoutPhoto from '../../assets/images/man.png';
-import reactStringReplace from 'react-string-replace';
-import {Emoji} from 'emoji-mart';
 import {s_getCurrentDialogId, s_getDialogs} from '../../redux/dialogs-selectors';
 import {Modal} from '@ant-design/react-native';
 import {deleteMessage} from '../../redux/dialogs-reducer';
-import { IconFill, IconOutline } from "@ant-design/icons-react-native";
 
 type Props = {
     message: MessageType,
@@ -75,7 +72,7 @@ export const Message: FC<Props> = ({message, isDialogBetween2}) => {
                     }
                     <View>
                         {message.files && message.files.map(file => {
-                            if (file.type.match(/image/) !== null){
+                            if (file.type.match(/image/) !== null) {
                                 console.log(urls.pathToFilesPinnedToMessage + file.name);
                                 return <View key={file.id}>
                                     <Image
@@ -83,8 +80,7 @@ export const Message: FC<Props> = ({message, isDialogBetween2}) => {
                                         source={{uri: urls.pathToFilesPinnedToMessage + file.name}}
                                     />
                                 </View>;
-                            }
-                            else
+                            } else
                                 return <View style={s.messageFile} key={file.id}
                                              onTouchEnd={() => onLinkClick(file.name)}>
                                     <Text style={s.text}>{file.name}</Text>

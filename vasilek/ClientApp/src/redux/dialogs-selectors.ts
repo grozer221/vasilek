@@ -1,5 +1,9 @@
 import {AppStateType} from './redux-store';
 
+export const s_getUsersTyping = (state: AppStateType) => {
+    return state.dialogsPage.usersTyping;
+}
+
 export const s_getDialogs = (state: AppStateType) => {
     return state.dialogsPage.dialogs;
 }

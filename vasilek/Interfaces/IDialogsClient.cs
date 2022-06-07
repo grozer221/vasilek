@@ -25,6 +25,7 @@ namespace vasilek.Interfaces
         Task MakeMessageRead(int dialogId, int messageId, string userLogin);
         Task ReceiveCall(int dialogId);
         Task ReceiveSignal(object stream);
+        Task Typing(int dialogId, bool isTyping, string nickName);
         Task SetUsersInCall(List<UserForCallModel> users);
         Task ChangeCallStatusOn(string login, string callStatus);
         Task EndCall();

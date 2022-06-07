@@ -26,6 +26,13 @@
     overflow-y: scroll;
     color: black;
     padding: 0 4px 0 6px;
+    position: relative;
+}
+
+.typings {
+    position: absolute;
+    right: 0;
+    bottom: 0;
 }
 
 .form_input_message {
@@ -100,7 +107,7 @@
     border-bottom: 3px solid #d5d5d5;
 }
 
-.dialog_info{
+.dialog_info {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -164,21 +171,21 @@
     right: 10px;
 }
 
-.wrapper_file_upload{
+.wrapper_file_upload {
     position: relative;
     height: 40px;
 }
 
-.user_ava{
+.user_ava {
     position: relative;
 }
 
-.user_nick_and_online_count{
+.user_nick_and_online_count {
     display: flex;
     flex-direction: column;
 }
 
-.label_file{
+.label_file {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -187,13 +194,13 @@
     cursor: pointer;
 }
 
-.message_photo{
+.message_photo {
     width: 300px;
     margin-top: 7px;
     border-radius: 10px;
 }
 
-.message_file{
+.message_file {
     padding: 3px;
     border-radius: 10px;
     display: flex;
@@ -202,34 +209,34 @@
     margin: 6px;
 }
 
-.message_file span{
+.message_file span {
     background-color: #a9aab7;
 }
 
-.checks{
+.checks {
     position: relative;
     height: 20px;
     margin-right: 20px;
 }
 
-.check_left{
+.check_left {
     position: absolute;
     left: -4px;
 }
 
-.check_right{
+.check_right {
     position: absolute;
 }
 
-.dialog_name{
+.dialog_name {
     font-weight: 500;
 }
 
-.deleteMessage{
+.deleteMessage {
     cursor: pointer;
 }
 
-.deleteMessage > *{
+.deleteMessage > * {
     border: 1px solid red;
 }
 
@@ -251,15 +258,15 @@
         height: 90%;
     }
 
-    .message{
+    .message {
         max-width: 80%;
     }
 
-    .emoji{
+    .emoji {
         left: -45px;
     }
 
-    .message_photo{
+    .message_photo {
         width: 200px;
     }
 }

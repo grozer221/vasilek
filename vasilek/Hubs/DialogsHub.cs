@@ -24,6 +24,17 @@ namespace vasilek.Hubs
             _userRep = new UserRepository(ctx);
         }
 
+        public async Task Typing(int dialogId, bool isTyping)
+        {
+            var currentUser = _userRep.GetUserByLogin(Context.User.Identity.Name);
+            var dialog = _dialogsRep.GetDialogById(dialogId);
+            var usersInDialogExeptMe = _dialogsRep.GetUsersInDialogExeptUser(dialogId, Context.User.Identity.Name).Select(u => u.Login);
+            if (dialog.Users.Any(u => u == currentUser))
+            {
+                await Clients.Users(usersInDialogExeptMe).Typing(dialogId, isTyping, currentUser.NickName);
+            }
+        }
+
         public async Task SendMessage(int dialogId, string messageText, FileModel[] files)
         {
             int messageId = _dialogsRep.AddMessageToDialog(Context.User.Identity.Name, dialogId, messageText);

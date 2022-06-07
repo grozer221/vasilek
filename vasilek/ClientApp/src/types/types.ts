@@ -26,3 +26,9 @@ export type ResponseType = {
     ResultCode: ResponseCodes,
     Messages: string[],
 }
+
+export type Typing = {
+    dialogId: number,
+    isTyping: boolean,
+    nickname: string,
+}

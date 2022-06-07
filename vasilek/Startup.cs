@@ -31,8 +31,8 @@ namespace vasilek
             services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
             string connectionString;
 #if DEBUG
-            connectionString = $"server=localhost;database=vasilek;user=root;password=;port=3306";
-            //connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=vasilek;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            //connectionString = $"server=localhost;database=vasilek;user=root;password=;port=3306";
+            connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=vasilek;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 #else
             connectionString = Environment.GetEnvironmentVariable("JAWSDB_URL");
             connectionString = connectionString.Split("//")[1];
@@ -47,8 +47,8 @@ namespace vasilek
             connectionString = $"server={server};database={database};user={user};password={password};port={port}";
 #endif
 
-            //services.AddDbContext<AppDatabaseContext>(o => o.UseSqlServer(connectionString));
-            services.AddDbContext<AppDatabaseContext>(o => o.UseMySQL(connectionString));
+            services.AddDbContext<AppDatabaseContext>(o => o.UseSqlServer(connectionString));
+            //services.AddDbContext<AppDatabaseContext>(o => o.UseMySQL(connectionString));
             services.AddSingleton<Blob>();
             services.AddSingleton<FilesUtils>();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

@@ -1,11 +1,12 @@
 import {BaseThunkType, InferActionsTypes} from "./redux-store";
 import {dialogsAPI, DialogType, MessageType} from "../api/dialogs-api";
 import {Dispatch} from "redux";
-import {ProfileType} from "../types/types";
+import {ProfileType, Typing} from "../types/types";
 import {actions as appActions} from "./app-reducer";
 import {Instance, SignalData} from "simple-peer";
 
 let initialState = {
+    usersTyping: [] as Typing[],
     dialogs: [] as Array<DialogType>,
     currentDialogId: null as number | null,
     ///
@@ -36,6 +37,16 @@ const dialogsReducer = (state = initialState, action: ActionsTypes): InitialStat
                 ...state,
                 currentDialogId: action.id
             };
+        case 'ADD_USER_TYPING':
+            return {
+                ...state,
+                usersTyping: [...state.usersTyping, action.userTyping],
+            };
+        case 'REMOVE_USER_TYPING':
+            return {
+                ...state,
+                usersTyping: state.usersTyping.filter(t => t === action.userTyping)
+            };
         case 'DIALOGS_RECEIVED':
             return {
                 ...state,
@@ -55,7 +66,7 @@ const dialogsReducer = (state = initialState, action: ActionsTypes): InitialStat
             return {
                 ...state,
                 dialogs: state.dialogs.map(dialog => {
-                    if(dialog.messages.some(message => message.id === action.messageId)){
+                    if (dialog.messages.some(message => message.id === action.messageId)) {
                         dialog.messages = dialog.messages.filter(m => m.id !== action.messageId);
                         return dialog;
                     }
@@ -268,6 +279,14 @@ const dialogsReducer = (state = initialState, action: ActionsTypes): InitialStat
 };
 
 export const actions = {
+    addUserTyping: (userTyping: Typing) => ({
+        type: 'ADD_USER_TYPING',
+        userTyping,
+    } as const),
+    removeUserTyping: (userTyping: Typing) => ({
+        type: 'REMOVE_USER_TYPING',
+        userTyping,
+    } as const),
     setCurrentDialogId: (id: number | null) => ({
         type: 'SET_CURRENT_DIALOG_ID',
         id: id,
@@ -400,6 +419,20 @@ export const actions = {
     } as const),
 }
 
+let _typingCreatorHandler: ((typing: Typing) => void) | null = null
+const typingHandlerCreator = (dispatch: Dispatch) => {
+    if (_typingCreatorHandler === null) {
+        _typingCreatorHandler = (typing) => {
+            if (typing.isTyping) {
+                dispatch(actions.addUserTyping(typing))
+            } else {
+                dispatch(actions.removeUserTyping(typing))
+            }
+        }
+    }
+    return _typingCreatorHandler
+}
+
 let _newDialogsHandler: ((dialogs: DialogType[]) => void) | null = null
 const newDialogsHandlerCreator = (dispatch: Dispatch) => {
     if (_newDialogsHandler === null) {
@@ -489,7 +522,6 @@ const addUsersToDialogHandlerCreator = (dispatch: Dispatch) => {
 //     }
 //     return _removeDialogHandler
 // }
-
 
 
 let _removeUserFromDialogHandler: ((dialogId: number, userId: number) => void) | null = null
@@ -627,6 +659,7 @@ const toggleVideoInCallHandlerCreator = (dispatch: Dispatch) => {
 
 export const startDialogsListening = (): ThunkType => async (dispatch) => {
     dialogsAPI.start();
+    dialogsAPI.subscribe('TYPING', typingHandlerCreator(dispatch));
     dialogsAPI.subscribe('DIALOGS_RECEIVED', newDialogsHandlerCreator(dispatch));
     dialogsAPI.subscribe('DIALOG_RECEIVED', newDialogHandlerCreator(dispatch));
     dialogsAPI.subscribe('DIALOG_ID_RECEIVED', newDialogIdHandlerCreator(dispatch));
@@ -674,6 +707,10 @@ export const stopDialogsListening = (): ThunkType => async (dispatch) => {
     dialogsAPI.unsubscribe('CHANGE_CALL_STATUS_ON', changeCallStatusOnHandlerCreator(dispatch));
     dialogsAPI.unsubscribe('END_CALL', endCallHandlerCreator(dispatch));
     dialogsAPI.unsubscribe('TOGGLE_VIDEO_IN_CALL', toggleVideoInCallHandlerCreator(dispatch));
+};
+
+export const typing = (dialogId: number, isTyping: boolean): ThunkType => async (dispatch) => {
+    await dialogsAPI.typing(dialogId, isTyping);
 };
 
 export const sendMessage = (dialogId: number, messageText: string, files: File[]): ThunkType => async (dispatch) => {
